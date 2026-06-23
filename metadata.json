@@ -1,0 +1,6 @@
+{
+  "name": "Pol Barrot - Dietista Nutricionista",
+  "description": "Lloc web oficial de Pol Barrot, Dietista-Nutricionista a Lleida i Online. Nutrició científica, personalitzada i humana basada en l'evidència.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Inter", ui-sans-serif, system-ui, sans-serif; /* High-end sporty sans-serif instead of old-fashioned serif */
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  /* Modern Dark Slate & Electric Green Color System */
+  --color-white: #0a0a0a; /* Main section card background */
+  
+  --color-brand-50: #0a110a; /* Deep charcoal black with subtle green tint */
+  --color-brand-100: #101f12; /* Dark container background */
+  --color-brand-200: #1a331d; /* Borders and lines on green tint */
+  --color-brand-300: #15803d; /* Vibrant active green border */
+  --color-brand-400: #22c55e; /* Electric lime-green */
+  --color-brand-500: #00FF66; /* Pure electric neon sports green */
+  --color-brand-600: #00E65A; /* High contrast hover sports green */
+  --color-brand-700: #39FF14; /* Purest fluorescent neon green */
+  --color-brand-800: #bbf7d0; /* Soft light text green */
+  --color-brand-900: #e8f9ed; /* Inverted header text tint */
+  --color-brand-950: #ffffff; /* Contrast pure white */
+
+  --color-accent-50: #020603; /* Pure pitch-black */
+  --color-accent-100: #0a170d; /* Deep moss glow background */
+  --color-accent-200: #142e1a;
+  --color-accent-300: #22c55e;
+  --color-accent-400: #00FF66;
+  --color-accent-500: #39FF14;
+  --color-accent-600: #ffffff;
+  --color-accent-700: #000000;
+  
+  --color-neutral-warm-50: #000000; /* Main dark page background */
+  --color-neutral-warm-100: #0a0a0a; /* Container card backgrounds */
+  --color-neutral-warm-200: #1c1c1c; /* Borders and dividers */
+  --color-neutral-warm-300: #2d2d2d; /* Hovered borders */
+  --color-neutral-warm-400: #7a7a7a; /* Muted texts */
+  --color-neutral-warm-500: #a3a3a3; /* Description texts */
+  --color-neutral-warm-600: #d4d4d4; /* Main body text */
+  --color-neutral-warm-700: #e5e5e5; /* Strong texts */
+  --color-neutral-warm-800: #f5f5f5; /* Brightest body text */
+  --color-neutral-warm-900: #ffffff; /* Crisp white titles */
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-neutral-warm-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-200);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-300);
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-900);
+}
