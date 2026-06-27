@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <circle cx="250" cy="250" r="225" fill="#beff52" />
+  <text
+    x="250"
+    y="295"
+    text-anchor="middle"
+    fill="#171717"
+    style="font-family: 'Playfair Display', 'Didot', 'Bodoni MT', 'Georgia', serif; font-weight: 900; font-size: 175px; letter-spacing: -4px"
+  >PBE</text>
+  <rect x="100" y="222" width="300" height="34" fill="#beff52" />
+  <text
+    x="254"
+    y="246"
+    text-anchor="middle"
+    fill="#171717"
+    style="font-family: 'Inter', 'Space Grotesk', 'Helvetica', sans-serif; font-weight: 900; font-size: 15px; letter-spacing: 10px"
+  >NUTRI BAEN</text>
+</svg>
