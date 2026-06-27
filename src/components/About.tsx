@@ -15,8 +15,7 @@ export default function About({ onLearnMore }: AboutProps) {
           {/* Left Side: Narrative and Interactive Button */}
           <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left" id="about-content">
             <span 
-              className="font-sans font-bold text-xs uppercase tracking-widest mb-3"
-              style={{ color: "var(--text-secondary)" }}
+              className="font-sans font-bold text-xs uppercase tracking-widest mb-3 text-brand-500"
             >
               Qui soc
             </span>
@@ -26,7 +25,7 @@ export default function About({ onLearnMore }: AboutProps) {
             </h2>
             
             {/* Structured Readable Narrative Text */}
-            <div className="space-y-6 mb-8 text-neutral-warm-800 font-sans text-base sm:text-lg leading-relaxed">
+            <div className="space-y-6 mb-8 text-neutral-warm-500 font-sans text-base sm:text-lg leading-relaxed">
               <p>
                 Soc el Pol Barrot Enjuanes, dietista i esportista professional. NutriBaen neix de la meva passió per la salut, el benestar i el rendiment esportiu.
               </p>
