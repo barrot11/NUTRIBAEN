@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Calendar, Apple } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import Logo from "./Logo";
 
 interface NavbarProps {
   onBookClick: () => void;
@@ -79,9 +80,7 @@ export default function Navbar({ onBookClick }: NavbarProps) {
           className="flex items-center gap-3 text-left focus:outline-none group"
           id="nav-logo"
         >
-          <div className="p-2 rounded-xl bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-100">
-            <Apple className="h-6 w-6" />
-          </div>
+          <Logo size={44} className="transition-transform duration-300 group-hover:scale-105" />
           <div>
             <div className="font-sans font-extrabold text-xl md:text-2xl text-neutral-warm-900 leading-none tracking-tight flex items-center uppercase">
               NUTRIBAEN

@@ -480,10 +480,10 @@ app.post("/api/booking", async (req, res) => {
 // API route: Submit Contact Message
 app.post("/api/contact", async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
+    const { name, phone, subject, message } = req.body;
 
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: "Nom, correu i missatge són camps obligatoris." });
+    if (!name || !phone || !message) {
+      return res.status(400).json({ error: "Nom, telèfon i missatge són camps obligatoris." });
     }
 
     const htmlContent = `
@@ -512,8 +512,8 @@ app.post("/api/contact", async (req, res) => {
             <div class="value">${name}</div>
           </div>
           <div class="field">
-            <div class="label">Correu Electrònic</div>
-            <div class="value"><a href="mailto:${email}">${email}</a></div>
+            <div class="label">Telèfon de Contacte</div>
+            <div class="value"><a href="tel:${phone}" style="color: #22C55E; font-weight: bold; text-decoration: none;">${phone}</a></div>
           </div>
           <div class="field">
             <div class="label">Assumpte</div>
@@ -533,7 +533,7 @@ app.post("/api/contact", async (req, res) => {
     if (!apiKey) {
       console.log("-----------------------------------------");
       console.log("AVÍS: RESEND_API_KEY no està configurada. Imprimint missatge de contacte:");
-      console.log(`De: ${name} (${email})`);
+      console.log(`De: ${name} (Tel: ${phone})`);
       console.log(`Assumpte: ${subject || "Sense assumpte"}`);
       console.log(`Missatge: ${message}`);
       console.log("-----------------------------------------");

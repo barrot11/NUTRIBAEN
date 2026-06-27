@@ -30,7 +30,7 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
               className="font-sans font-black leading-none tracking-tight mb-6 pt-6 text-5xl sm:text-7xl md:text-8xl lg:text-[90px] select-none"
               id="hero-title"
             >
-              <span className="text-white">NUTRI</span><span className="text-brand-500">BAEN</span>
+              <span className="text-red">NUTRI</span><span className="text-brand-500">BAEN</span>
             </motion.h1>
 
             {/* Subtitle */}
@@ -41,7 +41,8 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
               className="font-sans text-lg md:text-xl text-neutral-warm-600 leading-relaxed max-w-2xl mb-8 font-light"
               id="hero-subtitle"
             >
-              Oblida't de l'estètica superficial. Aquí busquem vitalitat, tenir un cos eficient, sincronitzat amb els teus ritmes naturals i ple d'energia.
+              Oblida't de l'estètica. 
+              Aquí busquem vitalitat, tenir un cos eficient, sincronitzat amb els teus ritmes naturals i ple d'energia.
             </motion.p>
 
             {/* Action Buttons */}
@@ -107,10 +108,10 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
                 </div>
                 <div>
                   <div className="font-sans font-bold text-sm text-neutral-warm-900 leading-none">
-                    CoDiNuCat
+                    NutriBaen
                   </div>
                   <div className="font-sans text-[10px] text-neutral-warm-500 mt-1 leading-tight">
-                    Garantia de servei mèdic oficial
+                    Dietista
                   </div>
                 </div>
               </motion.div>

@@ -87,9 +87,8 @@ export default function FAQ() {
           <p className="font-sans text-xs sm:text-sm text-neutral-warm-600 font-light">
             Encara tens algun dubte pendent de resoldre?{" "}
             <a href="#contacte" className="text-brand-600 font-bold hover:underline">
-              Envia'm un missatge a través del formulari de contacte
-            </a>{" "}
-            o truca'm directament al <strong className="font-semibold text-neutral-warm-800">973 00 00 00</strong>.
+              Envia'm un missatge a través del formulari de contacte.
+            </a>
           </p>
         </div>
 

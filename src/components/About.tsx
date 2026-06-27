@@ -21,14 +21,14 @@ export default function About({ onLearnMore }: AboutProps) {
               Qui soc
             </span>
             
-            <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-neutral-warm-900 leading-tight mb-6 uppercase tracking-tight">
-              Pol Barrot
+            <h2 className="font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold text-neutral-warm-900 leading-tight mb-6 uppercase tracking-tight">
+              POL BARROT
             </h2>
             
             {/* Structured Readable Narrative Text */}
             <div className="space-y-6 mb-8 text-neutral-warm-800 font-sans text-base sm:text-lg leading-relaxed">
               <p>
-                Soc el Pol Barrot, jugador professional de futbol sala i dietista. NutriBaen neix de la meva passió per la salut, el benestar i el rendiment esportiu.
+                Soc el Pol Barrot Enjuanes, dietista i esportista professional. NutriBaen neix de la meva passió per la salut, el benestar i el rendiment esportiu.
               </p>
               <p>
                 Aquí no busquem solucions ràpides ni dietes miracle de poques setmanes. Creiem en la reeducació conscient per construir uns hàbits forts, sans i duradors.

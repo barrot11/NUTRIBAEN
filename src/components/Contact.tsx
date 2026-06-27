@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    phone: "",
     subject: "",
     message: ""
   });
@@ -27,11 +27,11 @@ export default function Contact() {
     const errs: Record<string, string> = {};
     if (!formData.name.trim()) errs.name = "El nom és obligatori.";
     
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      errs.email = "El correu és obligatori.";
-    } else if (!emailRegex.test(formData.email)) {
-      errs.email = "Correu electrònic no vàlid.";
+    const phoneRegex = /^[0-9\s+-]{9,15}$/;
+    if (!formData.phone.trim()) {
+      errs.phone = "El telèfon és obligatori.";
+    } else if (!phoneRegex.test(formData.phone)) {
+      errs.phone = "El número de telèfon no és vàlid.";
     }
 
     if (!formData.message.trim()) errs.message = "El missatge no pot estar buit.";
@@ -58,7 +58,7 @@ export default function Contact() {
 
       if (response.ok) {
         setIsSuccess(true);
-        setFormData({ name: "", email: "", subject: "", message: "" });
+        setFormData({ name: "", phone: "", subject: "", message: "" });
         setActiveFields({});
       } else {
         const errData = await response.json();
@@ -82,7 +82,7 @@ export default function Contact() {
             Comencem avui
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-warm-900 leading-tight mt-3 mb-4">
-            Contacta amb en Pol Barrot
+            Contacta amb mi
           </h2>
           <p className="font-sans text-sm text-neutral-warm-500 font-light">
             Tens un cas complex, dubtes sobre el tractament o necessites rebre assessorament personalitzat abans de reservar? Deixa'm les teves dades i et respondré en menys de 24 hores laborables.
@@ -211,42 +211,42 @@ export default function Contact() {
                         )}
                       </div>
 
-                      {/* Floating Label Email */}
+                      {/* Floating Label Phone */}
                       <div className="relative">
                         <input
-                          type="email"
-                          id="contact-email"
-                          name="email"
+                          type="tel"
+                          id="contact-phone"
+                          name="phone"
                           required
-                          value={formData.email}
-                          onFocus={() => handleFocus("email")}
-                          onBlur={(e) => handleBlur("email", e.target.value)}
+                          value={formData.phone}
+                          onFocus={() => handleFocus("phone")}
+                          onBlur={(e) => handleBlur("phone", e.target.value)}
                           onChange={(e) => {
-                            setFormData({ ...formData, email: e.target.value });
-                            if (errors.email) setErrors({ ...errors, email: "" });
+                            setFormData({ ...formData, phone: e.target.value });
+                            if (errors.phone) setErrors({ ...errors, phone: "" });
                           }}
                           className={`w-full px-4 pt-6 pb-2 border rounded-xl font-sans text-sm outline-none transition-all ${
-                            errors.email
+                            errors.phone
                               ? "border-red-400 bg-red-50/10 focus:border-red-500"
-                              : formData.email || activeFields.email
+                              : formData.phone || activeFields.phone
                               ? "border-brand-500 bg-white"
                               : "border-neutral-warm-200 focus:border-brand-500"
                           }`}
                         />
                         <label
-                          htmlFor="contact-email"
+                          htmlFor="contact-phone"
                           className={`absolute left-4 font-sans text-xs transition-all duration-200 pointer-events-none ${
-                            formData.email || activeFields.email
+                            formData.phone || activeFields.phone
                               ? "top-1.5 text-brand-600 scale-90 origin-top-left"
                               : "top-4 text-neutral-warm-400 text-sm"
                           }`}
                         >
-                          Correu electrònic *
+                          Número de telèfon *
                         </label>
-                        {errors.email && (
+                        {errors.phone && (
                           <span className="text-[10px] text-red-500 flex items-center gap-1 mt-1">
                             <ShieldAlert className="h-3 w-3 shrink-0" />
-                            {errors.email}
+                            {errors.phone}
                           </span>
                         )}
                       </div>
@@ -359,7 +359,7 @@ export default function Contact() {
                     Missatge enviat amb èxit!
                   </h4>
                   <p className="font-sans text-xs sm:text-sm text-neutral-warm-500 mt-2 font-light max-w-sm leading-relaxed">
-                    Gràcies per posar-te en contacte. En Pol Barrot llegirà personalment el teu missatge i et respondrà al correu indicat al més aviat possible.
+                    Gràcies per posar-te en contacte. En Pol Barrot llegirà personalment el teu missatge i et respondrà al telèfon indicat al més aviat possible.
                   </p>
                   
                   <button
