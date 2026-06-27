@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "./firebase-db";
+import { db } from "./firebase-db.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Allow CORS from any origin for flexibility, especially during staging/preview deployments
