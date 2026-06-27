@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /bookings/{bookingId} {
+      // Allow read and write to the bookings collection so the reservation system can function.
+      allow read, write: if true;
+    }
+  }
+}

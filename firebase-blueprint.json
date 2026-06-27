@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "booking": {
+      "title": "Booking",
+      "description": "A scheduled nutritional consultation booking slot",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "The date of the booking in YYYY-MM-DD format"
+        },
+        "time": {
+          "type": "string",
+          "description": "The time slot of the booking, e.g. '10:00'"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the client"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the client"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact phone number of the client"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of when the booking was made"
+        }
+      },
+      "required": ["date", "time", "name", "email", "phone"]
+    }
+  },
+  "firestore": {
+    "bookings/{bookingId}": {
+      "schema": "booking",
+      "description": "Collection of scheduled client bookings"
+    }
+  }
+}

@@ -1,4 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "./firebase-db";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Allow CORS from any origin for flexibility, especially during staging/preview deployments
@@ -138,6 +140,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const key = dateKey || new Date(date).toISOString().split("T")[0];
+
+      // Save booking to Firestore database to persist slots across serverless cold starts
+      try {
+        const bookingsCol = collection(db, "bookings");
+        await addDoc(bookingsCol, {
+          date: key,
+          time,
+          name,
+          email,
+          phone,
+          visitType,
+          modality: modality || "Presencial",
+          notes,
+          willingToInvest: willingToInvest || "",
+          interestedService: interestedService || "",
+          serviceName: serviceName || "Consulta Nutrició",
+          createdAt: new Date().toISOString()
+        });
+      } catch (dbErr) {
+        console.error("Failed to save booking to Firestore:", dbErr);
+      }
 
       // Format date in a timezone-robust way from dateKey (YYYY-MM-DD)
       const [yr, mo, dy] = key.split("-").map(Number);
