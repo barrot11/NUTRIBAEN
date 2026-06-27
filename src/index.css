@@ -1,6 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+:root {
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --surface-1: #ffffff;
+  --border: #e5e7eb;
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Inter", ui-sans-serif, system-ui, sans-serif; /* High-end sporty sans-serif instead of old-fashioned serif */

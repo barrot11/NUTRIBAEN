@@ -12,7 +12,7 @@ export const SERVICES: Service[] = [
       "Estratègies pràctiques per gestionar la gana emocional i l'ansietat"
     ],
     icon: "Apple",
-    duration: "Primera: 60 min | Seguiment: 30 min"
+    duration: "Sessió de 45 minuts"
   },
   {
     id: "esportiva",
@@ -25,7 +25,7 @@ export const SERVICES: Service[] = [
       "Valoració antropomètrica ISAK per a anàlisi de composició corporal"
     ],
     icon: "Dumbbell",
-    duration: "Primera: 60 min | Seguiment: 30 min"
+    duration: "Sessió de 45 minuts"
   },
   {
     id: "clinica",
@@ -38,7 +38,7 @@ export const SERVICES: Service[] = [
       "Millora del trànsit intestinal, reflux i digestions pesades"
     ],
     icon: "Stethoscope",
-    duration: "Primera: 60 min | Seguiment: 30 min"
+    duration: "Sessió de 45 minuts"
   },
   {
     id: "vegana",
@@ -51,7 +51,7 @@ export const SERVICES: Service[] = [
       "Assessorament en opcions basades en plantes de fàcil preparació"
     ],
     icon: "Leaf",
-    duration: "Primera: 60 min | Seguiment: 30 min"
+    duration: "Sessió de 45 minuts"
   }
 ];
 
@@ -64,7 +64,7 @@ export const FAQS: FAQItem[] = [
   {
     id: "faq-2",
     question: "Com funciona la primera visita i quina durada té?",
-    answer: "La primera visita té una durada de 60 minuts. En ella realitzem una entrevista exhaustiva (anamnesi) on parlem de la teva història clínica, hàbits actuals, relació amb el menjar, horaris, nivell d'activitat física i objectius. També analitzem analítiques recents si en portes. A partir d'aquí, dissenyem conjuntament les primeres pautes 100% personalitzades."
+    answer: "La primera visita té una durada de 45 minuts. En ella realitzem una entrevista exhaustiva (anamnesi) on parlem de la teva història clínica, hàbits actuals, relació amb el menjar, horaris, nivell d'activitat física i objectius. També analitzem analítiques recents si en portes. A partir d'aquí, dissenyem conjuntament les primeres pautes 100% personalitzades."
   },
   {
     id: "faq-3",

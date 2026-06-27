@@ -45,15 +45,28 @@ export default function Contact() {
     if (!validate()) return;
 
     setIsSubmitting(true);
+    setErrors({});
     
-    // Simulate sending message
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setIsSuccess(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setActiveFields({});
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        setActiveFields({});
+      } else {
+        const errData = await response.json();
+        setErrors({ submit: errData.error || "No s'ha pogut enviar el missatge." });
+      }
     } catch (err) {
       console.error(err);
+      setErrors({ submit: "S'ha produït un error de connexió. Si us plau, torna-ho a intentar." });
     } finally {
       setIsSubmitting(false);
     }
@@ -87,38 +100,8 @@ export default function Contact() {
               
               {/* Cards Grid */}
               <div className="grid grid-cols-1 gap-4">
-                {/* Phone Card */}
-                <div className="flex items-center gap-4 p-4.5 bg-white border border-neutral-warm-200/50 rounded-2xl">
-                  <div className="p-3 bg-brand-50 rounded-xl text-brand-600">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider block">
-                      Truca'm directament
-                    </span>
-                    <a href="tel:+34973000000" className="font-sans font-bold text-sm text-neutral-warm-800 hover:text-brand-600 mt-0.5 block">
-                      973 00 00 00
-                    </a>
-                  </div>
-                </div>
-
-                {/* Email Card */}
-                <div className="flex items-center gap-4 p-4.5 bg-white border border-neutral-warm-200/50 rounded-2xl">
-                  <div className="p-3 bg-brand-50 rounded-xl text-brand-600">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider block">
-                      Correu electrònic
-                    </span>
-                    <a href="mailto:pol@barrotnutricio.com" className="font-sans font-bold text-sm text-neutral-warm-800 hover:text-brand-600 mt-0.5 block">
-                      pol@barrotnutricio.com
-                    </a>
-                  </div>
-                </div>
-
                 {/* Address Card */}
-                <div className="flex items-start gap-4 p-4.5 bg-white border border-neutral-warm-200/50 rounded-2xl">
+                <div className="flex items-start gap-4 p-5 bg-white border border-neutral-warm-200/50 rounded-2xl shadow-sm">
                   <div className="p-3 bg-brand-50 rounded-xl text-brand-600 mt-0.5">
                     <MapPin className="h-5 w-5" />
                   </div>
@@ -126,10 +109,11 @@ export default function Contact() {
                     <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider block">
                       Consulta presencial
                     </span>
-                    <address className="font-sans font-bold text-sm text-neutral-warm-800 not-italic mt-0.5 block leading-normal">
-                      Carrer Major, 15, Principal, 25007 Lleida
-                      <span className="font-light text-xs text-neutral-warm-400 block mt-1">
-                        Davant del Palau de la Paeria (Centre històric)
+                    <address className="font-sans font-bold text-sm text-neutral-warm-800 not-italic mt-1.5 block leading-relaxed">
+                      Carrer d'Agustí Duran i Santpere, 9<br />
+                      25001 Lleida, España
+                      <span className="font-light text-xs text-neutral-warm-400 block mt-2">
+                        Consulta presencial amb cita prèvia.
                       </span>
                     </address>
                   </div>
@@ -137,7 +121,7 @@ export default function Contact() {
               </div>
 
               {/* Social Channels */}
-              <div className="pt-4 flex gap-4">
+              <div className="pt-2 flex gap-4">
                 <a
                   href="https://instagram.com/polbarrot"
                   target="_blank"
@@ -161,7 +145,7 @@ export default function Contact() {
             <div className="rounded-2xl overflow-hidden border border-neutral-warm-200/60 shadow-inner h-56 md:h-64 mt-6">
               <iframe
                 title="Google Maps - Consulta Pol Barrot"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2989.4442654316715!2d0.6231940763959146!3d41.613697971228515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a723afaa5718df%3A0xc3f619e09d57a2df!2sCarrer%20Major%2C%20Lleida!5e0!3m2!1sca!2ses!4v1711200000000!5m2!1sca!2ses"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2989.7047716382025!2d0.6276228763955684!3d41.60809227122998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a723b7b4a20b01%3A0xc7f6a73c1dbeffaa!2sCarrer%20d&#39;Agust%C3%AD%20Duran%20i%20Sanpere%2C%209%2C%2025001%20Lleida!5e0!3m2!1sca!2ses!4v1711200000000!5m2!1sca!2ses"
                 className="w-full h-full border-none opacity-85 hover:opacity-100 transition-opacity"
                 allowFullScreen={false}
                 loading="lazy"

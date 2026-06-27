@@ -14,9 +14,7 @@ export default function Navbar({ onBookClick }: NavbarProps) {
   const navLinks = [
     { name: "Inici", id: "inici" },
     { name: "Sobre Mi", id: "sobre-mi" },
-    { name: "Serveis", id: "serveis" },
-    { name: "Com Funciona", id: "com-funciona" },
-    { name: "Testimonis", id: "testimonis" },
+    { name: "Servei Integral", id: "servei-integral" },
     { name: "FAQ", id: "faq" },
     { name: "Contacte", id: "contacte" },
   ];

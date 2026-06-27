@@ -32,4 +32,6 @@ export interface BookingDetails {
   email: string;
   phone: string;
   notes: string;
+  willingToInvest: string;
+  interestedService: string;
 }

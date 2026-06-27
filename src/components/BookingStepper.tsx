@@ -13,7 +13,9 @@ import {
   Check,
   Video,
   MapPin,
-  FlameKindling
+  FlameKindling,
+  Mail,
+  MessageSquare
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -28,9 +30,25 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
   
   // Selection State
   const [visitType, setVisitType] = useState<"primera" | "seguiment">("primera");
-  const [modality, setModality] = useState<"presencial" | "online">("presencial");
+  const modality = "presencial";
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [serverBookedSlots, setServerBookedSlots] = useState<{ date: string; time: string }[]>([]);
+
+  // Fetch booked slots from the backend to prevent duplicate bookings
+  useEffect(() => {
+    fetch("/api/booked-slots")
+      .then(res => {
+        if (res.ok) return res.json();
+        throw new Error("HTTP error " + res.status);
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setServerBookedSlots(data);
+        }
+      })
+      .catch(err => console.warn("Error fetching booked slots:", err));
+  }, [currentStep]);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -38,6 +56,8 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
     email: "",
     phone: "",
     notes: "",
+    willingToInvest: "",
+    interestedService: "",
     acceptTerms: false
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -159,69 +179,54 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
   const isDaySelectable = (date: Date, isPast: boolean) => {
     if (isPast) return false;
     const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
-    // Block Sundays (0) and Saturdays (6)
-    if (dayOfWeek === 0 || dayOfWeek === 6) return false;
-    return true;
+    // Only Dilluns (1), Dimarts (2), Dimecres (3), Dijous (4) are selectable!
+    return dayOfWeek >= 1 && dayOfWeek <= 4;
   };
 
-  // 45-minute booking logic time slots
-  // Mornings: 9:00 - 14:00 (last booking starts at 13:00 for Primera 60min, or 13:30 for Seguiment 30min)
-  // Afternoons: 16:00 - 20:00 (last booking starts at 19:00 for Primera, or 19:30 for Seguiment)
-  const TIME_SLOTS = [
-    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
-    "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"
-  ];
+  // Dynamic 45-minute slots based on the office hours:
+  // Dilluns, Dimarts, Dijous: 16:30, 17:15, 18:00 (3 clients)
+  // Dimecres: 16:30, 17:15, 18:00, 18:45 (4 clients)
+  const getTimeSlotsForDate = (date: Date | null) => {
+    if (!date) return [];
+    const day = date.getDay();
+    if (day === 3) {
+      // Dimecres: 4 clients de 45'
+      return ["16:30", "17:15", "18:00", "18:45"];
+    }
+    if (day === 1 || day === 2 || day === 4) {
+      // Dilluns, Dimarts, Dijous: 3 clients de 45'
+      return ["16:30", "17:15", "18:00"];
+    }
+    return [];
+  };
 
   // Deterministic "Busy Slots" depending on the day of the week to look 100% realistic!
+  // Return empty array so that no preset slots are disabled in gray as requested by the user
   const getBusySlotsForDate = (date: Date | null) => {
-    if (!date) return [];
-    const day = date.getDay(); // 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri
-    switch (day) {
-      case 1: // Mon
-        return ["10:00", "10:30", "11:00", "17:00", "17:30"];
-      case 2: // Tue
-        return ["09:30", "12:00", "12:30", "16:30", "18:00", "18:30"];
-      case 3: // Wed
-        return ["11:30", "12:00", "16:00", "19:00", "19:30"];
-      case 4: // Thu
-        return ["09:00", "10:30", "13:00", "17:30", "18:00"];
-      case 5: // Fri
-        return ["11:00", "11:30", "13:30", "16:00", "18:30"];
-      default:
-        return [];
-    }
+    return [];
   };
 
-  // Check if a specific slot is available, considering 60min duration vs 30min duration!
-  // If Primera Visita (60min): needs TWO consecutive free slots.
-  // E.g. If user wants 10:00, then BOTH 10:00 and 10:30 must be available!
-  // Also, 13:30 and 19:30 are NOT allowed for Primera Visita because there is no subsequent slot within the block!
+  // Every slot is 45 minutes, so it only occupies that exact slot!
   const isTimeSlotAvailable = (timeStr: string, busySlots: string[]) => {
     if (busySlots.includes(timeStr)) return false;
 
-    if (visitType === "primera") {
-      // Must not be the last slot of the morning or afternoon blocks (no slot follows them)
-      if (timeStr === "13:30" || timeStr === "19:30") return false;
+    if (selectedDate) {
+      // Generate timezone-proof YYYY-MM-DD local key matching what the server stores
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+      const day = String(selectedDate.getDate()).padStart(2, "0");
+      const dateKey = `${year}-${month}-${day}`;
 
-      const currentIndex = TIME_SLOTS.indexOf(timeStr);
-      if (currentIndex === -1 || currentIndex === TIME_SLOTS.length - 1) return false;
-
-      const nextTimeStr = TIME_SLOTS[currentIndex + 1];
-      
-      // Ensure the next slot is also free and does not bridge the lunch break (13:30 -> 16:00 is blocked!)
-      if (timeStr === "13:00") {
-        // Next slot is 13:30 which is morning, so check 13:30. But we must ensure it doesn't cross block!
-        // 13:30 is a valid slot, but is 14:00 available? No, morning finishes at 14:00, so 13:00 is fine (13:00 to 14:00).
-        // Let's check 13:30.
-        return !busySlots.includes("13:30");
-      }
-      
-      return !busySlots.includes(nextTimeStr);
+      const isAlreadyBooked = serverBookedSlots.some(
+        slot => slot.date === dateKey && slot.time === timeStr
+      );
+      if (isAlreadyBooked) return false;
     }
 
     return true;
   };
 
+  const activeTimeSlots = useMemo(() => getTimeSlotsForDate(selectedDate), [selectedDate]);
   const currentBusySlots = useMemo(() => getBusySlotsForDate(selectedDate), [selectedDate]);
 
   // Form Validation
@@ -243,6 +248,20 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
       errors.phone = "Introdueix un número de telèfon vàlid (9 xifres).";
     }
 
+    if (visitType === "primera" && !formData.notes.trim()) {
+      errors.notes = "Si us plau, indica el motiu de la teva consulta o comentari.";
+    }
+
+    if (visitType === "primera") {
+      if (!formData.willingToInvest) {
+        errors.willingToInvest = "Si us plau, respon a aquesta pregunta.";
+      }
+
+      if (!formData.interestedService) {
+        errors.interestedService = "Si us plau, indica quin servei t'interessa.";
+      }
+    }
+
     if (!formData.acceptTerms) {
       errors.acceptTerms = "Has d'acceptar la política de privacitat.";
     }
@@ -261,11 +280,47 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
 
     try {
       await new Promise(resolve => setTimeout(resolve, 800));
-      setSubmitMessage("Reservant el bloc d'horari a l'agenda d'en Pol...");
+      setSubmitMessage("Enviant sol·licitud i preparant correus electrònics...");
       
-      await new Promise(resolve => setTimeout(resolve, 900));
+      const serviceObj = SERVICES.find(s => s.id === selectedServiceId);
+      const serviceName = serviceObj ? serviceObj.title : "Consulta de Nutrició";
+
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+      const day = String(selectedDate.getDate()).padStart(2, "0");
+      const dateKey = `${year}-${month}-${day}`;
+
+      const finalWillingToInvest = visitType === "primera" ? formData.willingToInvest : "No aplica (Seguiment)";
+      const finalInterestedService = visitType === "primera" ? formData.interestedService : "No aplica (Seguiment)";
+
+      // Real API POST call to the backend
+      const response = await fetch("/api/booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: selectedDate.toISOString(),
+          dateKey: dateKey,
+          time: selectedTime,
+          visitType: visitType,
+          modality: modality,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          notes: formData.notes,
+          willingToInvest: finalWillingToInvest,
+          interestedService: finalInterestedService,
+          serviceName: serviceName,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("La resposta del servidor no ha estat OK.");
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 600));
       setSubmitMessage("Generant l'enllaç de confirmació i enllaços de Google Calendar...");
-      
       await new Promise(resolve => setTimeout(resolve, 800));
 
       const finalDetails: BookingDetails = {
@@ -276,7 +331,9 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        notes: formData.notes
+        notes: formData.notes,
+        willingToInvest: finalWillingToInvest,
+        interestedService: finalInterestedService,
       };
 
       setBookedDetails(finalDetails);
@@ -284,6 +341,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
       if (onBookingSuccess) onBookingSuccess();
     } catch (e) {
       console.error(e);
+      setFormErrors({ submit: "No s'ha pogut completar la reserva. Revisa la connexió o torna-ho a intentar." });
     } finally {
       setIsSubmitting(false);
       setSubmitMessage("");
@@ -318,15 +376,11 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
     const dates = `${formatCalDate(startDate)}/${formatCalDate(endDate)}`;
     
     const location = encodeURIComponent(
-      bookedDetails.modality === "presencial" 
-        ? "Consulta Pol Barrot, Carrer Major, Lleida" 
-        : "Videotrucada Online (Rebràs l'enllaç per correu)"
+      "Consulta Pol Barrot, Carrer d'Agustí Duran i Sanpere 9, 25001, Lleida"
     );
 
     const details = encodeURIComponent(
-      `Sessió de nutrició personalitzada amb Pol Barrot.\nModitat: ${
-        bookedDetails.modality === "presencial" ? "Presencial a Lleida" : "Online"
-      }\nPacient: ${bookedDetails.name}\n\nRebràs una confirmació amb més detalls per correu electrònic.`
+      `Sessió de nutrició personalitzada amb Pol Barrot.\nModalitat: Presencial a Lleida\nPacient: ${bookedDetails.name}\n\nRebràs una confirmació amb més detalls per correu electrònic.`
     );
 
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}&ctz=Europe/Madrid`;
@@ -345,7 +399,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
             Reserva la teva Cita en 3 Passos
           </h2>
           <p className="font-sans text-sm text-neutral-warm-500 font-light">
-            Selecciona la modalitat, el dia i la teva hora preferida. Rebràs una confirmació immediata amb tots els detalls al teu correu.
+            Selecciona el dia i la teva hora preferida per a la teva consulta presencial a Lleida. Rebràs una confirmació immediata amb tots els detalls al teu correu.
           </p>
         </div>
 
@@ -409,12 +463,12 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                 className="flex flex-col gap-8"
                 id="booking-step-1"
               >
-                {/* Segment Controls: Visit Type & Modality */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-neutral-warm-100">
+                {/* Segment Controls: Visit Type */}
+                <div className="pb-6 border-b border-neutral-warm-100">
                   {/* Visit Type */}
-                  <div className="flex flex-col items-start text-left">
-                    <label className="font-sans font-bold text-[11px] text-neutral-warm-400 uppercase tracking-wider mb-2.5">
-                      Tipus de visita
+                  <div className="flex flex-col items-start text-left max-w-md mx-auto w-full">
+                    <label className="font-sans font-bold text-[11px] text-neutral-warm-400 uppercase tracking-wider mb-2.5 text-center w-full">
+                      Tipus de visita (Sempre Presencial a Lleida)
                     </label>
                     <div className="flex bg-neutral-warm-100 p-1 rounded-xl w-full">
                       <button
@@ -429,7 +483,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                             : "text-neutral-warm-500 hover:text-neutral-warm-800"
                         }`}
                       >
-                        Primera Visita (60 min)
+                        Primera Visita (45 min)
                       </button>
                       <button
                         type="button"
@@ -443,40 +497,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                             : "text-neutral-warm-500 hover:text-neutral-warm-800"
                         }`}
                       >
-                        Seguiment (30 min)
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Modality */}
-                  <div className="flex flex-col items-start text-left">
-                    <label className="font-sans font-bold text-[11px] text-neutral-warm-400 uppercase tracking-wider mb-2.5">
-                      Modalitat de consulta
-                    </label>
-                    <div className="flex bg-neutral-warm-100 p-1 rounded-xl w-full">
-                      <button
-                        type="button"
-                        onClick={() => setModality("presencial")}
-                        className={`flex-1 py-2 text-xs font-sans font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
-                          modality === "presencial"
-                            ? "bg-white text-brand-800 shadow-sm"
-                            : "text-neutral-warm-500 hover:text-neutral-warm-800"
-                        }`}
-                      >
-                        <MapPin className="h-3.5 w-3.5" />
-                        Presencial (Lleida)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setModality("online")}
-                        className={`flex-1 py-2 text-xs font-sans font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
-                          modality === "online"
-                            ? "bg-white text-brand-800 shadow-sm"
-                            : "text-neutral-warm-500 hover:text-neutral-warm-800"
-                        }`}
-                      >
-                        <Video className="h-3.5 w-3.5" />
-                        Online
+                        Seguiment (45 min)
                       </button>
                     </div>
                   </div>
@@ -620,22 +641,18 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                     Hores disponibles per al dia seleccionat
                   </h3>
                   <p className="font-sans text-xs text-neutral-warm-500 mt-1 font-light">
-                    {visitType === "primera" 
-                      ? "La primera visita dura 60 minuts, per tant s'ocuparan dues franges de 30 minuts consecutives."
-                      : "Les visites de seguiment duren 30 minuts, ocupant una sola franja de temps."
-                    }
+                    Cada sessió té una durada de <strong>45 minuts</strong> de consulta personalitzada.
                   </p>
                 </div>
 
-                {/* Time Slots Grid split by Morning / Afternoon */}
+                {/* Time Slots Grid */}
                 <div className="space-y-6 text-left">
-                  {/* Morning slots */}
                   <div>
                     <h4 className="font-sans font-bold text-xs text-neutral-warm-400 uppercase tracking-wider mb-3">
-                      Franja de matí
+                      Torns de tarda disponibles
                     </h4>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                      {TIME_SLOTS.slice(0, 10).map((timeStr) => {
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {activeTimeSlots.map((timeStr) => {
                         const isAvailable = isTimeSlotAvailable(timeStr, currentBusySlots);
                         const isSelected = selectedTime === timeStr;
                         
@@ -647,44 +664,13 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                             disabled={!isAvailable}
                             className={`py-3 text-xs font-sans font-semibold rounded-xl text-center border transition-all ${
                               isSelected
-                                ? "bg-brand-600 border-brand-600 text-white font-bold shadow-md scale-105"
+                                ? "bg-brand-500 border-brand-500 text-black font-extrabold shadow-[0_0_15px_rgba(0,255,102,0.3)] scale-105"
                                 : isAvailable
                                 ? "bg-white border-neutral-warm-200/60 text-neutral-warm-700 hover:border-brand-300 hover:bg-brand-50/30 cursor-pointer"
                                 : "bg-neutral-warm-50 text-neutral-warm-300 border-neutral-warm-200/30 cursor-not-allowed line-through"
                             }`}
                           >
-                            {timeStr}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Afternoon slots */}
-                  <div>
-                    <h4 className="font-sans font-bold text-xs text-neutral-warm-400 uppercase tracking-wider mb-3">
-                      Franja de tarda
-                    </h4>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                      {TIME_SLOTS.slice(10).map((timeStr) => {
-                        const isAvailable = isTimeSlotAvailable(timeStr, currentBusySlots);
-                        const isSelected = selectedTime === timeStr;
-                        
-                        return (
-                          <button
-                            key={timeStr}
-                            type="button"
-                            onClick={() => isAvailable && setSelectedTime(timeStr)}
-                            disabled={!isAvailable}
-                            className={`py-3 text-xs font-sans font-semibold rounded-xl text-center border transition-all ${
-                              isSelected
-                                ? "bg-brand-600 border-brand-600 text-white font-bold shadow-md scale-105"
-                                : isAvailable
-                                ? "bg-white border-neutral-warm-200/60 text-neutral-warm-700 hover:border-brand-300 hover:bg-brand-50/30 cursor-pointer"
-                                : "bg-neutral-warm-50 text-neutral-warm-300 border-neutral-warm-200/30 cursor-not-allowed line-through"
-                            }`}
-                          >
-                            {timeStr}
+                            {timeStr} h
                           </button>
                         );
                       })}
@@ -696,7 +682,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-neutral-warm-100">
                   <span className="font-sans text-xs text-neutral-warm-500">
                     {selectedTime 
-                      ? `Sessió triada: ${selectedTime} h (${visitType === "primera" ? "60 min, fins a les " + TIME_SLOTS[TIME_SLOTS.indexOf(selectedTime) + 1] + " h" : "30 min"})`
+                      ? `Sessió triada: ${selectedTime} h (45 min)`
                       : "Siusplau, tria una hora de les disponibles."
                     }
                   </span>
@@ -705,10 +691,10 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                     type="button"
                     onClick={() => setCurrentStep(3)}
                     disabled={!selectedTime}
-                    className="w-full sm:w-auto px-6 py-3 bg-brand-600 disabled:bg-neutral-warm-200 text-white font-sans font-semibold text-sm rounded-xl hover:bg-brand-700 shadow-md transition-all active:scale-95 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-6 py-3 bg-brand-500 disabled:bg-neutral-warm-200 text-black font-sans font-extrabold text-sm rounded-xl hover:bg-brand-600 shadow-md transition-all active:scale-95 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     Següent pas: Les teves dades
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-4 w-4 stroke-[2.5]" />
                   </button>
                 </div>
               </motion.div>
@@ -873,7 +859,100 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                     </div>
                   </div>
 
-                  {/* Floating Label: Notes */}
+                  {visitType === "primera" && (
+                    <>
+                      {/* Question 1: Willing to invest 100+ € monthly */}
+                      <div className="flex flex-col text-left space-y-2">
+                        <label className="font-sans font-bold text-xs text-neutral-warm-700">
+                          Estàs disposat/a a invertir 100€ o més mensualment per la teva salut? *
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData({ ...formData, willingToInvest: "Sí" });
+                              if (formErrors.willingToInvest) {
+                                const newErrors = { ...formErrors };
+                                delete newErrors.willingToInvest;
+                                setFormErrors(newErrors);
+                              }
+                            }}
+                            className={`py-3 px-4 text-xs font-sans font-bold rounded-xl text-center border transition-all ${
+                              formData.willingToInvest === "Sí"
+                                ? "bg-brand-50 border-brand-500 text-brand-800 font-extrabold shadow-sm"
+                                : "bg-white border-neutral-warm-200/60 text-neutral-warm-700 hover:border-brand-300"
+                            }`}
+                          >
+                            Sí
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData({ ...formData, willingToInvest: "En aquest moment no" });
+                              if (formErrors.willingToInvest) {
+                                const newErrors = { ...formErrors };
+                                delete newErrors.willingToInvest;
+                                setFormErrors(newErrors);
+                              }
+                            }}
+                            className={`py-3 px-4 text-xs font-sans font-bold rounded-xl text-center border transition-all ${
+                              formData.willingToInvest === "En aquest moment no"
+                                ? "bg-brand-50 border-brand-500 text-brand-800 font-extrabold shadow-sm"
+                                : "bg-white border-neutral-warm-200/60 text-neutral-warm-700 hover:border-brand-300"
+                            }`}
+                          >
+                            En aquest moment no
+                          </button>
+                        </div>
+                        {formErrors.willingToInvest && (
+                          <span className="text-[11px] text-red-500 flex items-center gap-1 mt-1 font-sans">
+                            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                            {formErrors.willingToInvest}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Question 2: Interested service selection */}
+                      <div className="flex flex-col text-left space-y-2">
+                        <label className="font-sans font-bold text-xs text-neutral-warm-700">
+                          Amb quin servei estàs interessat? *
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {["Protocol trimestral", "Protocol semestral", "Protocol Anual", "Valoració antropomètrica", "Xerrades/tallers"].map((service) => (
+                            <button
+                              key={service}
+                              type="button"
+                              onClick={() => {
+                                setFormData({ ...formData, interestedService: service });
+                                if (formErrors.interestedService) {
+                                  const newErrors = { ...formErrors };
+                                  delete newErrors.interestedService;
+                                  setFormErrors(newErrors);
+                                }
+                              }}
+                              className={`py-3 px-4 text-xs font-sans font-bold rounded-xl text-center border transition-all ${
+                                formData.interestedService === service
+                                  ? "bg-brand-50 border-brand-500 text-brand-800 font-extrabold shadow-sm"
+                                  : "bg-white border-neutral-warm-200/60 text-neutral-warm-700 hover:border-brand-300"
+                              } ${
+                                service === "Xerrades/tallers" ? "sm:col-span-2" : ""
+                              }`}
+                            >
+                              {service}
+                            </button>
+                          ))}
+                        </div>
+                        {formErrors.interestedService && (
+                          <span className="text-[11px] text-red-500 flex items-center gap-1 mt-1 font-sans">
+                            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                            {formErrors.interestedService}
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Floating Label: Notes (Required) */}
                   <div className="relative">
                     <textarea
                       id="notes"
@@ -882,9 +961,18 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                       value={formData.notes}
                       onFocus={() => handleFocus("notes")}
                       onBlur={(e) => handleBlur("notes", e.target.value)}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, notes: e.target.value });
+                        if (formErrors.notes) {
+                          const newErrors = { ...formErrors };
+                          delete newErrors.notes;
+                          setFormErrors(newErrors);
+                        }
+                      }}
                       className={`w-full px-4 pt-6 pb-2 border rounded-xl font-sans text-sm outline-none transition-all resize-none ${
-                        formData.notes || activeFields.notes
+                        formErrors.notes
+                          ? "border-red-400 bg-red-50/10 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                          : formData.notes || activeFields.notes
                           ? "border-brand-500 bg-white"
                           : "border-neutral-warm-200 focus:border-brand-500"
                       }`}
@@ -897,8 +985,16 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                           : "top-4 text-neutral-warm-400 text-sm"
                       }`}
                     >
-                      Motiu de la consulta o notes d'interès (opcional)
+                      {visitType === "primera"
+                        ? "Motiu de la consulta o algun comentari que ens vulguis fer *"
+                        : "Motiu de la consulta o algun comentari que ens vulguis fer (opcional)"}
                     </label>
+                    {formErrors.notes && (
+                      <span className="text-[11px] text-red-500 flex items-center gap-1 mt-1 font-sans">
+                        <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                        {formErrors.notes}
+                      </span>
+                    )}
                   </div>
 
                   {/* Terms Policy Checkbox */}
@@ -1006,7 +1102,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                       Tipus de visita
                     </span>
                     <span className="font-sans font-semibold text-sm text-neutral-warm-800 block mt-0.5">
-                      {bookedDetails.visitType === "primera" ? "Primera Visita (60 min)" : "Seguiment de Nutrició (30 min)"}
+                      {bookedDetails.visitType === "primera" ? "Primera Visita (45 min)" : "Seguiment de Nutrició (45 min)"}
                     </span>
                   </div>
 
@@ -1052,25 +1148,102 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                     </span>
                   </div>
 
-                  {bookedDetails.modality === "presencial" ? (
-                    <div className="sm:col-span-2 pt-3 border-t border-brand-100">
-                      <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider">
-                        Adreça de la consulta
-                      </span>
-                      <span className="font-sans text-xs text-neutral-warm-600 block mt-0.5">
-                        Carrer Major, 15, Principal, Lleida (al costat de la Paeria)
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="sm:col-span-2 pt-3 border-t border-brand-100">
-                      <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider">
-                        Enllaç de la videotrucada
-                      </span>
-                      <span className="font-sans text-xs text-neutral-warm-600 block mt-0.5 italic">
-                        Rebràs l'enllaç de Google Meet per correu 10 minuts abans de la cita.
-                      </span>
+                  {bookedDetails.visitType === "primera" && (
+                    <div className="sm:col-span-2 pt-3 border-t border-brand-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider">
+                          Inversió en salut (+100€/mes)
+                        </span>
+                        <span className="font-sans font-semibold text-xs text-brand-700 block mt-0.5">
+                          {bookedDetails.willingToInvest}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider">
+                          Servei d'interès triat
+                        </span>
+                        <span className="font-sans font-semibold text-xs text-brand-700 block mt-0.5">
+                          {bookedDetails.interestedService}
+                        </span>
+                      </div>
                     </div>
                   )}
+
+                  <div className="sm:col-span-2 pt-3 border-t border-brand-100">
+                    <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider">
+                      Motiu indicat
+                    </span>
+                    <span className="font-sans text-xs text-neutral-warm-600 block mt-0.5 bg-neutral-warm-50 p-3 rounded-lg border border-neutral-warm-100/50 italic">
+                      "{bookedDetails.notes}"
+                    </span>
+                  </div>
+
+                  <div className="sm:col-span-2 pt-3 border-t border-brand-100">
+                    <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider">
+                      Adreça de la consulta
+                    </span>
+                    <span className="font-sans text-xs text-neutral-warm-600 block mt-0.5">
+                      Carrer d'Agustí Duran i Sanpere 9, 25001, Lleida
+                    </span>
+                  </div>
+                </div>
+
+                {/* Manual Forwarding / Contact Options with Pol */}
+                <div className="w-full max-w-lg bg-neutral-warm-50/60 rounded-xl p-4 border border-neutral-warm-100/70 flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-neutral-warm-700">
+                    <span className="text-base">📲</span>
+                    <span className="font-sans font-bold text-[10px] uppercase tracking-wider text-neutral-warm-600">
+                      Contacte Directe i Confirmació Manual
+                    </span>
+                  </div>
+                  <p className="font-sans text-xs text-neutral-warm-500 font-light">
+                    Pots enviar una confirmació manual o qualsevol dubte directament a en Pol Barrot amb un sol clic:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                    <a
+                      href={`mailto:polbaen@gmail.com?subject=${encodeURIComponent(
+                        `Reserva de Cita Nutricional - ${bookedDetails.name}`
+                      )}&body=${encodeURIComponent(
+                        `Hola Pol,\n\nEm dic ${bookedDetails.name || "Pacient"} (Email: ${bookedDetails.email}, Telèfon: ${bookedDetails.phone}).\n\nT'envio aquest correu per confirmar la meva cita de nutrició.\n\nDetalls:\n- Servei: ${
+                          bookedDetails.visitType === "primera" ? "Primera Consulta" : "Seguiment de Nutrició"
+                        }\n- Data: ${
+                          bookedDetails.date
+                            ? bookedDetails.date.toLocaleDateString("ca-ES", {
+                                weekday: "long",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })
+                            : ""
+                        }\n- Hora: ${bookedDetails.time}h\n- Motiu/Comentari: ${bookedDetails.notes || "Sense comentaris addicionals"}\n\nAtentament,\n${bookedDetails.name}`
+                      )}`}
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-white border border-neutral-warm-200 hover:bg-brand-50 hover:border-brand-300 text-neutral-warm-700 hover:text-brand-800 font-sans font-semibold text-xs rounded-lg transition-all"
+                    >
+                      <Mail className="h-3.5 w-3.5 text-brand-600" />
+                      Enviar per Correu
+                    </a>
+
+                    <a
+                      href={`https://wa.me/34640775160?text=${encodeURIComponent(
+                        `Hola Pol! Em dic ${bookedDetails.name || "Pacient"}. Confirmo la meva reserva de nutrició per al dia ${
+                          bookedDetails.date
+                            ? bookedDetails.date.toLocaleDateString("ca-ES", {
+                                weekday: "long",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })
+                            : ""
+                        } a les ${bookedDetails.time}h. Gràcies!`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-white border border-neutral-warm-200 hover:bg-emerald-50 hover:border-emerald-300 text-neutral-warm-700 hover:text-emerald-800 font-sans font-semibold text-xs rounded-lg transition-all"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
+                      Enviar per WhatsApp
+                    </a>
+                  </div>
                 </div>
 
                 {/* Dynamic Actions */}
@@ -1093,11 +1266,14 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                       setCurrentStep(1);
                       setSelectedDate(null);
                       setSelectedTime("");
+                      setBookedDetails(null);
                       setFormData({
                         name: "",
                         email: "",
                         phone: "",
                         notes: "",
+                        willingToInvest: "",
+                        interestedService: "",
                         acceptTerms: false
                       });
                       setActiveFields({});

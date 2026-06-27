@@ -1,7 +1,7 @@
-import { Calendar, ArrowRight, Award, ShieldCheck, Users } from "lucide-react";
+import { Calendar, ArrowRight, ShieldCheck } from "lucide-react";
 import { motion } from "motion/react";
 // @ts-ignore
-import polHeroImg from "../assets/images/pol_barrot_hero_1782233404589.jpg";
+import polHeroImg from "../assets/images/Pol.jpg";
 
 interface HeroProps {
   onBookClick: () => void;
@@ -22,32 +22,15 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Side Content */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            {/* Tag Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-100 border border-brand-300/30 rounded-full text-brand-800 text-xs font-semibold uppercase tracking-wider mb-6"
-              id="hero-badge"
-            >
-              <Award className="h-3.5 w-3.5 text-brand-500" />
-              Nutrició Basada en l'Evidència Científica
-            </motion.div>
-
             {/* Title */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-sans text-4xl sm:text-5xl md:text-6xl font-extrabold text-neutral-warm-900 leading-[1.1] tracking-tight mb-6"
+              className="font-sans font-black leading-none tracking-tight mb-6 pt-6 text-5xl sm:text-7xl md:text-8xl lg:text-[90px] select-none"
               id="hero-title"
             >
-              Menja sense culpes.
-              <br />
-              <span className="text-brand-500 relative inline-block">
-                Transforma la teva salut
-              </span>{" "}
-              de forma sostenible.
+              <span className="text-white">NUTRI</span><span className="text-brand-500">BAEN</span>
             </motion.h1>
 
             {/* Subtitle */}
@@ -58,7 +41,7 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
               className="font-sans text-lg md:text-xl text-neutral-warm-600 leading-relaxed max-w-2xl mb-8 font-light"
               id="hero-subtitle"
             >
-              Sóc en <strong className="font-semibold text-neutral-warm-900">Pol Barrot</strong>, dietista-nutricionista a Lleida. El meu mètode combina ciència i empatia per dissenyar un pla alimentari que s'adapti a la teva vida, no a l'inrevés. Sense prohibicions ni llistes de prohibits.
+              Oblida't de l'estètica superficial. Aquí busquem vitalitat, tenir un cos eficient, sincronitzat amb els teus ritmes naturals i ple d'energia.
             </motion.p>
 
             {/* Action Buttons */}
@@ -75,7 +58,7 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
                 id="hero-cta-main"
               >
                 <Calendar className="h-5 w-5 stroke-[2.5]" />
-                Reserva la teva Primera Cita
+                Reserva la teva Cita
                 <ArrowRight className="h-4 w-4 stroke-[2.5] transition-transform group-hover:translate-x-1" />
               </button>
               <button
@@ -86,40 +69,6 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
                 Saber-ne més
               </button>
             </motion.div>
-
-            {/* Trust Badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="grid grid-cols-3 gap-6 pt-8 border-t border-neutral-warm-200/60 w-full max-w-lg"
-              id="hero-trust"
-            >
-              <div className="flex flex-col items-start">
-                <span className="font-sans text-3xl font-black text-brand-500 leading-none">
-                  +500
-                </span>
-                <span className="font-sans text-xs text-neutral-warm-500 mt-1.5 leading-tight">
-                  Pacients ajudats
-                </span>
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="font-sans text-3xl font-black text-brand-500 leading-none">
-                  CAT1842
-                </span>
-                <span className="font-sans text-xs text-neutral-warm-500 mt-1.5 leading-tight">
-                  Nutricionista Col·legiat
-                </span>
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="font-sans text-3xl font-black text-brand-500 leading-none">
-                  100%
-                </span>
-                <span className="font-sans text-xs text-neutral-warm-500 mt-1.5 leading-tight">
-                  Atenció personalitzada
-                </span>
-              </div>
-            </motion.div>
           </div>
 
           {/* Right Side Image & Floating Elements */}
@@ -128,7 +77,7 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative w-full max-w-[420px]"
+              className="relative w-full max-w-[370px]"
               id="hero-image-wrapper"
             >
               {/* Outer decorative ring */}
@@ -162,27 +111,6 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
                   </div>
                   <div className="font-sans text-[10px] text-neutral-warm-500 mt-1 leading-tight">
                     Garantia de servei mèdic oficial
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating Badge 2 - Local Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="absolute -right-4 top-1/4 bg-neutral-warm-100 border border-neutral-warm-200 text-white p-3.5 rounded-2xl shadow-xl flex items-center gap-2.5 z-20"
-                id="floating-badge-2"
-              >
-                <div className="p-1.5 bg-brand-500 rounded-lg text-black">
-                  <Users className="h-4 w-4 stroke-[2.5]" />
-                </div>
-                <div className="text-left">
-                  <div className="font-sans font-semibold text-xs leading-none text-neutral-warm-900">
-                    Consulta a Lleida
-                  </div>
-                  <div className="font-sans text-[9px] text-neutral-warm-400 mt-0.5 uppercase tracking-wider">
-                    I format online
                   </div>
                 </div>
               </motion.div>
