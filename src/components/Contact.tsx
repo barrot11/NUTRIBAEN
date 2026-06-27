@@ -1,6 +1,23 @@
 import { useState, FormEvent } from "react";
-import { Mail, Phone, MapPin, Send, Loader2, CheckCircle2, Instagram, Linkedin, ShieldAlert } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2, CheckCircle2, Instagram, ShieldAlert } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+
+// Custom Tiktok icon component because it's not exported by the installed lucide-react version
+function Tiktok({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </svg>
+  );
+}
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -93,19 +110,19 @@ export default function Contact() {
           
           {/* Left Side: Contact Information Cards & Map */}
           <div className="lg:col-span-5 flex flex-col justify-between gap-6" id="contact-info-block">
-            <div className="space-y-6 text-left">
+            <div className="space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
               <h3 className="font-sans font-bold text-lg text-neutral-warm-900">
                 Informació de contacte
               </h3>
               
               {/* Cards Grid */}
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-4 w-full">
                 {/* Address Card */}
-                <div className="flex items-start gap-4 p-5 bg-white border border-neutral-warm-200/50 rounded-2xl shadow-sm">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-5 bg-white border border-neutral-warm-200/50 rounded-2xl shadow-sm w-full">
                   <div className="p-3 bg-brand-50 rounded-xl text-brand-600 mt-0.5">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <div>
+                  <div className="text-center sm:text-left">
                     <span className="font-sans text-[10px] text-neutral-warm-400 uppercase tracking-wider block">
                       Consulta presencial
                     </span>
@@ -123,7 +140,7 @@ export default function Contact() {
               {/* Social Channels */}
               <div className="pt-2 flex gap-4">
                 <a
-                  href="https://instagram.com/polbarrot"
+                  href="https://www.instagram.com/nutribaen?igsh=NGpqZHByZ2RhYW1p"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2.5 bg-white border border-neutral-warm-200 text-neutral-warm-600 hover:text-brand-600 hover:border-brand-200 rounded-xl shadow-sm transition-all flex items-center justify-center"
@@ -131,12 +148,12 @@ export default function Contact() {
                   <Instagram className="h-4.5 w-4.5" />
                 </a>
                 <a
-                  href="https://linkedin.com/in/polbarrot"
+                  href="https://www.tiktok.com/@nutribaen?_r=1&_t=ZN-97ZPWkajLPS"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2.5 bg-white border border-neutral-warm-200 text-neutral-warm-600 hover:text-brand-600 hover:border-brand-200 rounded-xl shadow-sm transition-all flex items-center justify-center"
                 >
-                  <Linkedin className="h-4.5 w-4.5" />
+                  <Tiktok className="h-4.5 w-4.5" />
                 </a>
               </div>
             </div>

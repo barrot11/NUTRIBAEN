@@ -66,7 +66,7 @@ export default function ServeiIntegral() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.15 }}
-                className="flex flex-col rounded-2xl p-8 sm:p-10 border border-neutral-warm-200 bg-neutral-warm-100 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-brand-500 group relative overflow-hidden"
+                className="flex flex-col items-center md:items-start text-center md:text-left rounded-2xl p-8 sm:p-10 border border-neutral-warm-200 bg-neutral-warm-100 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-brand-500 group relative overflow-hidden"
               >
                 {/* Subtle top brand glow line */}
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-neutral-warm-200 group-hover:bg-brand-500 transition-colors" />

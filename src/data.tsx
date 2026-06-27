@@ -57,19 +57,14 @@ export const SERVICES: Service[] = [
 
 export const FAQS: FAQItem[] = [
   {
-    id: "faq-1",
-    question: "Treballes amb mútues de salut?",
-    answer: "Treballo exclusivament de forma privada per poder garantir la màxima personalització i temps de qualitat a cada pacient. No obstant això, si la teva mútua disposa d'una polissa de reemborsament de lliure elecció, et puc emetre factures detallades perquè et retornin un percentatge del cost de la consulta (habitualment entre el 50% i el 80%)."
-  },
-  {
     id: "faq-2",
     question: "Com funciona la primera visita i quina durada té?",
-    answer: "La primera visita té una durada de 45 minuts. En ella realitzem una entrevista exhaustiva (anamnesi) on parlem de la teva història clínica, hàbits actuals, relació amb el menjar, horaris, nivell d'activitat física i objectius. També analitzem analítiques recents si en portes. A partir d'aquí, dissenyem conjuntament les primeres pautes 100% personalitzades."
+    answer: "La primera visita té una durada de 45 minuts. En ella realitzem una entrevista exhaustiva (anamnesi) on parlem de la teva història clínica, hàbits actuals, relació amb el menjar, horaris, nivell d'activitat física i objectius. A partir d'aquí, dissenyem conjuntament les primeres pautes 100% personalitzades."
   },
   {
     id: "faq-3",
     question: "Amb quina freqüència es fan les visites de seguiment?",
-    answer: "Depèn totalment del teu cas i objectius. Al principi, el més recomanable sol ser fer un seguiment cada 2 o 3 setmanes per anar consolidant hàbits, resoldre dubtes i fer els ajustos necessaris en els menús. A mesura que avances i guanyes autonomia, les visites s'espaien a un cop al mes o més, fins a rebre l'alta nutricional."
+    answer: "Un cop al mes."
   },
   {
     id: "faq-4",
@@ -79,7 +74,46 @@ export const FAQS: FAQItem[] = [
   {
     id: "faq-5",
     question: "Quina és la vostra política de cancel·lació?",
-    answer: "Per respecte al temps dels altres pacients i a la planificació de la meva agenda, demano que qualsevol canvi o cancel·lació de cita es faci amb un mínim de 24 hores d'antelació. Si es cancel·la amb menys temps, es cobrarà el 50% de la sessió."
+    answer: (
+      <span>
+        Per respecte al temps dels altres pacients i a la planificació de la meva agenda, demano que qualsevol canvi o cancel·lació de cita es faci amb un mínim de 24 hores d'antelació. Si us plau, escriu un missatge a l'{" "}
+        <a href="#contacte" className="text-brand-600 font-bold hover:underline">
+          enquesta de contacte
+        </a>{" "}
+        per gestionar qualsevol modificació.
+      </span>
+    )
+  },
+  {
+    id: "faq-6",
+    question: "Quina diferència hi ha entre el pla de 3 mesos i el de 6?",
+    answer: "En 3 mesos veuràs un canvi físic i energètic notable. En 6 mesos, haurem consolidat aquests canvis a nivell epigenètic. El protocol de 6 mesos és el que realment et garanteix que no tornaràs mai més als teus vells hàbits."
+  },
+  {
+    id: "faq-7",
+    question: "Estaràs en contacte directe amb mi per a dubtes diaris?",
+    answer: "Absolutament sí. A diferència dels serveis de nutrició convencionals, a NutriBaen entenem que l'optimització de la salut passa als detalls diaris. Aquí tindràs una via de comunicació directa amb mi per resoldre dubtes ràpids."
+  },
+  {
+    id: "faq-8",
+    question: "Quins mètodes de pagament accepta NutriBaen?",
+    answer: "Pots optar pel pagament únic del protocol sencer o bé la subscripció mensual, on el càrrec s'efectua automàticament cada mes per evitar interrupcions en el teu assessorament."
+  },
+  {
+    id: "faq-9",
+    question: "Què rebràs exactament quan contractis el teu pla?",
+    answer: (
+      <ul className="list-disc pl-5 space-y-1.5 mt-1 text-neutral-warm-600">
+        <li>Pla nutricional adaptat segons el teu context.</li>
+        <li>Accés al programa amb tota l'estratègia, documents d’interès, il·lustracions, etc.</li>
+        <li>Accés a l'App Premium personalitzat.</li>
+        <li>Suport de Xat directe amb mi per mitjà de l'App.</li>
+        <li>Coaching Nutricional a través de la gestió d'hàbits.</li>
+        <li>Seguiment i Videotrucades.</li>
+        <li>Guia d'idees de plats ràpids i sans.</li>
+        <li>Llista de la compra intel·ligent.</li>
+      </ul>
+    )
   }
 ];
 

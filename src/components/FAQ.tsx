@@ -70,9 +70,9 @@ export default function FAQ() {
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                     >
                       <div className="px-6 pb-5 border-t border-neutral-warm-100/50 pt-3">
-                        <p className="font-sans text-sm text-neutral-warm-600 leading-relaxed font-light text-left">
+                        <div className="font-sans text-sm text-neutral-warm-600 leading-relaxed font-light text-left">
                           {faq.answer}
-                        </p>
+                        </div>
                       </div>
                     </motion.div>
                   )}

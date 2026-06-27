@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface Service {
   id: string;
   title: string;
@@ -11,7 +13,7 @@ export interface Service {
 export interface FAQItem {
   id: string;
   question: string;
-  answer: string;
+  answer: ReactNode;
 }
 
 export interface Testimonial {

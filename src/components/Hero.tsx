@@ -21,7 +21,7 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
       <div className="max-w-7xl mx-auto px-6 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Side Content */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
+          <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left">
             {/* Title */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -38,7 +38,7 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="font-sans text-lg md:text-xl text-neutral-warm-600 leading-relaxed max-w-2xl mb-8 font-light"
+              className="font-sans text-lg md:text-xl text-neutral-warm-600 leading-relaxed max-w-2xl mb-8 font-light mx-auto lg:mx-0"
               id="hero-subtitle"
             >
               Oblida't de l'estètica. 
