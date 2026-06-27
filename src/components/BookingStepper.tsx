@@ -294,12 +294,13 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
       const finalInterestedService = visitType === "primera" ? formData.interestedService : "No aplica (Seguiment)";
 
       // Real API POST call to the backend
-      const response = await fetch("/api/booking", {
+      const response = await fetch("/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          type: "booking",
           date: selectedDate.toISOString(),
           dateKey: dateKey,
           time: selectedTime,
