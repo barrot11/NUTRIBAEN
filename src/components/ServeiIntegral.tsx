@@ -111,7 +111,7 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
               className="inline-flex items-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-black font-sans font-extrabold text-sm rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer uppercase tracking-wider"
               id="btn-explore-dirigit"
             >
-              Descobreix a qui va dirigit i els meus serveis
+              Descobreix els meus serveis
               <ArrowRight className="h-4 w-4" />
             </motion.button>
           </div>

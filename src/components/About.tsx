@@ -43,7 +43,7 @@ export default function About({ onLearnMore }: AboutProps) {
               className="inline-flex items-center justify-center px-6 py-3.5 bg-transparent hover:bg-neutral-warm-100 text-neutral-warm-800 hover:text-black font-sans font-bold text-sm sm:text-base rounded-xl border border-neutral-warm-300 hover:border-brand-500 transition-all active:scale-95 cursor-pointer"
               id="about-story-btn"
             >
-              Coneix la meva història →
+              Coneix la meva història
             </button>
           </div>
 

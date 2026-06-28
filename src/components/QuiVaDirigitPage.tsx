@@ -165,9 +165,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
             className="inline-flex items-center gap-2 px-3 py-1 bg-[#1ed760]/10 border border-[#1ed760]/20 rounded-full mb-4 mx-auto"
           >
             <Sparkles className="h-4 w-4 text-[#1ed760]" />
-            <span className="font-sans font-bold text-[10px] text-[#1ed760] uppercase tracking-wider text-center">
-              Enfocament personalitzat
-            </span>
+
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -177,27 +175,9 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
           >
             ELS MEUS SERVEIS
           </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="font-sans text-base sm:text-lg text-neutral-warm-400 leading-relaxed font-light text-center"
-          >
-            Protocols i serveis d'assessorament nutricional i esportiu dissenyats a mida segons el teu objectiu, biologia i ritme de vida.
-          </motion.p>
-        </div>
+          
 
         {/* 2. FIRST SECTION: PROTOCOLS AND SERVICES */}
-        <div className="mb-28 text-center">
-          <div className="flex flex-col items-center justify-center text-center mb-12">
-            <span className="font-sans font-bold text-xs text-[#1ed760] uppercase tracking-widest mb-2 block text-center">
-              FÒRMULES DE TREBALL
-            </span>
-            <h2 className="font-sans font-black italic text-2xl sm:text-3xl text-white tracking-tight leading-none text-center">
-              PROTOCOLS I SERVEIS A LA TEVA MIDA
-            </h2>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center justify-center items-center">
             {protocols.map((proto, index) => {
               return (
@@ -340,15 +320,15 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
           <h3 className="font-sans font-black text-2xl sm:text-3xl text-[#1ed760] uppercase tracking-tight mb-4 text-center">
             VOLS CONÈIXER ELS PREUS?
           </h3>
-          <p className="font-sans text-sm sm:text-base text-neutral-warm-300 max-w-2xl mx-auto leading-relaxed mb-8 text-center">
-            El meu mètode és ultra-personalitzat. No venc plantilles genèriques de pdf: cada cas és estudiat a fons i adaptat a la teva biologia i disponibilitat. Contacta directament amb mi per conèixer els preus detallats i trobar la fórmula exacta per a tu.
+          <p className="font-sans text-sm sm:text-base text-white max-w-2xl mx-auto leading-relaxed mb-8 text-center">
+            Contacta directament amb mi per conèixer els preus detallats.
           </p>
           
           <button
             onClick={onContactClick}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#1ed760] hover:bg-[#1db954] text-black font-sans font-black text-sm rounded-xl shadow-md shadow-[#1ed760]/20 hover:shadow-lg hover:shadow-[#1ed760]/30 transition-all uppercase tracking-wide active:scale-95 cursor-pointer text-center mx-auto"
           >
-            CONTACTA AMB MI → FORMULARI
+            CONTACTA AMB MI 
           </button>
         </motion.div>
 
@@ -361,19 +341,12 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
           className="rounded-3xl border-t-4 border-[#1ed760] bg-black py-12 md:py-16 px-6 text-center shadow-2xl text-center"
           id="contact-final-booking"
         >
-          <h3 className="font-sans font-black text-3xl sm:text-4xl text-white uppercase tracking-tight mb-2 text-center">
-            LLEST PER COMENÇAR?
-          </h3>
-          <p className="font-sans text-xs sm:text-sm text-white max-w-md mx-auto leading-relaxed mb-8 text-center">
-            Reserva una sessió de descobriment per valorar la teva situació de partida i explicar-te en detall com l'abordarem.
-          </p>
-
           <button
             onClick={onBookClick}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#1ed760] hover:bg-[#1db954] text-black font-sans font-black text-sm rounded-xl shadow-lg hover:shadow-xl transition-all uppercase tracking-wide active:scale-95 cursor-pointer text-center mx-auto"
           >
             <Calendar className="h-4.5 w-4.5" />
-            📅 RESERVA ARA
+            RESERVA ARA
           </button>
         </motion.div>
 
