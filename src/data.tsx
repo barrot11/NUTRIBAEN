@@ -64,12 +64,12 @@ export const FAQS: FAQItem[] = [
   {
     id: "faq-3",
     question: "Amb quina freqüència es fan les visites de seguiment?",
-    answer: "Un cop al mes."
+    answer: "Dependrà del context i la persona, però majoritàriament s'establirà una visita de seguiment un cop al mes per valorar el procés i com prosseguim amb el protocol."
   },
   {
     id: "faq-4",
     question: "Puc triar si fer la visita presencial a Lleida o de forma online?",
-    answer: "I tant. Totes les consultes (tant la primera com els seguiments) es poden fer de manera presencial a la meva consulta del centre de Lleida, o bé de forma online mitjançant videotrucada. L'eficàcia del tractament, l'atenció i els materials lliurats són exactament els mateixos."
+    answer: "I tant. Totes les consultes (tant la primera com els seguiments) es poden fer de manera presencial a la meva consulta del centre de Lleida, o bé de forma online mitjançant videotrucada."
   },
   {
     id: "faq-5",

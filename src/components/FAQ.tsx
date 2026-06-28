@@ -19,11 +19,14 @@ export default function FAQ() {
           <span className="font-sans font-bold text-xs text-brand-600 uppercase tracking-widest">
             Dubtes comuns
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-warm-900 leading-tight mt-3 mb-4">
-            Preguntes Freqüents (FAQ)
+          <h2 className="font-serif text-4xl sm:text-5xl font-bold text-neutral-warm-900 leading-none mt-3">
+            FAQ
           </h2>
+          <p className="font-sans text-xs sm:text-sm font-semibold text-neutral-warm-500 tracking-wider uppercase mt-1.5 mb-4">
+            Preguntes Freqüents
+          </p>
           <p className="font-sans text-sm text-neutral-warm-500 font-light">
-            Tens algun dubte sobre el funcionament de la consulta? Aquí trobaràs les respostes a les preguntes més habituals. Si no trobes el que busques, contacta'm directament.
+            Aquí trobaràs les respostes a les preguntes més habituals. Si no trobes el que busques, contacta'm directament.
           </p>
         </div>
 

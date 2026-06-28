@@ -1,7 +1,11 @@
 import { motion } from "motion/react";
-import { BookOpen, Heart, Flame } from "lucide-react";
+import { BookOpen, Heart, Flame, ArrowRight } from "lucide-react";
 
-export default function ServeiIntegral() {
+interface ServeiIntegralProps {
+  onExploreMoreClick?: () => void;
+}
+
+export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralProps) {
   const pillars = [
     {
       title: "Reeducació",
@@ -42,7 +46,7 @@ export default function ServeiIntegral() {
             transition={{ duration: 0.6 }}
             className="font-sans font-extrabold text-3xl sm:text-4xl text-neutral-warm-900 leading-tight mt-3 mb-4 uppercase"
           >
-            SERVEI INTEGRAL
+            ELS MEUS SERVEIS
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -94,6 +98,24 @@ export default function ServeiIntegral() {
             );
           })}
         </div>
+
+        {/* Interactive Button to new page */}
+        {onExploreMoreClick && (
+          <div className="mt-16 text-center">
+            <motion.button
+              onClick={onExploreMoreClick}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-black font-sans font-extrabold text-sm rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer uppercase tracking-wider"
+              id="btn-explore-dirigit"
+            >
+              Descobreix a qui va dirigit i els meus serveis
+              <ArrowRight className="h-4 w-4" />
+            </motion.button>
+          </div>
+        )}
 
       </div>
     </section>

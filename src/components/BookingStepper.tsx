@@ -469,7 +469,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                   {/* Visit Type */}
                   <div className="flex flex-col items-start text-left max-w-md mx-auto w-full">
                     <label className="font-sans font-bold text-[11px] text-neutral-warm-400 uppercase tracking-wider mb-2.5 text-center w-full">
-                      Tipus de visita (Sempre Presencial a Lleida)
+                      Tipus de visita 
                     </label>
                     <div className="flex bg-neutral-warm-100 p-1 rounded-xl w-full">
                       <button
@@ -591,7 +591,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                   <div className="flex gap-4 text-[11px] text-neutral-warm-500 justify-center sm:justify-start">
                     <div className="flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-brand-200" />
-                      Disponible (Dilluns a Divendres)
+                      Disponible (Dilluns a Dijous)
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-neutral-warm-200" />

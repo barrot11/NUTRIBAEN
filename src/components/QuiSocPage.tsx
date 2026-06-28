@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowLeft, Sparkles, Apple, Compass } from "lucide-react";
 // @ts-ignore
-import sportsPrepImg from "../assets/images/pbe.jpg";
+import sportsPrepImg from "../assets/images/mi2.jpg";
 
 interface QuiSocPageProps {
   onBack: () => void;
@@ -58,17 +58,17 @@ export default function QuiSocPage({ onBack }: QuiSocPageProps) {
             </div>
           </div>
 
-          <h1 className="font-sans font-black text-4xl sm:text-5xl md:text-6xl text-neutral-warm-900 uppercase tracking-tight leading-none mb-4">
+          <h1 className="font-sans font-black text-3xl sm:text-4xl md:text-5xl text-neutral-warm-900 uppercase tracking-tight leading-none mb-4">
             Pol Barrot Enjuanes
           </h1>
           <p className="font-sans font-bold text-sm sm:text-base text-brand-500 uppercase tracking-widest">
-            Jugador professional de futbol sala · Dietista
+            Jugador de futbol sala · Dietista
           </p>
         </div>
 
         {/* Narrativa personal */}
         <div className="prose prose-neutral max-w-none mb-20 text-center md:text-left">
-          <p className="font-serif text-lg sm:text-xl text-neutral-warm-800 leading-relaxed font-light mb-8 italic">
+          <p className="font-serif text-base sm:text-lg text-neutral-warm-800 leading-relaxed font-light mb-8">
             Soc el Pol Barrot Enjuanes, nascut a Lleida l'any 2003. Si m'hagués de definir, em considero una persona familiar, propera i un autèntic apassionat de l'esport i la salut.
           </p>
           <p className="font-serif text-base sm:text-lg text-neutral-warm-800 leading-relaxed font-light mb-8">

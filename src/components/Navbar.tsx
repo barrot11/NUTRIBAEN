@@ -5,9 +5,10 @@ import Logo from "./Logo";
 
 interface NavbarProps {
   onBookClick: () => void;
+  onNavigateToSection?: (sectionId: string) => void;
 }
 
-export default function Navbar({ onBookClick }: NavbarProps) {
+export default function Navbar({ onBookClick, onNavigateToSection }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("inici");
@@ -15,7 +16,7 @@ export default function Navbar({ onBookClick }: NavbarProps) {
   const navLinks = [
     { name: "Inici", id: "inici" },
     { name: "Sobre Mi", id: "sobre-mi" },
-    { name: "Servei Integral", id: "servei-integral" },
+    { name: "Els Meus Serveis", id: "servei-integral" },
     { name: "FAQ", id: "faq" },
     { name: "Contacte", id: "contacte" },
   ];
@@ -61,6 +62,8 @@ export default function Navbar({ onBookClick }: NavbarProps) {
         top: offsetPosition,
         behavior: "smooth",
       });
+    } else if (onNavigateToSection) {
+      onNavigateToSection(id);
     }
   };
 
