@@ -37,7 +37,7 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="font-sans font-bold text-xs text-brand-500 uppercase tracking-widest">
-            EL MEU COMPROMÍS
+            SERVEI INTEGRAL
           </span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
