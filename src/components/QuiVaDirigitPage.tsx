@@ -6,6 +6,12 @@ import {
   Dumbbell, Activity, Target, Flame, Heart
 } from "lucide-react";
 
+import futImg from "../assets/images/fut.png";
+import camImg from "../assets/images/co.jpg";
+import bomImg from "../assets/images/bom.jpg";
+import coImg from "../assets/images/cam.jpg";
+import padrImg from "../assets/images/padr.jpg";
+
 interface QuiVaDirigitPageProps {
   onBack: () => void;
   onContactClick: () => void;
@@ -27,7 +33,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       sub: "Rendiment & Readaptació",
       desc: "Perfils d'alt rendiment a la recerca d'un 1% extra i esportistes en procés de readaptació per lesions recurrents.",
       icon: Dumbbell,
-      image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=600",
+      image: futImg,
       details: [
         "Optimització de la composició corporal per a la competició.",
         "Planificació nutricional segons els cicles de càrrega de l'entrenament.",
@@ -41,7 +47,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       sub: "Vida Activa & Energia",
       desc: "Professionals ocupats que, malgrat portar una vida familiar, esportiva i saludable, pateixen fatiga crònica i insatisfacció corporal.",
       icon: Activity,
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=600",
+      image: camImg,
       details: [
         "Gestió d'energia al llarg del dia sense caigudes fatals.",
         "Optimització del descans i control d'estrès relacionat amb l'alimentació.",
@@ -55,7 +61,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       sub: "Preparació Física & Mental",
       desc: "Opositors conscients de l'exigència física i mental, que treballen per potenciar les seves capacidades i assolir la plaça.",
       icon: Target,
-      image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=600",
+      image: bomImg,
       details: [
         "Nutrició enfocada a potenciar la força, la resistència i la velocitat.",
         "Estratègies per afrontar el dia de les proves físiques de forma òptima.",
@@ -67,9 +73,9 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       id: "recomposicio",
       title: "RECOMPOSICIÓ CORPORAL",
       sub: "Canvi Real & Sostenible",
-      desc: "Persones amb un percentatge de greix elevat que han assajat tota mena de dietes sense èxit.",
+      desc: "Persones amb un percentatge de greix elevat que han assajat toda mena de dietes sense èxit.",
       icon: Flame,
-      image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=600",
+      image: coImg,
       details: [
         "Dèficit calòric sense gana gràcies a la selecció d'aliments realment saciants.",
         "Preservació de la massa muscular durant la pèrdua de teixit adipós.",
@@ -83,7 +89,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       sub: "Envelliment Actiu",
       desc: "No busquen córrer una marató, busquen arribar als 80 anys amb la vitalitat d'un de 40. Gent que vol prevenir malalties metabòliques.",
       icon: Heart,
-      image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600",
+      image: padrImg,
       details: [
         "Prevenció activa de síndrome metabòlica, diabetis tipus 2 i hipertensió.",
         "Nutrició per a la salut mitocondrial, digestiva i cardiovascular.",
