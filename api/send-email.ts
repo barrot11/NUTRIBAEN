@@ -595,6 +595,306 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    // Health Test Assessment & Initial Roadmap Email Logic
+    if (type === "health-test") {
+      const {
+        name,
+        email,
+        phone,
+        score,
+        blockScores,
+        answers,
+        levelTitle,
+        levelDescription,
+      } = payload;
+
+      if (!name || !email || score === undefined) {
+        return res.status(400).json({ error: "Nom, correu i puntuació són obligatoris per processar el test." });
+      }
+
+      // 1. Save Test Result & Lead to Firestore
+      try {
+        const testsCol = collection(db, "health_tests");
+        await addDoc(testsCol, {
+          name,
+          email,
+          phone: phone || "",
+          score: Number(score),
+          blockScores: blockScores || {},
+          answers: answers || [],
+          levelTitle: levelTitle || "",
+          levelDescription: levelDescription || "",
+          createdAt: new Date().toISOString(),
+        });
+      } catch (dbErr) {
+        console.error("Failed to save health test result to Firestore:", dbErr);
+      }
+
+      // 2. Build Client Email with Full Initial Roadmap
+      const clientHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #09090b; color: #e4e4e7; margin: 0; padding: 0; }
+            .container { max-width: 640px; margin: 30px auto; background-color: #121215; border: 1px solid rgba(0, 255, 102, 0.2); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); }
+            .header { background: linear-gradient(135deg, #0d0d11 0%, #051a0d 100%); padding: 35px 30px; text-align: center; border-bottom: 1px solid rgba(0, 255, 102, 0.15); }
+            .logo { font-size: 26px; font-weight: 900; color: #ffffff; letter-spacing: 2px; }
+            .logo span { color: #00FF66; }
+            .content { padding: 35px 30px; }
+            h1 { color: #ffffff; font-size: 22px; font-weight: 800; margin-top: 0; margin-bottom: 16px; }
+            p { font-size: 15px; line-height: 1.6; color: #a1a1aa; margin-top: 0; margin-bottom: 16px; }
+            .score-box { background: linear-gradient(135deg, #0a170d 0%, #081109 100%); border: 2px solid #00FF66; border-radius: 16px; padding: 25px; text-align: center; margin: 25px 0; }
+            .score-value { font-size: 48px; font-weight: 900; color: #00FF66; line-height: 1; margin-bottom: 8px; }
+            .score-label { font-size: 16px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; }
+            .score-desc { font-size: 14px; color: #a1a1aa; margin-top: 10px; line-height: 1.5; }
+            .blocks-grid { background-color: #18181c; border-radius: 14px; padding: 18px; margin: 25px 0; border: 1px solid #27272a; }
+            .block-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #27272a; font-size: 14px; }
+            .block-item:last-child { border-bottom: none; }
+            .block-name { color: #d4d4d8; font-weight: 600; }
+            .block-pts { color: #00FF66; font-weight: 800; }
+            .section-title { font-size: 17px; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; margin: 30px 0 15px 0; border-left: 4px solid #00FF66; padding-left: 12px; }
+            .roadmap-card { background-color: #18181c; border-radius: 12px; padding: 16px 20px; margin-bottom: 14px; border: 1px solid #27272a; }
+            .roadmap-card strong { color: #00FF66; }
+            .roadmap-card h3 { color: #ffffff; font-size: 15px; margin: 0 0 6px 0; font-weight: 700; }
+            .btn-cta { display: block; text-align: center; background-color: #00FF66; color: #000000; font-weight: 800; font-size: 16px; padding: 16px 28px; border-radius: 14px; text-decoration: none; margin: 30px 0 15px 0; box-shadow: 0 4px 20px rgba(0, 255, 102, 0.35); }
+            .footer { background-color: #0a0a0a; padding: 25px 30px; text-align: center; border-top: 1px solid #1a1a1a; font-size: 12px; color: #71717a; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="logo">NUTRI<span>BAEN</span></div>
+              <p style="margin: 8px 0 0 0; font-size: 12px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px;">Pol Barrot • Dietista-Nutricionista</p>
+            </div>
+            <div class="content">
+              <h1>Hola, ${name}!</h1>
+              <p>Has completat amb èxit el <strong>Test de Salut i Energia</strong>. Aquí tens el desglossament del teu estat biològic actual i el teu <strong>Full de Ruta Inicial gratuït</strong> per començar a optimitzar la teva vitalitat des d'avui mateix.</p>
+
+              <div class="score-box">
+                <div class="score-value">${score} <span style="font-size: 24px; color: #71717a;">/ 100</span></div>
+                <div class="score-label">${levelTitle}</div>
+                <div class="score-desc">${levelDescription}</div>
+              </div>
+
+              <div class="blocks-grid">
+                <div class="block-item">
+                  <span class="block-name">🌙 Bloc 1: Descans i Ritmes Circadians</span>
+                  <span class="block-pts">${blockScores?.circadia ?? 0} / 25 pts</span>
+                </div>
+                <div class="block-item">
+                  <span class="block-name">🥗 Bloc 2: Salut Digestiva i Metabolisme</span>
+                  <span class="block-pts">${blockScores?.digestiu ?? 0} / 25 pts</span>
+                </div>
+                <div class="block-item">
+                  <span class="block-name">💪 Bloc 3: Rendiment Físic i Força</span>
+                  <span class="block-pts">${blockScores?.forca ?? 0} / 25 pts</span>
+                </div>
+                <div class="block-item">
+                  <span class="block-name">🚶 Bloc 4: Context, Estrès i Moviment</span>
+                  <span class="block-pts">${blockScores?.context ?? 0} / 25 pts</span>
+                </div>
+              </div>
+
+              <div class="section-title">📍 El Teu Full de Ruta Inicial (Pas a Pas)</div>
+              
+              <div class="roadmap-card">
+                <h3>1. Regla del Menjar Real (80-90% un sol ingredient)</h3>
+                <p style="font-size: 13px; margin: 0; color: #a1a1aa;">Elimina ultraprocessats, olis vegetals refinats i farines industrials. Basa els teus plats en proteïna de qualitat (ous, peix, carn no processada), verdures fresques, tubercles (patata, moniato), fruita sencera i greixos saludables (oli d'oliva verge extra, alvocat, fruits secs).</p>
+              </div>
+
+              <div class="roadmap-card">
+                <h3>2. Sincronització Circadiana i Descans Fisiològic</h3>
+                <p style="font-size: 13px; margin: 0; color: #a1a1aa;">Exposa't a la llum natural del sol durant els primers 30 minuts en llevar-te. Sopa com a mínim 2 o 3 hores abans d'anar a dormir per permetre una digestió completa. Respecta un descans digestiu nocturn de 12 hores (ex: sopar a les 20:30h i esmorzar a les 8:30h).</p>
+              </div>
+
+              <div class="roadmap-card">
+                <h3>3. Moviment no estructurat (NEAT) i Força Essencial</h3>
+                <p style="font-size: 13px; margin: 0; color: #a1a1aa;">Assegura entre 8.000 i 10.000 passos al dia per mantenir la sensibilitat a la insulina. Fes un mínim de 3 sessions de força a la setmana (el múscul és el teu principal òrgan metabòlic i de protecció biològica).</p>
+              </div>
+
+              <div class="roadmap-card">
+                <h3>4. Hidratació Cel·lular i Digestió Conscient</h3>
+                <p style="font-size: 13px; margin: 0; color: #a1a1aa;">Beu aigua mineral o filtrada amb una petita mica de sal marina no refinada en despertar per reposar electròlits. Menja assegut/da, sense pantalles i mastegant 20-30 vegades cada mossegada per evitar inflor abdominal i gasos.</p>
+              </div>
+
+              <div class="roadmap-card" style="border-left: 4px solid #00FF66;">
+                <h3>🗓️ Protocol dels Primers 7 Dies</h3>
+                <ul style="font-size: 13px; color: #a1a1aa; padding-left: 20px; margin: 8px 0 0 0; line-height: 1.6;">
+                  <li><strong>Dies 1-2:</strong> Neteja de la cuina i primers 10.000 passos diaris.</li>
+                  <li><strong>Dies 3-4:</strong> Esmorzar proteic (ous, pernil o peix) en lloc de brioixeria o sucres.</li>
+                  <li><strong>Dies 5-6:</strong> Allunyar pantalles blaves 60 minuts abans d'anar a dormir.</li>
+                  <li><strong>Dia 7:</strong> Avalua la reducció d'inflor i l'augment d'energia matinal!</li>
+                </ul>
+              </div>
+            </div>
+            <div class="footer">
+              &copy; 2026 NUTRIBAEN • Pol Barrot, Dietista-Nutricionista col·legiat a Lleida.<br>
+              Aquest correu conté la teva guia inicial basada en les teves respostes a la valoració de salut.
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      // 3. Build Pol Barrot Notification Email
+      const polHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #030303; color: #e5e5e5; margin: 0; padding: 25px; }
+            .container { max-width: 600px; margin: 0 auto; background-color: #09090b; border: 1px solid rgba(0, 255, 102, 0.2); border-radius: 18px; padding: 30px; }
+            .badge { display: inline-block; padding: 6px 14px; font-size: 12px; font-weight: 800; text-transform: uppercase; border-radius: 20px; background: rgba(0, 255, 102, 0.15); color: #00FF66; border: 1px solid rgba(0, 255, 102, 0.3); margin-bottom: 20px; }
+            h2 { color: #ffffff; margin-top: 0; font-size: 20px; }
+            .field { margin-bottom: 12px; font-size: 14px; }
+            .label { color: #71717a; font-weight: 600; text-transform: uppercase; font-size: 11px; }
+            .val { color: #f4f4f5; font-size: 15px; margin-top: 2px; }
+            .score-highlight { font-size: 28px; font-weight: 900; color: #00FF66; }
+            .answers-box { background: #121215; border-radius: 12px; padding: 16px; margin-top: 20px; border: 1px solid #27272a; max-height: 350px; overflow-y: auto; }
+            .btn-group { margin-top: 25px; }
+            .btn { display: inline-block; padding: 12px 20px; background: #00FF66; color: #000; font-weight: 800; border-radius: 10px; text-decoration: none; font-size: 14px; margin-right: 10px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <span class="badge">🎯 Nou Lead: Test de Salut</span>
+            <h2>${name} ha completat el test</h2>
+            
+            <div class="field">
+              <div class="label">Puntuació Total</div>
+              <div class="score-highlight">${score} / 100 <span style="font-size: 16px; color: #ffffff;">(${levelTitle})</span></div>
+            </div>
+
+            <div class="field">
+              <div class="label">Correu Electrònic</div>
+              <div class="val"><a href="mailto:${email}" style="color: #00FF66;">${email}</a></div>
+            </div>
+
+            <div class="field">
+              <div class="label">Telèfon</div>
+              <div class="val">${phone ? `<a href="tel:${phone}" style="color: #00FF66;">${phone}</a>` : "No indicat"}</div>
+            </div>
+
+            <div class="field">
+              <div class="label">Puntuació per Blocs</div>
+              <div class="val" style="font-size: 13px; line-height: 1.6; margin-top: 4px;">
+                • Descans / Ritmes Circadians: ${blockScores?.circadia ?? 0}/25<br>
+                • Digestiu i Metabolisme: ${blockScores?.digestiu ?? 0}/25<br>
+                • Rendiment i Força: ${blockScores?.forca ?? 0}/25<br>
+                • Context i Estrès: ${blockScores?.context ?? 0}/25
+              </div>
+            </div>
+
+            <div class="answers-box">
+              <div class="label" style="margin-bottom: 8px;">Respostes al Qüestionari:</div>
+              ${Array.isArray(answers) ? answers.map((a: any, i: number) => `
+                <div style="font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #1f1f23; padding-bottom: 6px;">
+                  <strong style="color: #a1a1aa;">${i + 1}. ${a.question}</strong><br>
+                  <span style="color: #00FF66;">➜ ${a.answer} (${a.points} pts)</span>
+                </div>
+              `).join("") : "Sense respostes detallades"}
+            </div>
+
+            <div class="btn-group">
+              ${phone ? `<a href="tel:${phone}" class="btn">Trucar Candidat</a>` : ""}
+              <a href="mailto:${email}?subject=El%20teu%20Test%20de%20Salut%20a%20NutriBaen" class="btn" style="background: transparent; color: #fff; border: 1px solid #333;">Respondre per Correu</a>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      if (!apiKey) {
+        console.log("-----------------------------------------");
+        console.log("AVÍS: RESEND_API_KEY no està configurada. Imprimint resultat de test a la consola:");
+        console.log(`De: ${name} (${email} - Tel: ${phone || "N/A"})`);
+        console.log(`Puntuació: ${score}/100 - ${levelTitle}`);
+        console.log("-----------------------------------------");
+        return res.status(200).json({
+          success: true,
+          mocked: true,
+          message: "Resultat del test processat correctament. (Avís de desenvolupament: configura RESEND_API_KEY per enviar correus reals).",
+        });
+      }
+
+      // 4. Send Pol Barrot Notification Email
+      const polEmailResponse = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "info@polbarrotdietista.com",
+          to: "polbaen@gmail.com",
+          subject: `🎯 [Test de Salut] ${name} (${score}/100 pts) - ${levelTitle}`,
+          html: polHtml,
+        }),
+      });
+
+      let clientEmailSent = false;
+      let sandboxWarning = false;
+
+      // 5. Send Client Confirmation Email with Full Roadmap
+      try {
+        const clientEmailResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "info@polbarrotdietista.com",
+            to: email,
+            subject: `🍏 El teu Resultat del Test de Salut (${score}/100) + Full de Ruta Inicial - Pol Barrot`,
+            html: clientHtml,
+          }),
+        });
+
+        if (clientEmailResponse.ok) {
+          clientEmailSent = true;
+        } else {
+          const clientErr = await clientEmailResponse.text();
+          console.log(`[Resend Sandbox] El correu de client es retransmetrà a polbaen@gmail.com: ${clientErr}`);
+          sandboxWarning = true;
+        }
+      } catch (err) {
+        console.log("[Resend Sandbox] No s'ha pogut enviar directament al client. Fallback a polbaen@gmail.com.");
+        sandboxWarning = true;
+      }
+
+      // Fallback copy for Pol if sandbox restricted
+      if (sandboxWarning) {
+        try {
+          await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "info@polbarrotdietista.com",
+              to: "polbaen@gmail.com",
+              subject: `📩 [RETRANSMETRE AL PACIENT] Full de Ruta & Resultat Test (${score}/100) per a ${name}`,
+              html: clientHtml,
+            }),
+          });
+        } catch (fbErr) {
+          console.error("Failed to send fallback test email to Pol:", fbErr);
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        clientEmailSent,
+        sandboxWarning,
+        message: "Test completat amb èxit! Hem enviat el teu Full de Ruta Inicial.",
+      });
+    }
+
     return res.status(400).json({ error: "Invalid email request type." });
   } catch (error: any) {
     console.error("Error in serverless email handler:", error);

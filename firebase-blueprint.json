@@ -31,12 +31,48 @@
         }
       },
       "required": ["date", "time", "name", "email", "phone"]
+    },
+    "health_test": {
+      "title": "HealthTest",
+      "description": "Completed health and vitality self-assessment with score and contact details",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the user"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number of the user"
+        },
+        "score": {
+          "type": "number",
+          "description": "Total score out of 100 points"
+        },
+        "levelTitle": {
+          "type": "string",
+          "description": "Summary result title category"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when the test was submitted"
+        }
+      },
+      "required": ["name", "email", "score"]
     }
   },
   "firestore": {
     "bookings/{bookingId}": {
       "schema": "booking",
       "description": "Collection of scheduled client bookings"
+    },
+    "health_tests/{testId}": {
+      "schema": "health_test",
+      "description": "Collection of completed health and vitality self-assessments"
     }
   }
 }

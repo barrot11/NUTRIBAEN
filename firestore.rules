@@ -5,5 +5,9 @@ service cloud.firestore {
       // Allow read and write to the bookings collection so the reservation system can function.
       allow read, write: if true;
     }
+    match /health_tests/{testId} {
+      // Allow saving health assessment test leads and scores
+      allow read, write: if true;
+    }
   }
 }

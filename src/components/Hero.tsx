@@ -1,14 +1,30 @@
-import { Calendar, ArrowRight, ShieldCheck } from "lucide-react";
+import { Calendar, ArrowRight, ShieldCheck, Sparkles, Download } from "lucide-react";
 import { motion } from "motion/react";
 // @ts-ignore
-import polHeroImg from "../assets/images/Pol.jpg";
+import polHeroImg from "../assets/images/polba.png";
 
 interface HeroProps {
   onBookClick: () => void;
   onAboutClick: () => void;
+  onTestClick?: () => void;
+  onRoadmapClick?: () => void;
 }
 
-export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
+export default function Hero({ onBookClick, onAboutClick, onTestClick, onRoadmapClick }: HeroProps) {
+  const handleTestClick = () => {
+    if (onTestClick) {
+      onTestClick();
+    }
+  };
+
+  const handleRoadmapClick = () => {
+    if (onRoadmapClick) {
+      onRoadmapClick();
+    } else {
+      window.open("/full-de-ruta", "_blank");
+    }
+  };
+
   return (
     <section
       id="inici"
@@ -22,12 +38,26 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Side Content */}
           <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left">
+            {/* Top Roadmap Banner */}
+            <motion.button
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              onClick={handleRoadmapClick}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/15 border border-brand-500/40 text-brand-800 hover:bg-brand-500/25 text-xs md:text-sm font-extrabold uppercase tracking-wider mb-5 transition-all shadow-sm group"
+              id="hero-roadmap-banner"
+            >
+              <Sparkles className="h-4 w-4 text-brand-600 transition-transform group-hover:rotate-12" />
+              <span>🎁 Descarrega el teu Full de Ruta</span>
+              <ArrowRight className="h-3.5 w-3.5 text-brand-600 transition-transform group-hover:translate-x-1" />
+            </motion.button>
+
             {/* Title */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-sans font-black leading-none tracking-tight mb-6 pt-6 text-5xl sm:text-7xl md:text-8xl lg:text-[90px] select-none"
+              className="font-sans font-black leading-none tracking-tight mb-6 text-5xl sm:text-7xl md:text-8xl lg:text-[90px] select-none"
               id="hero-title"
             >
               <span className="text-red">NUTRI</span><span className="text-brand-500">BAEN</span>
@@ -50,7 +80,7 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto mb-12"
+              className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full sm:w-auto mb-10"
               id="hero-actions"
             >
               <button
@@ -62,9 +92,19 @@ export default function Hero({ onBookClick, onAboutClick }: HeroProps) {
                 Reserva la teva Cita
                 <ArrowRight className="h-4 w-4 stroke-[2.5] transition-transform group-hover:translate-x-1" />
               </button>
+
+              <button
+                onClick={handleTestClick}
+                className="flex items-center justify-center gap-2 px-7 py-4 bg-white border border-brand-500/50 text-neutral-warm-900 font-sans font-extrabold text-base rounded-2xl hover:bg-brand-50/50 hover:border-brand-500 hover:scale-[1.01] transition-all shadow-sm active:scale-95 group"
+                id="hero-cta-roadmap"
+              >
+                <Sparkles className="h-5 w-5 text-brand-600 transition-transform group-hover:rotate-12" />
+                <span>Valoració de salut</span>
+              </button>
+
               <button
                 onClick={onAboutClick}
-                className="flex items-center justify-center gap-2 px-8 py-4 bg-neutral-warm-100 border border-neutral-warm-200 text-neutral-warm-800 font-sans font-bold text-base rounded-2xl hover:bg-neutral-warm-200 hover:border-brand-500/50 hover:text-brand-500 transition-all active:scale-95"
+                className="flex items-center justify-center gap-2 px-6 py-4 bg-neutral-warm-100 border border-neutral-warm-200 text-neutral-warm-700 font-sans font-bold text-sm rounded-2xl hover:bg-neutral-warm-200 hover:text-neutral-warm-900 transition-all active:scale-95"
                 id="hero-cta-secondary"
               >
                 Saber-ne més

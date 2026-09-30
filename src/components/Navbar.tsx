@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Calendar, Apple } from "lucide-react";
+import { Menu, X, Calendar, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Logo from "./Logo";
 
 interface NavbarProps {
   onBookClick: () => void;
+  onTestClick?: () => void;
   onNavigateToSection?: (sectionId: string) => void;
 }
 
-export default function Navbar({ onBookClick, onNavigateToSection }: NavbarProps) {
+export default function Navbar({ onBookClick, onTestClick, onNavigateToSection }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("inici");
@@ -120,8 +121,19 @@ export default function Navbar({ onBookClick, onNavigateToSection }: NavbarProps
           ))}
         </div>
 
-        {/* Desktop CTA Button */}
-        <div className="hidden lg:block">
+        {/* Desktop CTA Buttons: Valoració de salut & Reserva Cita */}
+        <div className="hidden lg:flex items-center gap-3">
+          <button
+            onClick={() => {
+              if (onTestClick) onTestClick();
+            }}
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-neutral-warm-100 hover:bg-neutral-warm-200 text-neutral-warm-900 border border-brand-500/40 font-sans font-bold text-xs md:text-sm rounded-xl transition-all hover:scale-[1.02] shadow-sm group"
+            id="nav-roadmap-btn"
+          >
+            <Sparkles className="h-4 w-4 text-brand-500 transition-transform group-hover:rotate-12" />
+            <span>Valoració de salut</span>
+          </button>
+
           <button
             onClick={onBookClick}
             className="flex items-center gap-2 px-5 py-2.5 bg-brand-500 text-black font-sans font-extrabold text-sm rounded-xl hover:bg-brand-600 hover:scale-[1.03] shadow-[0_0_15px_rgba(0,255,102,0.3)] transition-all transform active:scale-95"
@@ -169,17 +181,32 @@ export default function Navbar({ onBookClick, onNavigateToSection }: NavbarProps
                   {link.name}
                 </button>
               ))}
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  onBookClick();
-                }}
-                className="flex items-center justify-center gap-2 mt-4 px-5 py-3 bg-brand-600 text-white font-sans font-semibold text-base rounded-xl hover:bg-brand-700 shadow-md transition-all active:scale-95"
-                id="mobile-cta-btn"
-              >
-                <Calendar className="h-5 w-5" />
-                Reserva Cita
-              </button>
+
+              <div className="flex flex-col gap-2.5 mt-2">
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    if (onTestClick) onTestClick();
+                  }}
+                  className="flex items-center justify-center gap-2 px-5 py-3 bg-neutral-warm-100 border border-brand-500/50 text-neutral-warm-900 font-sans font-bold text-sm rounded-xl hover:bg-neutral-warm-200 shadow-sm transition-all active:scale-95"
+                  id="mobile-roadmap-btn"
+                >
+                  <Sparkles className="h-4 w-4 text-brand-500" />
+                  Valoració de salut
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    onBookClick();
+                  }}
+                  className="flex items-center justify-center gap-2 px-5 py-3 bg-brand-500 text-black font-sans font-extrabold text-base rounded-xl hover:bg-brand-600 shadow-md transition-all active:scale-95"
+                  id="mobile-cta-btn"
+                >
+                  <Calendar className="h-5 w-5 stroke-[2.5]" />
+                  Reserva Cita
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

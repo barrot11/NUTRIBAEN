@@ -5,6 +5,9 @@ import About from "./components/About";
 import ServeiIntegral from "./components/ServeiIntegral";
 import BookingStepper from "./components/BookingStepper";
 import FAQ from "./components/FAQ";
+import HealthTestSection from "./components/HealthTestSection";
+import FullDeRutaPage from "./components/FullDeRutaPage";
+import { downloadRoadmapPptx } from "./utils/generateRoadmapPptx";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import QuiSocPage from "./components/QuiSocPage";
@@ -12,11 +15,16 @@ import QuiVaDirigitPage from "./components/QuiVaDirigitPage";
 
 export default function App() {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
-  const [view, setView] = useState<'home' | 'qui-soc' | 'qui-va-dirigit'>(
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false);
+  const [view, setView] = useState<'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut'>(
     window.location.pathname === "/qui-soc" 
       ? "qui-soc" 
       : window.location.pathname === "/qui-va-dirigit" 
       ? "qui-va-dirigit" 
+      : window.location.pathname === "/full-de-ruta"
+      ? "full-de-ruta"
+      : window.location.pathname === "/valoracio-salut" || window.location.pathname === "/test-salut"
+      ? "valoracio-salut"
       : "home"
   );
 
@@ -42,8 +50,14 @@ export default function App() {
     scrollToId("reserva");
   };
 
-  const navigateTo = (newView: 'home' | 'qui-soc' | 'qui-va-dirigit', targetId?: string) => {
-    const newPath = newView === 'qui-soc' ? '/qui-soc' : newView === 'qui-va-dirigit' ? '/qui-va-dirigit' : '/';
+  const navigateTo = (newView: 'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut', targetId?: string) => {
+    const newPath = 
+      newView === 'qui-soc' ? '/qui-soc' 
+      : newView === 'qui-va-dirigit' ? '/qui-va-dirigit' 
+      : newView === 'full-de-ruta' ? '/full-de-ruta'
+      : newView === 'valoracio-salut' ? '/valoracio-salut'
+      : '/';
+      
     window.history.pushState({}, "", newPath);
     setView(newView);
     
@@ -60,11 +74,30 @@ export default function App() {
     }
   };
 
+  const handleOpenRoadmap = async () => {
+    try {
+      await downloadRoadmapPptx();
+    } catch (e) {
+      console.error("Error downloading PPTX:", e);
+    }
+    window.open("/full-de-ruta", "_blank");
+  };
+
+  const handleOpenTestWindow = () => {
+    setIsTestModalOpen(true);
+  };
+
   // Synchronize history navigation (back/forward browser buttons)
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
-      setView(path === "/qui-soc" ? "qui-soc" : path === "/qui-va-dirigit" ? "qui-va-dirigit" : "home");
+      setView(
+        path === "/qui-soc" ? "qui-soc" 
+        : path === "/qui-va-dirigit" ? "qui-va-dirigit" 
+        : path === "/full-de-ruta" ? "full-de-ruta"
+        : path === "/valoracio-salut" || path === "/test-salut" ? "valoracio-salut"
+        : "home"
+      );
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
@@ -85,6 +118,12 @@ export default function App() {
         } else if (href && (href === "/qui-va-dirigit" || href.endsWith("/qui-va-dirigit"))) {
           e.preventDefault();
           navigateTo("qui-va-dirigit");
+        } else if (href && (href === "/full-de-ruta" || href.endsWith("/full-de-ruta"))) {
+          e.preventDefault();
+          navigateTo("full-de-ruta");
+        } else if (href && (href === "/valoracio-salut" || href === "/test-salut")) {
+          e.preventDefault();
+          navigateTo("valoracio-salut");
         } else if (href && (href === "/" || href === "")) {
           e.preventDefault();
           navigateTo("home");
@@ -103,15 +142,30 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-neutral-warm-50 text-neutral-warm-800 antialiased font-sans selection:bg-brand-500 selection:text-black">
-      {/* 1. Sticky Navbar with Scroll Detect */}
-      <Navbar 
-        onBookClick={() => view === 'home' ? scrollToId("reserva") : navigateTo('home', 'reserva')} 
-        onNavigateToSection={(sectionId) => navigateTo('home', sectionId)}
-      />
+      {/* 1. Sticky Navbar with Scroll Detect (Hidden in standalone document view) */}
+      {view !== 'full-de-ruta' && (
+        <Navbar 
+          onBookClick={() => view === 'home' ? scrollToId("reserva") : navigateTo('home', 'reserva')} 
+          onTestClick={handleOpenTestWindow}
+          onNavigateToSection={(sectionId) => navigateTo('home', sectionId)}
+        />
+      )}
 
       {/* Main Layout Containers */}
       <main>
-        {view === 'qui-soc' ? (
+        {view === 'full-de-ruta' ? (
+          /* Full de Ruta: 5-Slide Official Presentation & Download */
+          <FullDeRutaPage onBack={() => navigateTo('home')} />
+        ) : view === 'valoracio-salut' ? (
+          /* Dedicated Standalone Test Window View */
+          <div className="min-h-screen bg-neutral-warm-950">
+            <HealthTestSection 
+              isModal={true} 
+              onClose={() => navigateTo('home')} 
+              onBookClick={() => navigateTo('home', 'reserva')} 
+            />
+          </div>
+        ) : view === 'qui-soc' ? (
           /* Qui Soc page view */
           <QuiSocPage onBack={() => navigateTo('home')} />
         ) : view === 'qui-va-dirigit' ? (
@@ -128,6 +182,8 @@ export default function App() {
             <Hero 
               onBookClick={() => scrollToId("reserva")} 
               onAboutClick={() => scrollToId("sobre-mi")} 
+              onTestClick={handleOpenTestWindow}
+              onRoadmapClick={handleOpenRoadmap}
             />
 
             {/* 4. About Me (Sobre Mi) biography and story */}
@@ -145,14 +201,30 @@ export default function App() {
             {/* 8. Accordion folding FAQs */}
             <FAQ />
 
-            {/* 10. Contact form and address blocks */}
+            {/* 9. Contact form and address blocks */}
             <Contact />
           </>
         )}
       </main>
 
+      {/* Dedicated Test Window Modal Overlay */}
+      {isTestModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md overflow-y-auto p-2 sm:p-6 animate-fadeIn">
+          <div className="relative w-full max-w-5xl my-auto rounded-3xl overflow-hidden border border-brand-500/40 shadow-2xl bg-neutral-warm-950">
+            <HealthTestSection 
+              isModal={true} 
+              onClose={() => setIsTestModalOpen(false)} 
+              onBookClick={() => {
+                setIsTestModalOpen(false);
+                scrollToId("reserva");
+              }} 
+            />
+          </div>
+        </div>
+      )}
+
       {/* 11. Footer with business schedule details and legal blocks */}
-      <Footer />
+      {view !== 'full-de-ruta' && <Footer />}
     </div>
   );
 }
