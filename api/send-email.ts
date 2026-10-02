@@ -537,9 +537,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "info@polbarrotdietista.com",
+            from: "Pol Barrot <info@polbarrotdietista.com>",
+            reply_to: "info@polbarrotdietista.com",
             to: email,
             subject: `Confirmació de la teva Cita Nutricional - Pol Barrot`,
+            text: `Hola ${name},\n\nLa teva cita de nutrició ha quedat confirmada per al dia ${formattedDate} a les ${time}h a Lleida.\n\nServei: ${serviceName || (isPrimera ? "Primera Consulta" : "Seguiment de Nutrició")}\nUbicació: Carrer d'Agustí Duran i Sanpere 9, 25001, Lleida\n\nEns veiem molt aviat!\nPol Barrot\n\nPer cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb la paraula 'Baixa'.`,
             html: clientHtml,
           }),
         });
@@ -850,9 +852,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "info@polbarrotdietista.com",
+            from: "Pol Barrot <info@polbarrotdietista.com>",
+            reply_to: "info@polbarrotdietista.com",
             to: email,
-            subject: `🍏 El teu Resultat del Test de Salut (${score}/100) + Full de Ruta Inicial - Pol Barrot`,
+            subject: `El teu Resultat del Test de Salut (${score}/100) - Pol Barrot`,
+            text: `Hola ${name ? name : ""},\n\nAquí tens el teu resultat de la Valoració de Salut de NutriBaen: ${score}/100 punts.\nNivell: ${levelTitle}\n\nPots descarregar el teu protocol i Full de Ruta complet en format PDF directament des de la web oficial de NutriBaen.\n\nAtentament,\nPol Barrot\n\nPer cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb la paraula 'Baixa'.`,
             html: clientHtml,
           }),
         });
@@ -954,6 +958,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         </html>
       `;
 
+      const welcomePlainText = `Hola ${name ? name : ""}!
+
+Gràcies per sumar-te a NutriBaen.
+
+Acabes de confirmar la teva subscripció al butlletí de Pol Barrot.
+
+Què rebràs a la teva bústia?
+- Reflexions clíniques directes de consulta.
+- Estratègies de sincronització circadiana i digestió real.
+- Protocols de nutrició esportiva i energia sense filtres ni mites.
+
+Estaré redactant i compartint contingut de valor directament al teu correu.
+
+Atentament,
+Pol Barrot
+
+---
+Has rebut aquest correu perquè t'has subscrit al formulari web de NutriBaen.
+Per cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb la paraula 'Baixa'.`;
+
       if (apiKey) {
         try {
           await fetch("https://api.resend.com/emails", {
@@ -963,13 +987,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              from: "Pol Barrot • NutriBaen <info@polbarrotdietista.com>",
+              from: "Pol Barrot <info@polbarrotdietista.com>",
+              reply_to: "info@polbarrotdietista.com",
               to: email,
-              subject: "🍏 Benvingut/da al Newsletter de NutriBaen - Pol Barrot",
+              subject: "Benvingut a NutriBaen - Pol Barrot",
+              text: welcomePlainText,
               html: welcomeHtml,
-              headers: {
-                "List-Unsubscribe": "<mailto:info@polbarrotdietista.com?subject=Baixa%20Newsletter>",
-              },
             }),
           });
         } catch (e) {
@@ -1067,13 +1090,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              from: "Pol Barrot • NutriBaen <info@polbarrotdietista.com>",
+              from: "Pol Barrot <info@polbarrotdietista.com>",
+              reply_to: "info@polbarrotdietista.com",
               to: toEmail,
               subject: subject,
+              text: `${content}\n\n--\nPol Barrot\n\nPer cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb la paraula 'Baixa'.`,
               html: newsletterHtml,
-              headers: {
-                "List-Unsubscribe": "<mailto:info@polbarrotdietista.com?subject=Baixa%20Newsletter>",
-              },
             }),
           });
 
