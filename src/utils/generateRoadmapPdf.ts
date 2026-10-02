@@ -299,7 +299,7 @@ export function createRoadmapPdf(): jsPDF {
     {
       num: "1",
       badge: "Sol·licita la teva cita:",
-      text: "Contacta directament a traves del WhatsApp corporatiu - 640 77 51 60.",
+      text: "Sol·licita la teva cita directament a traves de la web oficial.",
     },
     {
       num: "2",
@@ -383,14 +383,14 @@ export function createRoadmapPdf(): jsPDF {
   doc.text("NutriBaen", pageWidth / 2, 126, { align: "center" });
   doc.text("Simma Lleida", pageWidth / 2, 133, { align: "center" });
 
-  // WhatsApp Box
+  // Booking Box
   doc.setFillColor(0, 0, 0);
   doc.roundedRect(pageWidth / 2 - 55, 168, 110, 14, 7, 7, "F");
 
   doc.setTextColor(143, 255, 0);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("WhatsApp Corporatiu: 640 77 51 60", pageWidth / 2, 177, {
+  doc.text("Reserva i Cites: nutribaen.cat", pageWidth / 2, 177, {
     align: "center",
   });
 

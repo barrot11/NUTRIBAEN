@@ -938,13 +938,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               </div>
               <p>Estaré redactant i compartint contingut de valor directament al teu correu.</p>
               <p style="margin-top: 28px; color: #ffffff; font-weight: bold;">
-                Pol Barrot<br>
-                <span style="font-weight: normal; color: #00FF66; font-size: 13px;">Dietista-Nutricionista Col·legiat • NutriBaen & Sïmma Lleida</span>
+                Pol Barrot
               </p>
             </div>
             <div class="footer">
               Has rebut aquest correu perquè t'has subscrit al formulari web de NutriBaen.<br>
-              Consulta presencial a Sïmma Lleida & Servei Online.
+              © ${new Date().getFullYear()} NutriBaen • Pol Barrot • Tots els drets reservats.
             </div>
           </div>
         </body>
@@ -1026,8 +1025,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               </div>
               <div class="signature">
                 <div class="author-name">Pol Barrot</div>
-                <div class="author-title">Dietista-Nutricionista Col·legiat • NutriBaen & Sïmma Lleida</div>
-                <div style="font-size: 12px; color: #888888; margin-top: 6px;">WhatsApp: 640 77 51 60 | Consulta a Sïmma Lleida</div>
               </div>
             </div>
             <div class="footer">

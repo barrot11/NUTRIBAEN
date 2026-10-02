@@ -14,8 +14,7 @@ import {
   Video,
   MapPin,
   FlameKindling,
-  Mail,
-  MessageSquare
+  Mail
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -1208,14 +1207,14 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                     </span>
                   </div>
                   <p className="font-sans text-xs text-neutral-warm-500 font-light">
-                    Pots enviar una confirmació manual o qualsevol dubte directament a en Pol Barrot amb un sol clic:
+                    Pots enviar una confirmació manual o qualsevol dubte directament a en Pol Barrot per correu:
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                  <div className="mt-1">
                     <a
                       href={`mailto:polbaen@gmail.com?subject=${encodeURIComponent(
                         `Reserva de Cita Nutricional - ${bookedDetails.name}`
                       )}&body=${encodeURIComponent(
-                        `Hola Pol,\n\nEm dic ${bookedDetails.name || "Pacient"} (Email: ${bookedDetails.email}, Telèfon: ${bookedDetails.phone}).\n\nT'envio aquest correu per confirmar la meva cita de nutrició.\n\nDetalls:\n- Servei: ${
+                        `Hola Pol,\n\nEm dic ${bookedDetails.name || "Pacient"} (Email: ${bookedDetails.email}).\n\nT'envio aquest correu per confirmar la meva cita de nutrició.\n\nDetalls:\n- Servei: ${
                           bookedDetails.visitType === "primera" ? "Primera Consulta" : "Seguiment de Nutrició"
                         }\n- Data: ${
                           bookedDetails.date
@@ -1228,31 +1227,10 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                             : ""
                         }\n- Hora: ${bookedDetails.time}h\n- Motiu/Comentari: ${bookedDetails.notes || "Sense comentaris addicionals"}\n\nAtentament,\n${bookedDetails.name}`
                       )}`}
-                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-white border border-neutral-warm-200 hover:bg-brand-50 hover:border-brand-300 text-neutral-warm-700 hover:text-brand-800 font-sans font-semibold text-xs rounded-lg transition-all"
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-white border border-neutral-warm-200 hover:bg-brand-50 hover:border-brand-300 text-neutral-warm-700 hover:text-brand-800 font-sans font-semibold text-xs rounded-lg transition-all w-full"
                     >
                       <Mail className="h-3.5 w-3.5 text-brand-600" />
-                      Enviar per Correu
-                    </a>
-
-                    <a
-                      href={`https://wa.me/34640775160?text=${encodeURIComponent(
-                        `Hola Pol! Em dic ${bookedDetails.name || "Pacient"}. Confirmo la meva reserva de nutrició per al dia ${
-                          bookedDetails.date
-                            ? bookedDetails.date.toLocaleDateString("ca-ES", {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })
-                            : ""
-                        } a les ${bookedDetails.time}h. Gràcies!`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 py-2.5 px-4 bg-white border border-neutral-warm-200 hover:bg-emerald-50 hover:border-emerald-300 text-neutral-warm-700 hover:text-emerald-800 font-sans font-semibold text-xs rounded-lg transition-all"
-                    >
-                      <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
-                      Enviar per WhatsApp
+                      Enviar per Correu Electrònic
                     </a>
                   </div>
                 </div>

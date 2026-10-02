@@ -349,7 +349,7 @@ export async function downloadRoadmapPptx(): Promise<void> {
   const nextSteps = [
     {
       title: "Sol·licita la teva cita:",
-      text: "Contacta directament a través del WhatsApp corporatiu - 640775160",
+      text: "Sol·licita la teva cita directament a través de la web oficial.",
       y: 1.2,
     },
     {
@@ -445,7 +445,7 @@ export async function downloadRoadmapPptx(): Promise<void> {
     fill: { color: "111111" },
   });
 
-  slide5.addText("Pol Barrot\nNutriBaen & Sïmma Lleida\nWhatsApp: 640 77 51 60", {
+  slide5.addText("Pol Barrot\nNutriBaen\nReserva: nutribaen.cat", {
     x: 4.8,
     y: 3.8,
     w: 3.7,

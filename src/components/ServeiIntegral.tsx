@@ -41,7 +41,7 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="font-sans font-bold text-xs text-brand-500 uppercase tracking-widest">
-            ELS MEUS SERVEIS
+            
           </span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -51,7 +51,7 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
             className="font-sans font-extrabold text-3xl sm:text-4xl leading-tight mt-3 mb-4 uppercase"
             style={{ color: '#ffffff' }}
           >
-            SOLUCIONS I PROTOCOLS DE SALUT
+            ELS MEUS SERVEIS
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -116,7 +116,7 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
               className="inline-flex items-center gap-2.5 px-8 py-4 bg-brand-500 hover:bg-brand-400 text-black font-sans font-black text-xs uppercase tracking-wider rounded-xl shadow-[0_0_25px_rgba(0,255,102,0.2)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               id="btn-explore-dirigit"
             >
-              Veure tots els serveis, protocols i a qui va dirigit
+              Veure tots els serveis
               <ArrowRight className="h-4 w-4 stroke-[2.5]" />
             </motion.button>
           </div>

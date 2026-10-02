@@ -31,7 +31,7 @@ export default function FullDeRutaPage({ onBack }: FullDeRutaPageProps) {
           Full de Ruta
         </h1>
         <p className="text-xs uppercase tracking-widest text-[#00FF66] font-bold mb-4">
-          NutriBaen & Sïmma Lleida
+          NutriBaen
         </p>
 
         <p className="text-sm text-neutral-400 mb-8 leading-relaxed font-light">
