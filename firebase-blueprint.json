@@ -63,6 +63,58 @@
         }
       },
       "required": ["name", "email", "score"]
+    },
+    "newsletter_subscriber": {
+      "title": "NewsletterSubscriber",
+      "description": "A subscribed user waiting for daily clinical newsletters",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Email address of subscriber"
+        },
+        "name": {
+          "type": "string",
+          "description": "First name of subscriber (optional)"
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Whether subscription is currently active"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when subscription was created"
+        }
+      },
+      "required": ["email", "active", "createdAt"]
+    },
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "A drafted or broadcast newsletter edition sent to subscribers",
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string",
+          "description": "Subject line of the newsletter"
+        },
+        "content": {
+          "type": "string",
+          "description": "Body text or HTML of the newsletter"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status: draft or sent"
+        },
+        "recipientsCount": {
+          "type": "number",
+          "description": "Number of subscribers receiving this newsletter"
+        },
+        "sentAt": {
+          "type": "string",
+          "description": "ISO timestamp when the newsletter was sent"
+        }
+      },
+      "required": ["subject", "content", "status"]
     }
   },
   "firestore": {
@@ -73,6 +125,14 @@
     "health_tests/{testId}": {
       "schema": "health_test",
       "description": "Collection of completed health and vitality self-assessments"
+    },
+    "newsletter_subscribers/{subscriberId}": {
+      "schema": "newsletter_subscriber",
+      "description": "Collection of newsletter subscribers"
+    },
+    "newsletters/{newsletterId}": {
+      "schema": "newsletter",
+      "description": "Collection of drafted and sent newsletter editions"
     }
   }
 }

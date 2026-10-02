@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   ArrowLeft, Calendar, Check, X, Sparkles,
   Zap, Clock, CalendarDays, Ruler, Users,
-  Dumbbell, Activity, Target, Flame, Heart
+  Dumbbell, Activity, Target, Flame, Heart, Stethoscope
 } from "lucide-react";
 
 import futImg from "../assets/images/fut.png";
@@ -15,7 +15,7 @@ import padrImg from "../assets/images/padr.jpg";
 interface QuiVaDirigitPageProps {
   onBack: () => void;
   onContactClick: () => void;
-  onBookClick?: () => void;
+  onBookClick?: (serviceId?: string) => void;
 }
 
 export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }: QuiVaDirigitPageProps) {
@@ -101,13 +101,29 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
 
   const protocols = [
     {
+      id: "consulta-unica",
+      type: "INDIVIDUAL",
+      name: "CONSULTA ÚNICA",
+      sub: "Radiografia Completa (40 min)",
+      desc: "Sessió individual de 40 minuts on farem una radiografia completa del teu estat actual.",
+      buttonText: "RESERVAR ARA",
+      popular: false,
+      icon: Stethoscope,
+      details: [
+        "Sessió individual de 40 minuts centrada exclusivament en tu.",
+        "Radiografia completa del teu estat metabòlic, digestiu i hàbits.",
+        "Anàlisi del teu context diari, descans i nivell d'estrès.",
+        "Pla d'acció immediat per començar a notar canvis des del primer moment."
+      ]
+    },
+    {
       id: "trimestral",
       type: "PROTOCOL",
       name: "PROTOCOL TRIMESTRAL",
       sub: "Fase de Xoc i Reset",
-      desc: "Programa de tres mesos. Ideal per a qui busca un canvi de xip immediat i sortir de l'estat d'inflamació.",
-      buttonText: "MÉS INFORMACIÓ",
-      popular: false,
+      desc: "Programa de tres mesos de seguiment personalitzat. Ideal per a qui busca un canvi de xip immediat i sortir de l'estat d'inflamació.",
+      buttonText: "RESERVAR ARA",
+      popular: true,
       icon: Zap,
       details: [
         "3 mesos de seguiment estret i personalitzat.",
@@ -117,61 +133,12 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       ]
     },
     {
-      id: "semestral",
-      type: "PROTOCOL",
-      name: "PROTOCOL SEMESTRAL",
-      sub: "Reeducació d'Hàbits",
-      desc: "Programa de sis mesos. El temps necessari per fixar nous hàbits i veure canvis estructurals.",
-      buttonText: "MÉS INFORMACIÓ",
-      popular: true,
-      icon: Clock,
-      details: [
-        "6 mesos d'acompanyament continuat.",
-        "Establiment dels nous fonaments i hàbits consolidats.",
-        "Valoracions periòdiques del progrés estètic i de vitalitat.",
-        "Ajustos constants segons els teus canvis de ritme diaris.",
-        "Ideal per aconseguir un canvi que es mantingui per a tota la vida."
-      ]
-    },
-    {
-      id: "anual",
-      type: "PROTOCOL",
-      name: "PROTOCOL ANUAL",
-      sub: "Autonomia Total",
-      desc: "Programa de dotze mesos. Per a qui vol un acompanyament total fins a ser 100% autònom.",
-      buttonText: "MÉS INFORMACIÓ",
-      popular: false,
-      icon: CalendarDays,
-      details: [
-        "12 mesos complets de mentorització en salut.",
-        "Estudi profund de la teva biologia i evolució estacional.",
-        "Control exhaustiu de la composició corporal al llarg d'un any.",
-        "Autonomia absoluta en el control de la teva nutrició i salut preventiva."
-      ]
-    },
-    {
-      id: "antropometria",
-      type: "SERVEI",
-      name: "ANTROPOMETRIA",
-      sub: "Anàlisi Corporal Complet",
-      desc: "Valoració física objectiva i evolució. El punt de partida de qualsevol canvi real.",
-      buttonText: "MÉS INFORMACIÓ",
-      popular: false,
-      icon: Ruler,
-      details: [
-        "Mesuraments corporals objectius mitjançant plicòmetre i cintes homologades.",
-        "Anàlisi dels plecs de greix, diàmetres ossis i perímetres musculars.",
-        "Detecció del punt exacte del greix subcutani per a millores d'alta precisió.",
-        "Ideal per comprovar si estàs perdent greix real o aigua/múscul."
-      ]
-    },
-    {
       id: "tallers",
       type: "SERVEI",
       name: "XERRADES / TALLERS",
       sub: "Tallers Pràctics",
-      desc: "Dirigit a tots aquells grups inquiets que volen continuar evolucionant i entenent com els hàbits marquen el seu futur.",
-      buttonText: "SOL·LICITA LA TEVA PROPOSTA",
+      desc: "Dirigit a clubs esportius, gimnasos, empreses o col·lectius que volen comprendre com la nutrició i els hàbits marquen el seu futur.",
+      buttonText: "SOL·LICITA PROPOSTA",
       popular: false,
       icon: Users,
       details: [
@@ -179,6 +146,22 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
         "Tallers pràctics sobre compra intel·ligent, cuina saludable i mites nutricionals.",
         "Eines aplicables de forma directa l'endemà de la sessió.",
         "Espai de preguntes i respostes per aclarir mites comuns."
+      ]
+    },
+    {
+      id: "antropometria",
+      type: "SERVEI",
+      name: "ANTROPOMETRIA",
+      sub: "Anàlisi Corporal Complet",
+      desc: "Valoració física objectiva i evolució. El punt de partida de qualsevol canvi real mitjançant mesures i plecs de precisió.",
+      buttonText: "RESERVAR ARA",
+      popular: false,
+      icon: Ruler,
+      details: [
+        "Mesuraments corporals objectius mitjançant plicòmetre i cintes homologades.",
+        "Anàlisi dels plecs de greix, diàmetres ossis i perímetres musculars.",
+        "Detecció del punt exacte del greix subcutani per a millores d'alta precisió.",
+        "Ideal per comprovar si estàs perdent greix real o aigua/múscul."
       ]
     }
   ];
@@ -221,7 +204,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
 
         {/* 2. FIRST SECTION: PROTOCOLS AND SERVICES */}
         <div className="mb-28 text-center">
-          <div className="flex flex-wrap justify-center gap-8 text-center items-stretch w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch w-full text-center">
             {protocols.map((proto, index) => {
               const IconComponent = proto.icon;
               return (
@@ -231,7 +214,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex flex-col w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-sm rounded-3xl border border-neutral-warm-800/60 bg-[#121212] overflow-hidden shadow-xl hover:border-[#1ed760]/30 hover:-translate-y-1 transition-all group relative p-8 text-center items-center"
+                  className="flex flex-col justify-between w-full rounded-3xl border border-neutral-warm-800/60 bg-[#121212] overflow-hidden shadow-xl hover:border-[#1ed760]/30 hover:-translate-y-1 transition-all group relative p-8 sm:p-10 text-center items-center"
                   id={`protocol-card-${proto.id}`}
                 >
                   {/* POPULAR BADGE */}
@@ -269,7 +252,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
 
                   {/* Button "RESERVAR ARA" in green background */}
                   <button
-                    onClick={onBookClick}
+                    onClick={() => onBookClick && onBookClick(proto.id)}
                     className="w-full py-3 bg-[#1ed760] hover:bg-[#1db954] text-black font-sans font-extrabold text-xs rounded-xl shadow-md uppercase tracking-wider transition-all active:scale-[0.98] cursor-pointer text-center"
                   >
                     RESERVAR ARA

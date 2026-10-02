@@ -786,34 +786,13 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
             Valoració de salut • 2 Minuts
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-white font-sans tracking-tight text-white mb-4">
-            Valora la teva <span className="text-brand-500">Salut i Energia</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-sans tracking-tight text-[#ffffff] mb-4">
+            Valora la teva <span className="text-[#00FF66]">Salut i Energia</span>
           </h2>
 
           <p className="text-base md:text-lg text-neutral-warm-400 font-light leading-relaxed">
-            Respon les 20 preguntes clíniques sobre digestió, ritmes circadians i moviment. Descobreix la teva puntuació exacta sobre 100 i descarrega el teu{" "}
-            <strong className="text-white font-semibold">Full de Ruta Inicial gratuït</strong> per guardar al mòbil o rebre'l al correu.
+            Respon les 20 preguntes clíniques sobre digestió, ritmes circadians i moviment per conèixer el teu estat de salut actual i rebre un pla d'acció adaptat.
           </p>
-
-          {/* Quick Direct Download button for users who want to grab the roadmap immediately */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={handleDownloadRoadmap}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-warm-900 border border-neutral-warm-700 text-neutral-warm-200 text-sm font-semibold hover:border-brand-500/50 hover:text-white transition-all shadow-sm"
-              id="btn-direct-download-roadmap"
-            >
-              <Download className="h-4 w-4 text-brand-400" />
-              Descarregar Full de Ruta Inicial directe
-            </button>
-            <button
-              onClick={() => setShowRoadmapModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-warm-900 border border-neutral-warm-700 text-neutral-warm-200 text-sm font-semibold hover:border-brand-500/50 hover:text-white transition-all shadow-sm"
-              id="btn-view-roadmap-modal"
-            >
-              <BookOpen className="h-4 w-4 text-brand-400" />
-              Veure contingut del Full de Ruta
-            </button>
-          </div>
         </div>
 
         {/* Main Interactive Card */}
@@ -883,9 +862,6 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
                       <div className="flex-1">
                         <div className="text-sm sm:text-base font-medium text-white leading-relaxed">
                           {option.text}
-                        </div>
-                        <div className="text-xs text-brand-400/80 font-semibold mt-1">
-                          {option.sublabel}
                         </div>
                       </div>
 

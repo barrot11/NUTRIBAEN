@@ -18,6 +18,7 @@ export default function Navbar({ onBookClick, onTestClick, onNavigateToSection }
     { name: "Inici", id: "inici" },
     { name: "Sobre Mi", id: "sobre-mi" },
     { name: "Els Meus Serveis", id: "servei-integral" },
+    { name: "Newsletter", id: "newsletter" },
     { name: "FAQ", id: "faq" },
     { name: "Contacte", id: "contacte" },
   ];

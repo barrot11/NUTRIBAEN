@@ -21,7 +21,12 @@ export default function Hero({ onBookClick, onAboutClick, onTestClick, onRoadmap
     if (onRoadmapClick) {
       onRoadmapClick();
     } else {
-      window.open("/full-de-ruta", "_blank");
+      const link = document.createElement("a");
+      link.href = "/Full_de_Ruta_NutriBaen.pdf";
+      link.download = "Full_de_Ruta_NutriBaen.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 

@@ -76,11 +76,18 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
   // Sync selectedServiceId from parent (Services component click)
   useEffect(() => {
     if (selectedServiceId) {
-      if (selectedServiceId === "reeducacio" || selectedServiceId === "esportiva" || selectedServiceId === "clinica" || selectedServiceId === "vegana") {
-        setVisitType("primera"); // default to primera when selecting primary services
+      setVisitType("primera");
+      if (selectedServiceId === "consulta-unica") {
+        setFormData(prev => ({ ...prev, interestedService: "Consulta Única (40 min)" }));
+      } else if (selectedServiceId === "trimestral") {
+        setFormData(prev => ({ ...prev, interestedService: "Protocol Trimestral ⭐ (Popular)" }));
+      } else if (selectedServiceId === "xerrades-tallers" || selectedServiceId === "tallers") {
+        setFormData(prev => ({ ...prev, interestedService: "Xerrades i tallers" }));
+      } else if (selectedServiceId === "antropometria") {
+        setFormData(prev => ({ ...prev, interestedService: "Antropometria" }));
       }
       // Scroll to booking section when a service is selected
-      const el = document.getElementById("reserva-section");
+      const el = document.getElementById("reserva-section") || document.getElementById("reserva");
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
@@ -484,7 +491,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                             : "text-neutral-warm-500 hover:text-neutral-warm-800"
                         }`}
                       >
-                        Primera Visita (45 min)
+                        Consulta Única / 1a Visita (40 min)
                       </button>
                       <button
                         type="button"
@@ -498,7 +505,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                             : "text-neutral-warm-500 hover:text-neutral-warm-800"
                         }`}
                       >
-                        Seguiment (45 min)
+                        Seguiment de Protocol (40 min)
                       </button>
                     </div>
                   </div>
@@ -919,7 +926,12 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                           Amb quin servei estàs interessat? *
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {["Protocol trimestral", "Protocol semestral", "Protocol Anual", "Valoració antropomètrica", "Xerrades/tallers"].map((service) => (
+                          {[
+                            "Consulta Única (40 min)",
+                            "Protocol Trimestral ⭐ (Popular)",
+                            "Xerrades i tallers",
+                            "Antropometria"
+                          ].map((service) => (
                             <button
                               key={service}
                               type="button"
@@ -933,10 +945,8 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                               }}
                               className={`py-3 px-4 text-xs font-sans font-bold rounded-xl text-center border transition-all ${
                                 formData.interestedService === service
-                                  ? "bg-brand-50 border-brand-500 text-brand-800 font-extrabold shadow-sm"
+                                  ? "bg-brand-50 border-brand-500 text-brand-800 font-extrabold shadow-sm ring-1 ring-brand-500"
                                   : "bg-white border-neutral-warm-200/60 text-neutral-warm-700 hover:border-brand-300"
-                              } ${
-                                service === "Xerrades/tallers" ? "sm:col-span-2" : ""
                               }`}
                             >
                               {service}

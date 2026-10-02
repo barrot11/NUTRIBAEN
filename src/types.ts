@@ -8,6 +8,7 @@ export interface Service {
   icon: string;
   price?: string;
   duration: string;
+  popular?: boolean;
 }
 
 export interface FAQItem {

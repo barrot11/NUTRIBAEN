@@ -2,56 +2,57 @@ import { Service, FAQItem, Testimonial } from "./types";
 
 export const SERVICES: Service[] = [
   {
-    id: "reeducacio",
-    title: "Reeducació Alimentària",
-    description: "Millora la teva relació amb el menjar, aprèn a menjar sa de forma sostenible i assoleix el teu pes saludable sense dietes restrictives ni culpabilitats.",
+    id: "consulta-unica",
+    title: "Consulta Única",
+    description: "Sessió individual de 40 minuts on farem una radiografia completa del teu estat actual.",
     bullets: [
-      "Pla d'alimentació 100% flexible i adaptat als teus gustos",
-      "Educació nutricional per a tota la vida (no més dietes miracle)",
-      "Seguiment periòdic dels teus progressos i suport setmanal",
-      "Estratègies pràctiques per gestionar la gana emocional i l'ansietat"
-    ],
-    icon: "Apple",
-    duration: "Sessió de 45 minuts"
-  },
-  {
-    id: "esportiva",
-    title: "Nutrició Esportiva",
-    description: "Optimitza el teu rendiment físic, millora la teva composició corporal (greix/múscul) i aprèn a planificar els teus entrenaments i competicions de manera professional.",
-    bullets: [
-      "Planificació periòdica segons càrrega d'entrenament",
-      "Estratègies de suplementació esportiva basada en evidència",
-      "Assessorament per a competicions (càrregues, hidratació, recuperació)",
-      "Valoració antropomètrica ISAK per a anàlisi de composició corporal"
-    ],
-    icon: "Dumbbell",
-    duration: "Sessió de 45 minuts"
-  },
-  {
-    id: "clinica",
-    title: "Nutrició Clínica i Digestiva",
-    description: "Tractament dietètic per a patologies digestives i clíniques per reduir símptomes, recuperar el benestar intestinal i millorar la teva qualitat de vida.",
-    bullets: [
-      "Abordatge expert de SIBO, Colon Irritable (FODMAP), Celíacs i Crohn",
-      "Gestió dietètica de diabetis, hypertension i perfils lipídics (colesterol)",
-      "Regulació de problemes hormonals (Hipotiroïdisme, SOP)",
-      "Millora del trànsit intestinal, reflux i digestions pesades"
+      "Entrevista exhaustiva i radiografia de la teva situació inicial",
+      "Anàlisi d'hàbits, digestió, descans i patrons diaris",
+      "Pla d'acció immediat i recomanacions adaptades al teu context",
+      "Ideal per tenir claredat sense compromís a llarg termini"
     ],
     icon: "Stethoscope",
-    duration: "Sessió de 45 minuts"
+    duration: "Sessió individual de 40 minuts"
   },
   {
-    id: "vegana",
-    title: "Alimentació Vegetariana i Vegana",
-    description: "Transicions segures cap a un estil de vida basat en plantes o assessorament per a persones vegetarianes/veganes que volen optimitzar la seva dieta de forma equilibrada.",
+    id: "trimestral",
+    title: "Protocol Trimestral",
+    popular: true,
+    description: "Programa de tres mesos de seguiment personalitzat. Ideal per a qui busca un canvi de xip, trencar la inflamació i consolidar hàbits reals.",
     bullets: [
-      "Planificació de menús rics, variats i nutricionalment complets",
-      "Suplementació clau i pautes per evitar dèficits (Vitamina B12)",
-      "Estratègies per a l'obtenció adequada de proteïnes i ferro",
-      "Assessorament en opcions basades en plantes de fàcil preparació"
+      "3 mesos d'acompanyament i seguiment estret",
+      "Estudi de la situació de partida i reprogramació nutricional",
+      "Valoracions periòdiques d'evolució i ajustos continuats",
+      "Resolució de dubtes ràpida durant tota la fase de transformació"
     ],
-    icon: "Leaf",
-    duration: "Sessió de 45 minuts"
+    icon: "Zap",
+    duration: "Programa complet de 3 mesos"
+  },
+  {
+    id: "xerrades-tallers",
+    title: "Xerrades i Tallers",
+    description: "Sessions formatives i tallers pràctics dirigits a clubs esportius, gimnasos, empreses o col·lectius que volen comprendre com la nutrició i els hàbits marquen el seu futur.",
+    bullets: [
+      "Formacions a mida presencials o online per a equips i empreses",
+      "Tallers pràctics: compra conscient, menjador d'empresa i mites nutricionals",
+      "Eines directament aplicables des de l'endemà de la sessió",
+      "Torn obert de preguntes i consultori en directe"
+    ],
+    icon: "Users",
+    duration: "Format adaptat al col·lectiu"
+  },
+  {
+    id: "antropometria",
+    title: "Antropometria",
+    description: "Valoració física objectiva i evolució. El punt de partida de qualsevol canvi real mitjançant mesures i plecs de precisió homologats.",
+    bullets: [
+      "Mesuraments corporals objectius amb instrumental homologat",
+      "Anàlisi dels plecs de greix subcutani, perímetres i diàmetres ossis",
+      "Distinció real entre pèrdua de greix, retenció de líquids i massa muscular",
+      "Informe detallat de composició corporal per seguir la teva progressió"
+    ],
+    icon: "Ruler",
+    duration: "Sessió de 30-40 minuts"
   }
 ];
 

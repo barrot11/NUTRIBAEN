@@ -7,15 +7,19 @@ import BookingStepper from "./components/BookingStepper";
 import FAQ from "./components/FAQ";
 import HealthTestSection from "./components/HealthTestSection";
 import FullDeRutaPage from "./components/FullDeRutaPage";
-import { downloadRoadmapPptx } from "./utils/generateRoadmapPptx";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import QuiSocPage from "./components/QuiSocPage";
 import QuiVaDirigitPage from "./components/QuiVaDirigitPage";
+import NewsletterSection from "./components/NewsletterSection";
+import NewsletterAdminModal from "./components/NewsletterAdminModal";
 
 export default function App() {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
+  const [isNewsletterAdminOpen, setIsNewsletterAdminOpen] = useState(
+    window.location.pathname === "/admin-newsletter" || window.location.pathname === "/newsletter-admin"
+  );
   const [view, setView] = useState<'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut'>(
     window.location.pathname === "/qui-soc" 
       ? "qui-soc" 
@@ -74,13 +78,13 @@ export default function App() {
     }
   };
 
-  const handleOpenRoadmap = async () => {
-    try {
-      await downloadRoadmapPptx();
-    } catch (e) {
-      console.error("Error downloading PPTX:", e);
-    }
-    window.open("/full-de-ruta", "_blank");
+  const handleOpenRoadmap = () => {
+    const link = document.createElement("a");
+    link.href = "/Full_de_Ruta_NutriBaen.pdf";
+    link.download = "Full_de_Ruta_NutriBaen.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleOpenTestWindow = () => {
@@ -173,7 +177,10 @@ export default function App() {
           <QuiVaDirigitPage 
             onBack={() => navigateTo('home')} 
             onContactClick={() => navigateTo('home', 'contacte')} 
-            onBookClick={() => navigateTo('home', 'reserva')}
+            onBookClick={(serviceId) => {
+              if (serviceId) setSelectedServiceId(serviceId);
+              navigateTo('home', 'reserva');
+            }}
           />
         ) : (
           /* Home page view */
@@ -190,7 +197,13 @@ export default function App() {
             <About onLearnMore={() => navigateTo('qui-soc')} />
 
             {/* 6. Servei Integral */}
-            <ServeiIntegral onExploreMoreClick={() => navigateTo('qui-va-dirigit')} />
+            <ServeiIntegral 
+              onExploreMoreClick={() => navigateTo('qui-va-dirigit')} 
+              onBookService={(serviceId) => {
+                setSelectedServiceId(serviceId);
+                scrollToId("reserva");
+              }}
+            />
 
             {/* 7. The 3-Step Interactive Booking Stepper */}
             <BookingStepper 
@@ -200,6 +213,9 @@ export default function App() {
 
             {/* 8. Accordion folding FAQs */}
             <FAQ />
+
+            {/* 8.5 Newsletter Subscription Section */}
+            <NewsletterSection onOpenAdmin={() => setIsNewsletterAdminOpen(true)} />
 
             {/* 9. Contact form and address blocks */}
             <Contact />
@@ -223,8 +239,16 @@ export default function App() {
         </div>
       )}
 
+      {/* Newsletter Admin Modal for Pol Barrot */}
+      <NewsletterAdminModal
+        isOpen={isNewsletterAdminOpen}
+        onClose={() => setIsNewsletterAdminOpen(false)}
+      />
+
       {/* 11. Footer with business schedule details and legal blocks */}
-      {view !== 'full-de-ruta' && <Footer />}
+      {view !== 'full-de-ruta' && (
+        <Footer onOpenAdminNewsletter={() => setIsNewsletterAdminOpen(true)} />
+      )}
     </div>
   );
 }

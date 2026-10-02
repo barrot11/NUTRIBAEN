@@ -9,5 +9,13 @@ service cloud.firestore {
       // Allow saving health assessment test leads and scores
       allow read, write: if true;
     }
+    match /newsletter_subscribers/{subscriberId} {
+      // Allow reading and writing newsletter subscribers
+      allow read, write: if true;
+    }
+    match /newsletters/{newsletterId} {
+      // Allow drafting, updating and reading newsletter broadcasts
+      allow read, write: if true;
+    }
   }
 }

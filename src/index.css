@@ -77,3 +77,18 @@ html {
   background-color: var(--color-brand-100);
   color: var(--color-brand-900);
 }
+
+/* Newsletter Admin & Inputs Text Visibility Fix */
+#newsletter-admin-modal input,
+#newsletter-admin-modal textarea,
+.newsletter-input,
+.newsletter-textarea {
+  color: #ffffff !important;
+  caret-color: #00FF66 !important;
+}
+
+#newsletter-admin-modal input::placeholder,
+#newsletter-admin-modal textarea::placeholder {
+  color: #737373 !important;
+}
+

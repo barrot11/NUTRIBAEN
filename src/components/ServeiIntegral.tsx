@@ -3,28 +3,32 @@ import { BookOpen, Heart, Flame, ArrowRight } from "lucide-react";
 
 interface ServeiIntegralProps {
   onExploreMoreClick?: () => void;
+  onBookService?: (serviceId: string) => void;
 }
 
 export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralProps) {
   const pillars = [
     {
-      title: "Reeducació",
-      highlight: "Oblida't de les dietes.",
-      desc: "Reeduquem els teus hàbits dins del teu context. T'ensenyo a decidir perquè siguis completament autònom.",
+      id: "reeducacio",
       icon: BookOpen,
+      title: "REEDUCACIÓ",
+      subtitle: "Oblida't de les dietes.",
+      desc: "Reeduquem els teus hàbits dins del teu context. T'ensenyo a decidir perquè siguis completament autònom."
     },
     {
-      title: "Confiança",
-      highlight: "No estàs sol en aquest procés.",
-      desc: "El meu enfocament és humà, directe i proper. Soc aquí per escoltar-te i resoldre els teus dubtes de forma transparent.",
+      id: "confianca",
       icon: Heart,
+      title: "CONFIANÇA",
+      subtitle: "No estàs sol en aquest procés.",
+      desc: "El meu enfocament és humà, directe i proper. Soc aquí per escoltar-te i resoldre els teus dubtes de forma transparent."
     },
     {
-      title: "Passió",
-      highlight: "No entenc la salut a mitges.",
-      desc: "Establim un compromís mutu on et guio i m'implico en la teva evolució. Estimo el que faig i ho transmeto a cada consulta.",
+      id: "passio",
       icon: Flame,
-    },
+      title: "PASSIÓ",
+      subtitle: "No entenc la salut a mitges.",
+      desc: "Establim un compromís mutu on et guio i m'implico en la teva evolució. Estimo el que faig i ho transmeto a cada consulta."
+    }
   ];
 
   return (
@@ -37,16 +41,17 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="font-sans font-bold text-xs text-brand-500 uppercase tracking-widest">
-            SERVEI INTEGRAL
+            ELS MEUS SERVEIS
           </span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="font-sans font-extrabold text-3xl sm:text-4xl text-neutral-warm-900 leading-tight mt-3 mb-4 uppercase"
+            className="font-sans font-extrabold text-3xl sm:text-4xl leading-tight mt-3 mb-4 uppercase"
+            style={{ color: '#ffffff' }}
           >
-            ELS MEUS SERVEIS
+            SOLUCIONS I PROTOCOLS DE SALUT
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -55,51 +60,51 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
             transition={{ duration: 0.8, delay: 0.2 }}
             className="font-sans text-xs sm:text-sm text-neutral-warm-500 mt-4 max-w-2xl mx-auto leading-relaxed"
           >
-            Els tres pilars fonamentals que defineixen com treballem cada dia al teu costat:
+            Un acompanyament personalitzat basat en evidència científica, proximitat clínica i canvi d'hàbits duradors.
           </motion.p>
         </div>
 
-        {/* Pillars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 mt-12">
-          {pillars.map((pillar, idx) => {
-            const IconComponent = pillar.icon;
+        {/* 3 Pillars Grid (Reeducació, Confiança, Passió) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch max-w-6xl mx-auto">
+          {pillars.map((item, idx) => {
+            const IconComponent = item.icon;
             return (
               <motion.div
-                key={idx}
+                key={item.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.15 }}
-                className="flex flex-col items-center md:items-start text-center md:text-left rounded-2xl p-8 sm:p-10 border border-neutral-warm-200 bg-neutral-warm-100 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-brand-500 group relative overflow-hidden"
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="flex flex-col justify-between rounded-3xl p-8 sm:p-9 bg-[#121212] border border-neutral-800 hover:border-brand-500/40 hover:-translate-y-1 transition-all duration-300 relative group text-left shadow-xl"
               >
-                {/* Subtle top brand glow line */}
-                <div className="absolute top-0 left-0 right-0 h-[3px] bg-neutral-warm-200 group-hover:bg-brand-500 transition-colors" />
+                <div>
+                  {/* Icon Circle */}
+                  <div className="w-12 h-12 rounded-full border border-neutral-800 bg-neutral-900/90 flex items-center justify-center text-brand-500 mb-6 group-hover:border-brand-500/50 group-hover:scale-105 transition-all">
+                    <IconComponent className="h-5 w-5 stroke-[2]" />
+                  </div>
 
-                {/* Icon Wrapper */}
-                <div className="mb-6 p-4 rounded-full w-fit bg-brand-100/10 border border-neutral-warm-200 group-hover:border-brand-500 transition-all">
-                  <IconComponent className="h-8 w-8 text-brand-500" />
+                  {/* Title & Subtitle */}
+                  <h3 
+                    className="font-sans font-black text-2xl text-white tracking-wide uppercase mb-1.5"
+                    style={{ color: '#ffffff' }}
+                  >
+                    {item.title}
+                  </h3>
+                  <span className="font-sans text-xs text-brand-500 italic font-semibold tracking-wide block mb-4">
+                    {item.subtitle}
+                  </span>
+
+                  {/* Description */}
+                  <p className="font-sans text-xs sm:text-sm leading-relaxed text-neutral-300 font-light">
+                    {item.desc}
+                  </p>
                 </div>
-
-                {/* Big Title */}
-                <h3 className="font-sans font-black text-2xl sm:text-3xl tracking-tight mb-2 uppercase text-neutral-warm-900 group-hover:text-brand-400 transition-colors">
-                  {pillar.title}
-                </h3>
-
-                {/* Highlight text / Subtitle */}
-                <p className="font-sans font-bold text-sm italic mb-4 text-brand-500">
-                  {pillar.highlight}
-                </p>
-
-                {/* Description paragraph */}
-                <p className="font-sans text-sm leading-relaxed text-neutral-warm-500">
-                  {pillar.desc}
-                </p>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Interactive Button to new page */}
+        {/* Interactive Button to full services & protocols page */}
         {onExploreMoreClick && (
           <div className="mt-16 text-center">
             <motion.button
@@ -108,11 +113,11 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-black font-sans font-extrabold text-sm rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer uppercase tracking-wider"
+              className="inline-flex items-center gap-2.5 px-8 py-4 bg-brand-500 hover:bg-brand-400 text-black font-sans font-black text-xs uppercase tracking-wider rounded-xl shadow-[0_0_25px_rgba(0,255,102,0.2)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               id="btn-explore-dirigit"
             >
-              Descobreix els meus serveis
-              <ArrowRight className="h-4 w-4" />
+              Veure tots els serveis, protocols i a qui va dirigit
+              <ArrowRight className="h-4 w-4 stroke-[2.5]" />
             </motion.button>
           </div>
         )}

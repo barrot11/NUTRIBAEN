@@ -1,6 +1,10 @@
-import { Heart } from "lucide-react";
+import { Heart, Lock } from "lucide-react";
 
-export default function Footer() {
+interface FooterProps {
+  onOpenAdminNewsletter?: () => void;
+}
+
+export default function Footer({ onOpenAdminNewsletter }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -10,12 +14,24 @@ export default function Footer() {
           {/* Copyright details */}
           <div className="font-sans text-xs text-neutral-warm-500 font-light">
             <p>&copy; {currentYear} Pol Barrot Nutrició. Tots els drets reservats.</p>
-            <div className="flex justify-center sm:justify-start gap-3 mt-1.5 text-[11px] text-neutral-warm-600">
+            <div className="flex justify-center sm:justify-start gap-3 mt-1.5 text-[11px] text-neutral-warm-600 items-center">
+              <a href="#newsletter" className="hover:underline text-[#00FF66]">Newsletter</a>
+              <span>&bull;</span>
               <a href="#avis-legal" className="hover:underline hover:text-neutral-warm-400">Avís Legal</a>
               <span>&bull;</span>
               <a href="#privacitat" className="hover:underline hover:text-neutral-warm-400">Política de Privacitat</a>
-              <span>&bull;</span>
-              <a href="#cookies" className="hover:underline hover:text-neutral-warm-400">Cookies</a>
+              {onOpenAdminNewsletter && (
+                <>
+                  <span>&bull;</span>
+                  <button
+                    onClick={onOpenAdminNewsletter}
+                    className="hover:underline text-neutral-500 hover:text-[#00FF66] inline-flex items-center gap-1 cursor-pointer font-mono"
+                  >
+                    <Lock className="h-2.5 w-2.5" />
+                    <span>Redactor Newsletter</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 

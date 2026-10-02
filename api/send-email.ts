@@ -895,6 +895,207 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    // ==============================================================
+    // NEWSLETTER WELCOME CONFIRMATION
+    // ==============================================================
+    if (type === "newsletter_welcome") {
+      const { email, name } = payload;
+      if (!email) {
+        return res.status(400).json({ error: "El correu electrònic és obligatori." });
+      }
+
+      const welcomeHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f1113; color: #f0f0f0; margin: 0; padding: 24px; }
+            .container { max-width: 600px; margin: 0 auto; background-color: #181a1e; border: 1px solid #2a2e35; border-radius: 20px; overflow: hidden; }
+            .header { background-color: #121417; padding: 30px; text-align: center; border-bottom: 2px solid #00FF66; }
+            .logo { font-size: 22px; font-weight: 900; letter-spacing: 2px; color: #00FF66; text-decoration: none; }
+            .body { padding: 32px; font-size: 15px; line-height: 1.6; color: #d0d0d0; }
+            .badge { display: inline-block; padding: 4px 12px; background: rgba(0,255,102,0.15); border: 1px solid rgba(0,255,102,0.3); border-radius: 9999px; color: #00FF66; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 16px; }
+            .title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 16px; }
+            .box { background-color: #21252b; border-left: 4px solid #00FF66; padding: 16px; border-radius: 8px; margin: 20px 0; color: #e5e5e5; }
+            .footer { padding: 24px 32px; background-color: #121417; text-align: center; font-size: 12px; color: #888888; border-top: 1px solid #2a2e35; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="logo">NB NUTRIBAEN</div>
+            </div>
+            <div class="body">
+              <div class="badge">Benvingut/da al Newsletter</div>
+              <div class="title">Hola ${name ? name : ""}! Gràcies per sumar-te.</div>
+              <p>Acabes de confirmar la teva subscripció al Newsletter exclusiu de <strong>NutriBaen</strong>.</p>
+              <div class="box">
+                <strong>Què rebràs a la teva bústia?</strong><br>
+                • Reflexions clíniques directes de consulta.<br>
+                • Estratègies de sincronització circadiana i digestió real.<br>
+                • Protocols de nutrició esportiva i energia sense filtres ni mites.
+              </div>
+              <p>Estaré redactant i compartint contingut de valor directament al teu correu.</p>
+              <p style="margin-top: 28px; color: #ffffff; font-weight: bold;">
+                Pol Barrot<br>
+                <span style="font-weight: normal; color: #00FF66; font-size: 13px;">Dietista-Nutricionista Col·legiat • NutriBaen & Sïmma Lleida</span>
+              </p>
+            </div>
+            <div class="footer">
+              Has rebut aquest correu perquè t'has subscrit al formulari web de NutriBaen.<br>
+              Consulta presencial a Sïmma Lleida & Servei Online.
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      if (apiKey) {
+        try {
+          await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Pol Barrot • NutriBaen <info@polbarrotdietista.com>",
+              to: email,
+              subject: "🍏 Benvingut/da al Newsletter de NutriBaen - Pol Barrot",
+              html: welcomeHtml,
+              headers: {
+                "List-Unsubscribe": "<mailto:info@polbarrotdietista.com?subject=Baixa%20Newsletter>",
+              },
+            }),
+          });
+        } catch (e) {
+          console.error("Error sending welcome email via Resend:", e);
+        }
+      }
+
+      return res.status(200).json({ success: true, message: "Subscripció confirmada!" });
+    }
+
+    // ==============================================================
+    // NEWSLETTER BROADCAST DISPATCHER
+    // ==============================================================
+    if (type === "newsletter_broadcast") {
+      const { subject, content, recipients, preheader } = payload;
+
+      if (!subject || !content || !Array.isArray(recipients) || recipients.length === 0) {
+        return res.status(400).json({
+          error: "Assumpte, contingut i almenys un destinatari són obligatoris.",
+        });
+      }
+
+      const formattedBodyHtml = content
+        .split("\n\n")
+        .map((p: string) => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, "<br>")}</p>`)
+        .join("");
+
+      const newsletterHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f1113; color: #f0f0f0; margin: 0; padding: 24px; }
+            .container { max-width: 620px; margin: 0 auto; background-color: #181a1e; border: 1px solid #2a2e35; border-radius: 20px; overflow: hidden; }
+            .header { background-color: #121417; padding: 26px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #00FF66; }
+            .logo { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: #00FF66; }
+            .preheader { font-size: 11px; color: #888888; text-transform: uppercase; letter-spacing: 1px; }
+            .body { padding: 36px 32px; font-size: 15px; line-height: 1.7; color: #e0e0e0; }
+            .subject-title { font-size: 24px; font-weight: 900; color: #ffffff; margin-bottom: 24px; line-height: 1.3; }
+            .signature { margin-top: 36px; padding-top: 24px; border-top: 1px solid #2a2e35; }
+            .author-name { font-size: 16px; font-weight: bold; color: #ffffff; }
+            .author-title { font-size: 13px; color: #00FF66; }
+            .footer { padding: 24px 32px; background-color: #121417; text-align: center; font-size: 11px; color: #777777; border-top: 1px solid #2a2e35; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="logo">NB NUTRIBAEN</div>
+              <div class="preheader">${preheader || "Newsletter Clínic"}</div>
+            </div>
+            <div class="body">
+              <div class="subject-title">${subject}</div>
+              <div class="content">
+                ${formattedBodyHtml}
+              </div>
+              <div class="signature">
+                <div class="author-name">Pol Barrot</div>
+                <div class="author-title">Dietista-Nutricionista Col·legiat • NutriBaen & Sïmma Lleida</div>
+                <div style="font-size: 12px; color: #888888; margin-top: 6px;">WhatsApp: 640 77 51 60 | Consulta a Sïmma Lleida</div>
+              </div>
+            </div>
+            <div class="footer">
+              Estàs rebent aquest correu com a subscriptor de NutriBaen.<br>
+              © ${new Date().getFullYear()} NutriBaen • Tots els drets reservats.
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      let sentCount = 0;
+      let failedCount = 0;
+
+      if (!apiKey) {
+        console.log("-----------------------------------------");
+        console.log(`[NEWSLETTER BROADCAST MOCK] Assumpte: "${subject}"`);
+        console.log(`Destinataris (${recipients.length}):`, recipients.join(", "));
+        console.log("-----------------------------------------");
+        return res.status(200).json({
+          success: true,
+          mocked: true,
+          sentCount: recipients.length,
+          message: `Newsletter enviat (Mode desenvolupament: simulat per a ${recipients.length} subscriptors).`,
+        });
+      }
+
+      // Send to recipients (batches or individual calls)
+      for (const toEmail of recipients) {
+        try {
+          const emailRes = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Pol Barrot • NutriBaen <info@polbarrotdietista.com>",
+              to: toEmail,
+              subject: subject,
+              html: newsletterHtml,
+              headers: {
+                "List-Unsubscribe": "<mailto:info@polbarrotdietista.com?subject=Baixa%20Newsletter>",
+              },
+            }),
+          });
+
+          if (emailRes.ok) {
+            sentCount++;
+          } else {
+            failedCount++;
+            console.error(`Error sending newsletter to ${toEmail}`);
+          }
+        } catch (err) {
+          failedCount++;
+          console.error(`Exception sending newsletter to ${toEmail}:`, err);
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        sentCount,
+        failedCount,
+        totalRecipients: recipients.length,
+        message: `Newsletter enviat amb èxit a ${sentCount} subscriptors!`,
+      });
+    }
+
     return res.status(400).json({ error: "Invalid email request type." });
   } catch (error: any) {
     console.error("Error in serverless email handler:", error);
