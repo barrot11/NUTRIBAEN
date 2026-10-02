@@ -417,7 +417,11 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
 
                       <div className="mt-6 pt-4 border-t border-[#2a2e35] text-xs">
                         <div className="font-bold text-[#ffffff]" style={{ color: '#ffffff' }}>Pol Barrot</div>
+                        <div className="text-[10px] text-neutral-400 mt-3 pt-3 border-t border-[#222]">
+                          Estàs rebent aquest correu com a subscriptor de NutriBaen.<br />
+                          <span className="text-[#00FF66] underline">Cancel·lar la subscripció / Donar-se de baixa</span>
                         </div>
+                      </div>
                     </div>
                   ) : (
                     <textarea

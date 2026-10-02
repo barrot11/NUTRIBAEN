@@ -60,7 +60,7 @@ export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralPro
             transition={{ duration: 0.8, delay: 0.2 }}
             className="font-sans text-xs sm:text-sm text-neutral-warm-500 mt-4 max-w-2xl mx-auto leading-relaxed"
           >
-            Un acompanyament personalitzat basat en evidència científica, proximitat clínica i canvi d'hàbits duradors.
+           
           </motion.p>
         </div>
 

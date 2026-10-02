@@ -221,7 +221,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               <p>Moltes gràcies per confiar la teva salut amb nosaltres. Ens veiem molt aviat!</p>
             </div>
             <div class="footer">
-              &copy; 2026 NUTRIBAEN • Pol Barrot, Dietista-Nutricionista. Lleida.
+              &copy; ${new Date().getFullYear()} NUTRIBAEN • Pol Barrot.<br>
+              Aquest és un correu informatiu sobre la teva reserva de nutrició.<br><br>
+              <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20de%20NutriBaen." style="color: #a1a1aa; text-decoration: underline;">Cancel·lar la subscripció / Donar-se de baixa</a>
             </div>
           </div>
         </body>
@@ -730,8 +732,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               </div>
             </div>
             <div class="footer">
-              &copy; 2026 NUTRIBAEN • Pol Barrot, Dietista-Nutricionista col·legiat a Lleida.<br>
-              Aquest correu conté la teva guia inicial basada en les teves respostes a la valoració de salut.
+              &copy; ${new Date().getFullYear()} NUTRIBAEN • Pol Barrot.<br>
+              Aquest correu conté la teva guia inicial basada en les teves respostes a la valoració de salut.<br><br>
+              <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20de%20NutriBaen." style="color: #a1a1aa; text-decoration: underline;">Cancel·lar la subscripció / Donar-se de baixa</a>
             </div>
           </div>
         </body>
@@ -943,7 +946,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             </div>
             <div class="footer">
               Has rebut aquest correu perquè t'has subscrit al formulari web de NutriBaen.<br>
-              © ${new Date().getFullYear()} NutriBaen • Pol Barrot • Tots els drets reservats.
+              © ${new Date().getFullYear()} NutriBaen • Pol Barrot • Tots els drets reservats.<br><br>
+              <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20al%20newsletter%20de%20NutriBaen." style="color: #00FF66; text-decoration: underline;">Cancel·lar la subscripció / Donar-se de baixa</a>
             </div>
           </div>
         </body>
@@ -1029,7 +1033,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             </div>
             <div class="footer">
               Estàs rebent aquest correu com a subscriptor de NutriBaen.<br>
-              © ${new Date().getFullYear()} NutriBaen • Tots els drets reservats.
+              © ${new Date().getFullYear()} NutriBaen • Pol Barrot • Tots els drets reservats.<br><br>
+              <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20al%20newsletter%20de%20NutriBaen." style="color: #00FF66; text-decoration: underline;">Cancel·lar la subscripció / Donar-se de baixa</a>
             </div>
           </div>
         </body>

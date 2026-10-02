@@ -730,8 +730,16 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
   };
 
   // Direct download / open Full de Ruta in new tab
-  const handleDownloadRoadmap = () => {
-    window.open("/full-de-ruta", "_blank");
+  const handleDownloadRoadmap = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    const link = document.createElement("a");
+    link.href = "/Full_de_Ruta_NutriBaen.pdf";
+    link.download = "Full_de_Ruta_NutriBaen.pdf";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -1007,22 +1015,37 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
                     </p>
                   </div>
 
-                  <button
-                    onClick={handleDownloadRoadmap}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-500/20 text-brand-400 border border-brand-500/40 text-xs sm:text-sm font-bold hover:bg-brand-500 hover:text-black transition-all"
+                  <a
+                    href="/Full_de_Ruta_NutriBaen.pdf"
+                    download="Full_de_Ruta_NutriBaen.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-500 text-black text-xs sm:text-sm font-extrabold hover:bg-brand-400 transition-all shadow-[0_0_15px_rgba(0,255,102,0.25)] cursor-pointer"
+                    id="btn-download-roadmap-test"
                   >
-                    <Download className="h-4 w-4" />
-                    Descarregar al mòbil ara
-                  </button>
+                    <Download className="h-4 w-4 stroke-[2.5]" />
+                    Descarregar PDF ara
+                  </a>
                 </div>
 
                 {submitSuccess ? (
                   <div className="p-5 rounded-2xl bg-brand-500/10 border border-brand-500/40 text-center">
                     <CheckCircle2 className="h-10 w-10 text-brand-500 mx-auto mb-2" />
                     <h5 className="font-bold text-white text-base">Full de Ruta enviat correctament!</h5>
-                    <p className="text-xs sm:text-sm text-neutral-warm-300 mt-1">
-                      Hem enviat el teu informe a <span className="text-brand-400 font-semibold">{email}</span>. També pots descarregar-lo al mòbil directament amb el botó superior.
+                    <p className="text-xs sm:text-sm text-neutral-warm-300 mt-1 mb-4">
+                      Hem enviat el teu informe a <span className="text-brand-400 font-semibold">{email}</span>. També pots descarregar-lo al teu mòbil directament aquí sota:
                     </p>
+                    <a
+                      href="/Full_de_Ruta_NutriBaen.pdf"
+                      download="Full_de_Ruta_NutriBaen.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 text-black font-extrabold text-xs sm:text-sm transition-all shadow-[0_0_20px_rgba(0,255,102,0.3)] cursor-pointer"
+                      id="btn-download-roadmap-after-submit"
+                    >
+                      <Download className="h-4 w-4 stroke-[2.5]" />
+                      Descarregar Full de Ruta (PDF)
+                    </a>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmitLead} className="flex flex-col gap-4">
@@ -1225,13 +1248,17 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-neutral-warm-800">
-                <button
-                  onClick={handleDownloadRoadmap}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-brand-500 text-black font-extrabold text-xs sm:text-sm hover:bg-brand-600 transition-all"
+                <a
+                  href="/Full_de_Ruta_NutriBaen.pdf"
+                  download="Full_de_Ruta_NutriBaen.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-brand-500 text-black font-extrabold text-xs sm:text-sm hover:bg-brand-400 transition-all cursor-pointer"
+                  id="btn-modal-download-roadmap-pdf"
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className="h-4 w-4 stroke-[2.5]" />
                   Descarregar al Mòbil / PDF
-                </button>
+                </a>
                 <button
                   onClick={() => setShowRoadmapModal(false)}
                   className="w-full sm:w-auto px-5 py-3 rounded-xl bg-neutral-warm-800 text-neutral-warm-300 font-semibold text-xs sm:text-sm hover:bg-neutral-warm-700 transition-all"
