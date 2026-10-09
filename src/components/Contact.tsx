@@ -22,6 +22,7 @@ function Tiktok({ className }: { className?: string }) {
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
     phone: "",
     subject: "",
     message: ""
@@ -44,6 +45,13 @@ export default function Contact() {
     const errs: Record<string, string> = {};
     if (!formData.name.trim()) errs.name = "El nom és obligatori.";
     
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      errs.email = "El correu electrònic és obligatori.";
+    } else if (!emailRegex.test(formData.email.trim())) {
+      errs.email = "El correu electrònic no és vàlid.";
+    }
+
     const phoneRegex = /^[0-9\s+-]{9,15}$/;
     if (!formData.phone.trim()) {
       errs.phone = "El telèfon és obligatori.";
@@ -75,7 +83,7 @@ export default function Contact() {
 
       if (response.ok) {
         setIsSuccess(true);
-        setFormData({ name: "", phone: "", subject: "", message: "" });
+        setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
         setActiveFields({});
       } else {
         const errData = await response.json();
@@ -93,20 +101,20 @@ export default function Contact() {
     <section id="contacte" className="py-20 md:py-28 bg-neutral-warm-50/50 overflow-hidden">
       <div className="max-w-3xl mx-auto px-6 flex flex-col gap-10 md:gap-14">
         
-        {/* Header - "primer contcata amb mi el text" */}
+        {/* Header - "Vols contactar amb mi?" */}
         <div className="text-center max-w-2xl mx-auto" id="contact-header">
           <span className="font-sans font-bold text-xs text-brand-600 uppercase tracking-widest">
             Comencem avui
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-warm-900 leading-tight mt-3 mb-4">
-            Contacta amb mi
+            Vols contactar amb mi?
           </h2>
           <p className="font-sans text-sm text-neutral-warm-500 font-light">
             Deixa'm les teves dades i et respondré en menys de 24 hores laborables.
           </p>
         </div>
 
-        {/* Formulari - "i llavors despres d'aixo vull que ujois el formulari aqui" */}
+        {/* Formulari */}
         <div className="bg-white border border-neutral-warm-200/50 rounded-3xl p-6 md:p-10 shadow-[0_4px_25px_rgba(0,0,0,0.01)] relative min-h-[450px]">
           <AnimatePresence mode="wait">
             {!isSuccess ? (
@@ -163,6 +171,48 @@ export default function Contact() {
                       )}
                     </div>
 
+                    {/* Floating Label Email */}
+                    <div className="relative text-left">
+                      <input
+                        type="email"
+                        id="contact-email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onFocus={() => handleFocus("email")}
+                        onBlur={(e) => handleBlur("email", e.target.value)}
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value });
+                          if (errors.email) setErrors({ ...errors, email: "" });
+                        }}
+                        className={`w-full px-4 pt-6 pb-2 border rounded-xl font-sans text-sm outline-none transition-all ${
+                          errors.email
+                            ? "border-red-400 bg-red-50/10 focus:border-red-500"
+                            : formData.email || activeFields.email
+                            ? "border-brand-500 bg-white"
+                            : "border-neutral-warm-200 focus:border-brand-500"
+                        }`}
+                      />
+                      <label
+                        htmlFor="contact-email"
+                        className={`absolute left-4 font-sans text-xs transition-all duration-200 pointer-events-none ${
+                          formData.email || activeFields.email
+                            ? "top-1.5 text-brand-600 scale-90 origin-top-left"
+                            : "top-4 text-neutral-warm-400 text-sm"
+                        }`}
+                      >
+                        El teu correu electrònic *
+                      </label>
+                      {errors.email && (
+                        <span className="text-[10px] text-red-500 flex items-center gap-1 mt-1">
+                          <ShieldAlert className="h-3 w-3 shrink-0" />
+                          {errors.email}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Floating Label Phone */}
                     <div className="relative text-left">
                       <input
@@ -202,34 +252,34 @@ export default function Contact() {
                         </span>
                       )}
                     </div>
-                  </div>
 
-                  {/* Floating Label Subject */}
-                  <div className="relative text-left">
-                    <input
-                      type="text"
-                      id="contact-subject"
-                      name="subject"
-                      value={formData.subject}
-                      onFocus={() => handleFocus("subject")}
-                      onBlur={(e) => handleBlur("subject", e.target.value)}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className={`w-full px-4 pt-6 pb-2 border rounded-xl font-sans text-sm outline-none transition-all ${
-                        formData.subject || activeFields.subject
-                          ? "border-brand-500 bg-white"
-                          : "border-neutral-warm-200 focus:border-brand-500"
-                      }`}
-                    />
-                    <label
-                      htmlFor="contact-subject"
-                      className={`absolute left-4 font-sans text-xs transition-all duration-200 pointer-events-none ${
-                        formData.subject || activeFields.subject
-                          ? "top-1.5 text-brand-600 scale-90 origin-top-left"
-                          : "top-4 text-neutral-warm-400 text-sm"
-                      }`}
-                    >
-                      Motiu del missatge (opcional)
-                    </label>
+                    {/* Floating Label Subject */}
+                    <div className="relative text-left">
+                      <input
+                        type="text"
+                        id="contact-subject"
+                        name="subject"
+                        value={formData.subject}
+                        onFocus={() => handleFocus("subject")}
+                        onBlur={(e) => handleBlur("subject", e.target.value)}
+                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        className={`w-full px-4 pt-6 pb-2 border rounded-xl font-sans text-sm outline-none transition-all ${
+                          formData.subject || activeFields.subject
+                            ? "border-brand-500 bg-white"
+                            : "border-neutral-warm-200 focus:border-brand-500"
+                        }`}
+                      />
+                      <label
+                        htmlFor="contact-subject"
+                        className={`absolute left-4 font-sans text-xs transition-all duration-200 pointer-events-none ${
+                          formData.subject || activeFields.subject
+                            ? "top-1.5 text-brand-600 scale-90 origin-top-left"
+                            : "top-4 text-neutral-warm-400 text-sm"
+                        }`}
+                      >
+                        Motiu del missatge (opcional)
+                      </label>
+                    </div>
                   </div>
 
                   {/* Floating Label Message */}

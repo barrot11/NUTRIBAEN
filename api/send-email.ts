@@ -27,7 +27,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Contact Form Logic
     if (type === "contact") {
-      const { name, phone, subject, message } = payload;
+      const { name, email, phone, subject, message } = payload;
 
       if (!name || !phone || !message) {
         return res.status(400).json({ error: "Nom, telèfon i missatge són camps obligatoris." });
@@ -58,6 +58,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               <div class="label">Remitent</div>
               <div class="value">${name}</div>
             </div>
+            ${email ? `
+            <div class="field">
+              <div class="label">Correu Electrònic</div>
+              <div class="value"><a href="mailto:${email}" style="color: #22C55E; font-weight: bold; text-decoration: none;">${email}</a></div>
+            </div>` : ""}
             <div class="field">
               <div class="label">Telèfon de Contacte</div>
               <div class="value"><a href="tel:${phone}" style="color: #22C55E; font-weight: bold; text-decoration: none;">${phone}</a></div>

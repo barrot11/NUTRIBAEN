@@ -4,9 +4,9 @@ export const SERVICES: Service[] = [
   {
     id: "consulta-unica",
     title: "Consulta Única",
-    description: "Sessió individual de 40 minuts on farem una radiografia completa del teu estat actual.",
+    description: "Sessió individual de 40 minuts on farem una valoració inicial completa del teu estat actual.",
     bullets: [
-      "Entrevista exhaustiva i radiografia de la teva situació inicial",
+      "Entrevista exhaustiva i valoració inicial de la teva situació de partida",
       "Anàlisi d'hàbits, digestió, descans i patrons diaris",
       "Pla d'acció immediat i recomanacions adaptades al teu context",
       "Ideal per tenir claredat sense compromís a llarg termini"

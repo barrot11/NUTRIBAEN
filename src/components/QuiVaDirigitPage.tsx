@@ -104,14 +104,14 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       id: "consulta-unica",
       type: "INDIVIDUAL",
       name: "CONSULTA ÚNICA",
-      sub: "Radiografia Completa (40 min)",
-      desc: "Sessió individual de 40 minuts on farem una radiografia completa del teu estat actual.",
+      sub: "Valoració Inicial",
+      desc: "Sessió individual de 40 minuts on farem una valoració inicial completa del teu estat actual.",
       buttonText: "RESERVAR ARA",
       popular: false,
       icon: Stethoscope,
       details: [
         "Sessió individual de 40 minuts centrada exclusivament en tu.",
-        "Radiografia completa del teu estat metabòlic, digestiu i hàbits.",
+        "Valoració inicial completa del teu estat metabòlic, digestiu i hàbits.",
         "Anàlisi del teu context diari, descans i nivell d'estrès.",
         "Pla d'acció immediat per començar a notar canvis des del primer moment."
       ]
@@ -120,7 +120,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       id: "trimestral",
       type: "PROTOCOL",
       name: "PROTOCOL TRIMESTRAL",
-      sub: "Fase de Xoc i Reset",
+      sub: "Fase Reset",
       desc: "Programa de tres mesos de seguiment personalitzat. Ideal per a qui busca un canvi de xip immediat i sortir de l'estat d'inflamació.",
       buttonText: "RESERVAR ARA",
       popular: true,

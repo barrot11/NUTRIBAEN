@@ -211,11 +211,11 @@ export default function App() {
               onBookingSuccess={() => setSelectedServiceId(null)} 
             />
 
+            {/* 7.5 Newsletter Subscription Section (abans de FAQ) */}
+            <NewsletterSection onOpenAdmin={() => setIsNewsletterAdminOpen(true)} />
+
             {/* 8. Accordion folding FAQs */}
             <FAQ />
-
-            {/* 8.5 Newsletter Subscription Section */}
-            <NewsletterSection onOpenAdmin={() => setIsNewsletterAdminOpen(true)} />
 
             {/* 9. Contact form and address blocks */}
             <Contact />
