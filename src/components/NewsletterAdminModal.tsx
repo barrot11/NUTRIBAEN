@@ -25,6 +25,7 @@ import {
   addManualSubscriber,
   Subscriber,
   NewsletterRecord,
+  BroadcastResult,
 } from "../services/newsletterService";
 
 interface NewsletterAdminModalProps {
@@ -54,10 +55,13 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
   const [content, setContent] = useState("");
   const [previewMode, setPreviewMode] = useState(false);
 
-  // Sending State
+  // Sending State & Detailed Reporting
   const [isSending, setIsSending] = useState(false);
   const [sendSuccessMessage, setSendSuccessMessage] = useState("");
   const [sendErrorMessage, setSendErrorMessage] = useState("");
+  const [sendReport, setSendReport] = useState<BroadcastResult | null>(null);
+  const [testEmailInput, setTestEmailInput] = useState("polbaen@gmail.com, Ferranbaren@gmail.com");
+  const [showTestConfig, setShowTestConfig] = useState(false);
 
   // History State
   const [history, setHistory] = useState<NewsletterRecord[]>([]);
@@ -235,6 +239,7 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
   const handleSendBroadcast = async (isTestOnly = false) => {
     setSendSuccessMessage("");
     setSendErrorMessage("");
+    setSendReport(null);
 
     if (!subject.trim()) {
       setSendErrorMessage("Si us plau, escriu un assumpte per al newsletter.");
@@ -247,9 +252,19 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
 
     const activeRecipients = subscribers.filter((s) => s.active).map((s) => s.email);
 
-    const targetRecipients = isTestOnly
-      ? ["Ferranbaren@gmail.com", "polbaen@gmail.com"]
-      : activeRecipients;
+    let targetRecipients: string[] = [];
+    if (isTestOnly) {
+      targetRecipients = testEmailInput
+        .split(",")
+        .map((e) => e.trim().toLowerCase())
+        .filter((e) => e.includes("@"));
+
+      if (!targetRecipients.length) {
+        targetRecipients = ["ferranbaren@gmail.com", "polbaen@gmail.com"];
+      }
+    } else {
+      targetRecipients = activeRecipients;
+    }
 
     if (!targetRecipients.length) {
       setSendErrorMessage("No hi ha cap destinatari actiu a la llista.");
@@ -259,7 +274,7 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
     if (
       !isTestOnly &&
       !window.confirm(
-        `Atenció: Aquest newsletter s'enviarà a TOTS els ${targetRecipients.length} subscriptors actius. Vols continuar?`
+        `Atenció: Aquest newsletter s'enviarà en lot (Resend Batch API) a TOTS els ${targetRecipients.length} subscriptors actius. Vols continuar?`
       )
     ) {
       return;
@@ -274,13 +289,25 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
         preheader
       );
 
-      setSendSuccessMessage(
-        isTestOnly
-          ? `Prova enviada amb èxit al teu correu de prova!`
-          : `Newsletter transmès amb èxit a ${result.sentCount} subscriptors!`
-      );
+      setSendReport(result);
 
-      if (!isTestOnly) {
+      if (result.failedCount === 0 && result.sentCount > 0) {
+        setSendSuccessMessage(
+          isTestOnly
+            ? `Prova enviada amb èxit a ${result.sentCount} adreces (${result.accepted.join(", ")})!`
+            : `Newsletter transmès amb èxit a tots els ${result.sentCount} subscriptors!`
+        );
+      } else if (result.sentCount > 0 && result.failedCount > 0) {
+        setSendErrorMessage(
+          `Enviament parcial: ${result.sentCount} acceptats, ${result.failedCount} fallits de ${result.totalRecipients} totals.`
+        );
+      } else {
+        setSendErrorMessage(
+          `No s'ha pogut transmetre: cap destinatari acceptat (${result.failedCount} fallits).`
+        );
+      }
+
+      if (!isTestOnly && result.sentCount > 0) {
         setSubject("");
         setContent("");
         setPreheader("");
@@ -427,6 +454,49 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
                   <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm font-semibold flex items-center gap-2.5">
                     <AlertCircle className="h-5 w-5 shrink-0" />
                     <span>{sendErrorMessage}</span>
+                  </div>
+                )}
+
+                {/* Detailed Broadcast Breakdown (Totals, Accepted, Failed, Pending) */}
+                {sendReport && (
+                  <div className="p-4 rounded-2xl bg-neutral-900 border border-neutral-700 space-y-3 animate-fadeIn">
+                    <div className="flex items-center justify-between text-xs font-bold text-neutral-300">
+                      <span>Estat del Repartiment (Resend Batch API)</span>
+                      <span className="text-[11px] font-mono text-neutral-400">
+                        {sendReport.failedCount === 0 ? "✓ Sense incidències" : "⚠️ Incidències detectades"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                      <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
+                        <div className="text-neutral-400 text-[10px] uppercase font-bold">Destinataris Totals</div>
+                        <div className="text-lg font-black text-white mt-0.5">{sendReport.totalRecipients}</div>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
+                        <div className="text-[#00FF66] text-[10px] uppercase font-bold">Acceptats</div>
+                        <div className="text-lg font-black text-[#00FF66] mt-0.5">{sendReport.sentCount}</div>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
+                        <div className="text-red-400 text-[10px] uppercase font-bold">Fallits</div>
+                        <div className="text-lg font-black text-red-400 mt-0.5">{sendReport.failedCount}</div>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
+                        <div className="text-amber-400 text-[10px] uppercase font-bold">Pendents</div>
+                        <div className="text-lg font-black text-amber-400 mt-0.5">{sendReport.pendingCount}</div>
+                      </div>
+                    </div>
+
+                    {sendReport.failed.length > 0 && (
+                      <div className="p-3 rounded-xl bg-red-950/40 border border-red-800/40 text-xs text-red-300 space-y-1.5">
+                        <div className="font-bold">Detall d'adreces fallides:</div>
+                        {sendReport.failed.map((f, idx) => (
+                          <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] font-mono border-t border-red-900/40 pt-1">
+                            <span className="text-white font-semibold">{f.email}</span>
+                            <span className="text-red-400">{f.reason}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -595,15 +665,25 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
                     </div>
 
                     <div className="flex items-center gap-3 w-full sm:w-auto">
-                      <button
-                        type="button"
-                        disabled={isSending}
-                        onClick={() => handleSendBroadcast(true)}
-                        className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
-                        style={{ color: '#ffffff' }}
-                      >
-                        Enviar correu de prova
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          disabled={isSending}
+                          onClick={() => handleSendBroadcast(true)}
+                          className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                          style={{ color: '#ffffff' }}
+                        >
+                          Enviar correu de prova
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowTestConfig(!showTestConfig)}
+                          title="Personalitzar adreces de prova"
+                          className="p-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-colors cursor-pointer text-xs"
+                        >
+                          ⚙️
+                        </button>
+                      </div>
 
                       <button
                         type="button"
@@ -614,7 +694,7 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
                         {isSending ? (
                           <>
                             <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                            <span>Transmetent als subscriptors...</span>
+                            <span>Transmetent en lot...</span>
                           </>
                         ) : (
                           <>
@@ -625,6 +705,24 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
                       </button>
                     </div>
                   </div>
+
+                  {/* Customizable Test Emails Input */}
+                  {showTestConfig && (
+                    <div className="p-3 bg-neutral-950 border border-neutral-800 rounded-xl space-y-2 animate-fadeIn text-xs">
+                      <div className="flex items-center justify-between text-neutral-300 font-bold">
+                        <span>Adreces per a la prova (separades per coma):</span>
+                        <span className="text-[11px] text-[#00FF66]">Pots posar 1 o més correus</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={testEmailInput}
+                        onChange={(e) => setTestEmailInput(e.target.value)}
+                        placeholder="polbaen@gmail.com, Ferranbaren@gmail.com"
+                        className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#00FF66]"
+                        style={{ color: '#ffffff' }}
+                      />
+                    </div>
+                  )}
 
                   {/* Expandable Preview of Recipient Emails in Bright White */}
                   {showRecipientsPreview && subscribers.length > 0 && (

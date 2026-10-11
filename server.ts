@@ -3,16 +3,19 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import bookedSlotsHandler from "./api/booked-slots";
 import sendEmailHandler from "./api/send-email";
+import unsubscribeHandler from "./api/unsubscribe";
 
 const app = express();
 const PORT = 3000;
 
-// Middleware for parsing JSON bodies
+// Middleware for parsing JSON and form bodies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Proxy API routes to the same Vercel serverless handlers for zero code duplication and perfect dev/prod alignment!
 app.get("/api/booked-slots", bookedSlotsHandler as any);
 app.post("/api/send-email", sendEmailHandler as any);
+app.all("/api/unsubscribe", unsubscribeHandler as any);
 
 // Legacy routes fallback/alias for safety
 app.post("/api/booking", (req, res, next) => {

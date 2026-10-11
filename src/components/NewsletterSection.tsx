@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, CheckCircle2, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { Mail, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Smartphone, Laptop } from "lucide-react";
 import { subscribeToNewsletter } from "../services/newsletterService";
 
 interface NewsletterSectionProps {
@@ -93,20 +93,59 @@ export default function NewsletterSection({ onOpenAdmin }: NewsletterSectionProp
             {/* Right Interactive Form Box */}
             <div className="lg:col-span-5 bg-[#181818] border border-neutral-800 rounded-2xl p-6 sm:p-8 shadow-xl">
               {isSuccess ? (
-                <div className="text-center py-6 animate-fadeIn">
-                  <div className="w-14 h-14 rounded-full bg-[#00FF66]/20 border border-[#00FF66]/40 flex items-center justify-center text-[#00FF66] mx-auto mb-4">
-                    <CheckCircle2 className="h-8 w-8" />
+                <div className="text-left py-2 animate-fadeIn space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#00FF66]/20 border border-[#00FF66]/40 flex items-center justify-center text-[#00FF66] shrink-0">
+                      <CheckCircle2 className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-[#ffffff] leading-tight" style={{ color: '#ffffff' }}>
+                        Subscripció confirmada!
+                      </h3>
+                      <p className="text-xs text-[#00FF66] font-semibold">
+                        Revisa el teu correu ara mateix
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-[#ffffff] mb-2" style={{ color: '#ffffff' }}>Benvingut/da a la comunitat!</h3>
-                  <p className="text-xs sm:text-sm text-neutral-300 mb-6 leading-relaxed">
-                    T'has subscrit correctament. Rebràs les properes edicions clíniques directament a la teva bústia.
-                  </p>
-                  <button
-                    onClick={() => setIsSuccess(false)}
-                    className="text-xs text-[#00FF66] underline hover:text-[#39FF14] font-semibold"
-                  >
-                    Subscriure un altre correu
-                  </button>
+
+                  <div className="p-4 rounded-xl bg-[#0f1113] border border-[#00FF66]/30 text-xs space-y-3">
+                    <p className="text-neutral-200 font-semibold leading-relaxed">
+                      T'acabem d'enviar el correu de benvinguda. Per garantir que no perdis cap publicació clínica a "Promocions" o "Spam", <strong className="text-[#00FF66]">mou el nostre correu a la pestanya Principal</strong>:
+                    </p>
+
+                    <div className="p-2.5 rounded-lg bg-neutral-900/90 border border-neutral-800 space-y-1">
+                      <div className="flex items-center gap-1.5 text-[#00FF66] font-bold text-[11px]">
+                        <Laptop className="h-3.5 w-3.5" />
+                        <span>A l'ordinador (Gmail / Web):</span>
+                      </div>
+                      <p className="text-neutral-300 text-[11px] leading-relaxed pl-5">
+                        Arrossega el correu a la pestanya <strong>"Principal"</strong> i confirma fent clic a <em>"Sí"</em> quan et pregunti si vols fer-ho sempre.
+                      </p>
+                    </div>
+
+                    <div className="p-2.5 rounded-lg bg-neutral-900/90 border border-neutral-800 space-y-1">
+                      <div className="flex items-center gap-1.5 text-[#00FF66] font-bold text-[11px]">
+                        <Smartphone className="h-3.5 w-3.5" />
+                        <span>Al mòbil (App de Gmail / Mail):</span>
+                      </div>
+                      <p className="text-neutral-300 text-[11px] leading-relaxed pl-5">
+                        Obre el correu, prem els <strong>botons / 3 punts de dalt (⋮)</strong>, selecciona <strong>"Moure a"</strong> i tria <strong>"Principal"</strong>.
+                      </p>
+                    </div>
+
+                    <p className="text-[10px] text-[#a3e6be] italic">
+                      ✨ Aquesta és l'única solució 100% efectiva i definitiva perquè mai et perdis cap consell ni protocol clínic.
+                    </p>
+                  </div>
+
+                  <div className="text-center pt-1">
+                    <button
+                      onClick={() => setIsSuccess(false)}
+                      className="text-xs text-[#00FF66] underline hover:text-[#39FF14] font-semibold"
+                    >
+                      Subscriure un altre correu
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">

@@ -124,13 +124,25 @@ export async function addManualSubscriber(email: string, name?: string): Promise
   });
 }
 
+export interface BroadcastResult {
+  success: boolean;
+  totalRecipients: number;
+  sentCount: number;
+  failedCount: number;
+  pendingCount: number;
+  accepted: string[];
+  failed: Array<{ email: string; reason: string }>;
+  pending: string[];
+  message: string;
+}
+
 // 5. Send Broadcast Newsletter
 export async function broadcastNewsletter(
   subject: string,
   content: string,
   recipients: string[],
   preheader?: string
-): Promise<{ success: boolean; sentCount: number; message: string }> {
+): Promise<BroadcastResult> {
   if (!subject.trim()) {
     throw new Error("L'assumpte del newsletter no pot estar buit.");
   }
@@ -156,7 +168,7 @@ export async function broadcastNewsletter(
 
   const resData = await response.json();
   if (!response.ok || !resData.success) {
-    throw new Error(resData.error || "Error en transmetre el newsletter.");
+    throw new Error(resData.error || resData.message || "Error en transmetre el newsletter.");
   }
 
   // 2. Log record to Firestore
@@ -169,7 +181,8 @@ export async function broadcastNewsletter(
       status: "sent",
       sentAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
-      recipientsCount: recipients.length,
+      recipientsCount: resData.sentCount ?? recipients.length,
+      failedCount: resData.failedCount ?? 0,
     });
   } catch (err) {
     console.error("Error saving sent newsletter log:", err);
@@ -177,8 +190,14 @@ export async function broadcastNewsletter(
 
   return {
     success: true,
-    sentCount: resData.sentCount || recipients.length,
-    message: resData.message || "Newsletter enviat correctament a tots els subscriptors!",
+    totalRecipients: resData.totalRecipients ?? recipients.length,
+    sentCount: resData.sentCount ?? recipients.length,
+    failedCount: resData.failedCount ?? 0,
+    pendingCount: resData.pendingCount ?? 0,
+    accepted: resData.accepted ?? [],
+    failed: resData.failed ?? [],
+    pending: resData.pending ?? [],
+    message: resData.message || "Newsletter enviat correctament!",
   };
 }
 

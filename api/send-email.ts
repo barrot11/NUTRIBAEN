@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebase-db.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -948,6 +948,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 • Estratègies de sincronització circadiana i digestió real.<br>
                 • Protocols de nutrició esportiva i energia sense filtres ni mites.
               </div>
+
+              <!-- Important instruction to move to Principal tab -->
+              <div style="background-color: #14241b; border: 1.5px solid #00FF66; border-radius: 12px; padding: 22px; margin: 26px 0; color: #ffffff;">
+                <div style="color: #00FF66; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                  ⚠️ PAS FONAMENTAL (Només et portarà 5 segons)
+                </div>
+                <p style="margin: 0 0 14px 0; font-size: 15px; font-weight: 700; color: #ffffff; line-height: 1.5;">
+                  Perquè els propers correus no acabin a la carpeta de "Promocions" o "Spam", mou aquest missatge a la pestanya <span style="color: #00FF66;">"Principal"</span> o marca'm com a remitent segur:
+                </p>
+                <div style="margin-bottom: 12px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                  <div style="font-weight: bold; color: #00FF66; font-size: 14px; margin-bottom: 4px;">💻 A l'ordinador (Gmail / Web):</div>
+                  <div style="font-size: 13px; color: #d8d8d8; line-height: 1.5;">
+                    Arrossega aquest correu des de la llista directament a la pestanya <strong>"Principal"</strong>. Quan aparegui el missatge emergent a baix, fes clic a <strong>"Sí"</strong> perquè s'apliqui a tots els futurs correus.
+                  </div>
+                </div>
+                <div style="margin-bottom: 14px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                  <div style="font-weight: bold; color: #00FF66; font-size: 14px; margin-bottom: 4px;">📱 Al mòbil (App de Gmail / Mail):</div>
+                  <div style="font-size: 13px; color: #d8d8d8; line-height: 1.5;">
+                    Obre aquest correu, prem als <strong>tres botons / punts de dalt (⋮)</strong> a la cantonada superior, selecciona <strong>"Moure a"</strong> i tria <strong>"Principal"</strong> (o prem <em>"Afegir als contactes"</em> / <em>"Remitent segur"</em>).
+                  </div>
+                </div>
+                <p style="margin: 0; font-size: 12px; color: #a3e6be; font-style: italic;">
+                  ✨ Aquesta és l'única solució 100% efectiva i definitiva per garantir que reps totes les publicacions a la teva safata principal.
+                </p>
+              </div>
+
               <p>Estaré redactant i compartint contingut de valor directament al teu correu.</p>
               <p style="margin-top: 28px; color: #ffffff; font-weight: bold;">
                 Pol Barrot
@@ -956,7 +982,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <div class="footer">
               Has rebut aquest correu perquè t'has subscrit al formulari web de NutriBaen.<br>
               © ${new Date().getFullYear()} NutriBaen • Pol Barrot • Tots els drets reservats.<br><br>
-              <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20al%20newsletter%20de%20NutriBaen." style="color: #00FF66; text-decoration: underline;">Cancel·lar la subscripció / Donar-se de baixa</a>
+              <a href="https://polbarrotdietista.com/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #00FF66; text-decoration: underline;">Cancel·lar la subscripció (1 clic)</a> | 
+              <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20de%20NutriBaen." style="color: #888888; text-decoration: underline;">per correu</a>
             </div>
           </div>
         </body>
@@ -974,6 +1001,20 @@ Què rebràs a la teva bústia?
 - Estratègies de sincronització circadiana i digestió real.
 - Protocols de nutrició esportiva i energia sense filtres ni mites.
 
+==================================================
+⚠️ PAS FONAMENTAL (NOMÉS ET PORTARÀ 5 SEGONS):
+==================================================
+Perquè els propers correus no acabin a la carpeta de "Promocions" o "Spam", mou aquest correu a la pestanya "Principal" o marca'm com a remitent segur:
+
+💻 A L'ORDINADOR (GMAIL / WEB):
+Arrossega aquest correu directament a la pestanya "Principal" i prem "Sí" quan et pregunti si vols fer-ho per sempre.
+
+📱 AL MÒBIL (APP DE GMAIL / MAIL):
+Obre aquest correu, prem als botons/tres punts de dalt (⋮), selecciona "Moure a" i tria "Principal" (o afegeix info@polbarrotdietista.com a contactes / remitent segur).
+
+Aquesta és l'única solució 100% efectiva i definitiva per garantir que mai et perdis cap contingut clínic!
+==================================================
+
 Estaré redactant i compartint contingut de valor directament al teu correu.
 
 Atentament,
@@ -981,7 +1022,8 @@ Pol Barrot
 
 ---
 Has rebut aquest correu perquè t'has subscrit al formulari web de NutriBaen.
-Per cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb la paraula 'Baixa'.`;
+Per cancel·lar la subscripció, fes clic aquí: https://polbarrotdietista.com/api/unsubscribe?email=${encodeURIComponent(email)}
+O respon a aquest correu amb la paraula 'Baixa'.`;
 
       if (apiKey) {
         try {
@@ -998,6 +1040,10 @@ Per cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb 
               subject: "Benvingut a NutriBaen - Pol Barrot",
               text: welcomePlainText,
               html: welcomeHtml,
+              headers: {
+                "List-Unsubscribe": `<https://polbarrotdietista.com/api/unsubscribe?email=${encodeURIComponent(email)}>, <mailto:info@polbarrotdietista.com?subject=Baixa%20Newsletter>`,
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+              },
             }),
           });
         } catch (e) {
@@ -1009,7 +1055,7 @@ Per cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb 
     }
 
     // ==============================================================
-    // NEWSLETTER BROADCAST DISPATCHER
+    // NEWSLETTER BROADCAST DISPATCHER (Resend Batch API /emails/batch)
     // ==============================================================
     if (type === "newsletter_broadcast") {
       const { subject, content, recipients, preheader } = payload;
@@ -1019,6 +1065,42 @@ Per cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb 
           error: "Assumpte, contingut i almenys un destinatari són obligatoris.",
         });
       }
+
+      // 1. Sanitize & deduplicate recipients
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const rawUniqueEmails = Array.from(
+        new Set(
+          recipients
+            .map((r: any) => (typeof r === "string" ? r.toLowerCase().trim() : ""))
+            .filter((e: string) => emailRegex.test(e))
+        )
+      );
+
+      if (rawUniqueEmails.length === 0) {
+        return res.status(400).json({
+          error: "Cap de les adreces de correu proporcionades té un format vàlid.",
+        });
+      }
+
+      // 2. Query Firestore to detect inactive / unsubscribed contacts to strictly prevent sending
+      let unsubscribedEmails = new Set<string>();
+      try {
+        const unsubQuery = query(
+          collection(db, "newsletter_subscribers"),
+          where("active", "==", false)
+        );
+        const unsubSnapshot = await getDocs(unsubQuery);
+        unsubSnapshot.forEach((d) => {
+          const data = d.data();
+          if (d.id) unsubscribedEmails.add(d.id.toLowerCase().trim());
+          if (data?.email) unsubscribedEmails.add(data.email.toLowerCase().trim());
+        });
+      } catch (err) {
+        console.warn("Avís: No s'ha pogut verificar la llista d'inactius a Firestore:", err);
+      }
+
+      // Filter out any unsubscribed emails
+      const targetsToSend = rawUniqueEmails.filter((email) => !unsubscribedEmails.has(email));
 
       const parseFormatting = (text: string) => {
         return text
@@ -1036,7 +1118,8 @@ Per cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb 
         .map((p: string) => `<p style="margin: 0 0 16px 0;">${parseFormatting(p).replace(/\n/g, "<br>")}</p>`)
         .join("");
 
-      const newsletterHtml = `
+      // Helper function to build personalized HTML per recipient
+      const buildNewsletterHtml = (toEmail: string) => `
         <!DOCTYPE html>
         <html>
         <head>
@@ -1073,66 +1156,197 @@ Per cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb 
             <div class="footer">
               Estàs rebent aquest correu com a subscriptor de NutriBaen.<br>
               © ${new Date().getFullYear()} NutriBaen • Pol Barrot • Tots els drets reservats.<br><br>
-              <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20al%20newsletter%20de%20NutriBaen." style="color: #00FF66; text-decoration: underline;">Cancel·lar la subscripció / Donar-se de baixa</a>
+              <a href="https://polbarrotdietista.com/api/unsubscribe?email=${encodeURIComponent(toEmail)}" style="color: #00FF66; text-decoration: underline;">Cancel·lar la subscripció (1 clic)</a> | 
+              <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20al%20newsletter%20de%20NutriBaen." style="color: #888888; text-decoration: underline;">per correu</a>
             </div>
           </div>
         </body>
         </html>
       `;
 
-      let sentCount = 0;
-      let failedCount = 0;
+      // Helper function to build personalized plain text per recipient
+      const buildPlainText = (toEmail: string) =>
+        `${content}\n\n--\nPol Barrot\n\nPer cancel·lar la subscripció, fes clic aquí: https://polbarrotdietista.com/api/unsubscribe?email=${encodeURIComponent(toEmail)}\nO respon a aquest correu amb la paraula 'Baixa'.`;
 
+      // Helper to generate Resend email payload with RFC 8058 List-Unsubscribe headers
+      const buildEmailPayload = (toEmail: string) => ({
+        from: "Pol Barrot <info@polbarrotdietista.com>",
+        reply_to: "info@polbarrotdietista.com",
+        to: [toEmail],
+        subject: subject,
+        text: buildPlainText(toEmail),
+        html: buildNewsletterHtml(toEmail),
+        headers: {
+          "List-Unsubscribe": `<https://polbarrotdietista.com/api/unsubscribe?email=${encodeURIComponent(toEmail)}>, <mailto:info@polbarrotdietista.com?subject=Baixa%20Newsletter>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        },
+      });
+
+      // Tracking sets to guarantee no duplicates and precise reporting
+      const acceptedSet = new Set<string>();
+      const failedList: Array<{ email: string; reason: string }> = [];
+
+      // If in development mode without API key, simulate sending
       if (!apiKey) {
         console.log("-----------------------------------------");
-        console.log(`[NEWSLETTER BROADCAST MOCK] Assumpte: "${subject}"`);
-        console.log(`Destinataris (${recipients.length}):`, recipients.join(", "));
+        console.log(`[NEWSLETTER BROADCAST MOCK BATCH] Assumpte: "${subject}"`);
+        console.log(`Destinataris (${targetsToSend.length}):`, targetsToSend.join(", "));
         console.log("-----------------------------------------");
         return res.status(200).json({
           success: true,
           mocked: true,
-          sentCount: recipients.length,
-          message: `Newsletter enviat (Mode desenvolupament: simulat per a ${recipients.length} subscriptors).`,
+          totalRecipients: recipients.length,
+          sentCount: targetsToSend.length,
+          failedCount: 0,
+          pendingCount: 0,
+          accepted: targetsToSend,
+          failed: [],
+          pending: [],
+          message: `Newsletter enviat (Mode desenvolupament: simulat per a ${targetsToSend.length} subscriptors).`,
         });
       }
 
-      // Send to recipients (batches or individual calls)
-      for (const toEmail of recipients) {
-        try {
-          const emailRes = await fetch("https://api.resend.com/emails", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              from: "Pol Barrot <info@polbarrotdietista.com>",
-              reply_to: "info@polbarrotdietista.com",
-              to: toEmail,
-              subject: subject,
-              text: `${content}\n\n--\nPol Barrot\n\nPer cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb la paraula 'Baixa'.`,
-              html: newsletterHtml,
-            }),
-          });
+      // Chunk targets into batches of max 100 (Resend Batch API limit)
+      const BATCH_SIZE = 100;
+      const chunks: string[][] = [];
+      for (let i = 0; i < targetsToSend.length; i += BATCH_SIZE) {
+        chunks.push(targetsToSend.slice(i, i + BATCH_SIZE));
+      }
 
-          if (emailRes.ok) {
-            sentCount++;
-          } else {
-            failedCount++;
-            console.error(`Error sending newsletter to ${toEmail}`);
+      for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
+        const chunk = chunks[chunkIndex];
+        let batchDelivered = false;
+        let batchErrorMessage = "";
+
+        // Attempt official Resend batch endpoint: POST /emails/batch
+        // Retry controlled up to 3 attempts with exponential backoff on 429 / 5xx
+        for (let attempt = 0; attempt < 3; attempt++) {
+          try {
+            const batchRes = await fetch("https://api.resend.com/emails/batch", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(chunk.map((email) => buildEmailPayload(email))),
+            });
+
+            const batchData: any = await batchRes.json().catch(() => ({}));
+
+            if (batchRes.ok && Array.isArray(batchData?.data)) {
+              // Batch was successfully accepted by Resend
+              chunk.forEach((email) => acceptedSet.add(email));
+              batchDelivered = true;
+              break;
+            }
+
+            // If rate limited (429) or temporary 5xx server error, wait and retry
+            if (batchRes.status === 429 || batchRes.status >= 500) {
+              batchErrorMessage = batchData?.message || `HTTP ${batchRes.status}`;
+              const delay = Math.pow(2, attempt) * 1000 + Math.floor(Math.random() * 300);
+              console.warn(`Resend Batch retornà ${batchRes.status}. Reintent ${attempt + 1}/3 en ${delay}ms...`);
+              await new Promise((r) => setTimeout(r, delay));
+              continue;
+            }
+
+            // If 4xx client validation error, one address in chunk might be invalid.
+            // Breaking batch into individual dispatches to prevent 1 bad address from failing the rest.
+            batchErrorMessage = batchData?.message || `HTTP ${batchRes.status}`;
+            console.warn(`Resend Batch no acceptat (${batchErrorMessage}). Activant enviament individual amb espaiat...`);
+            break;
+          } catch (err: any) {
+            batchErrorMessage = err?.message || String(err);
+            const delay = Math.pow(2, attempt) * 1000;
+            await new Promise((r) => setTimeout(r, delay));
           }
-        } catch (err) {
-          failedCount++;
-          console.error(`Exception sending newsletter to ${toEmail}:`, err);
+        }
+
+        // If batch failed after retries or suffered a validation error,
+        // dispatch individual emails safely with rate-limiting pacing (never exceeding 10 req/s)
+        if (!batchDelivered) {
+          for (const toEmail of chunk) {
+            if (acceptedSet.has(toEmail)) continue; // Never resend already accepted emails!
+
+            let emailSent = false;
+            let lastErr = batchErrorMessage || "Error en l'enviament";
+
+            for (let indAttempt = 0; indAttempt < 2; indAttempt++) {
+              try {
+                const singleRes = await fetch("https://api.resend.com/emails", {
+                  method: "POST",
+                  headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(buildEmailPayload(toEmail)),
+                });
+
+                const singleData: any = await singleRes.json().catch(() => ({}));
+
+                if (singleRes.ok) {
+                  acceptedSet.add(toEmail);
+                  emailSent = true;
+                  break;
+                }
+
+                lastErr = singleData?.message || `HTTP ${singleRes.status}`;
+
+                if (singleRes.status === 429 || singleRes.status >= 500) {
+                  // Rate limit or server hiccup: wait with backoff
+                  await new Promise((r) => setTimeout(r, 1200 * (indAttempt + 1)));
+                  continue;
+                }
+
+                // If non-retryable validation error (e.g. invalid domain syntax)
+                break;
+              } catch (err: any) {
+                lastErr = err?.message || String(err);
+                await new Promise((r) => setTimeout(r, 1000));
+              }
+            }
+
+            if (!emailSent) {
+              failedList.push({ email: toEmail, reason: lastErr });
+            }
+
+            // Pacing delay (150ms) ensures maximum ~6 requests/second, strictly within Resend limits
+            await new Promise((r) => setTimeout(r, 150));
+          }
+        }
+
+        // If multiple chunks exist, add a pause between chunks
+        if (chunkIndex < chunks.length - 1) {
+          await new Promise((r) => setTimeout(r, 300));
         }
       }
 
+      const totalRequested = recipients.length;
+      const acceptedList = Array.from(acceptedSet);
+      const pendingList = targetsToSend.filter(
+        (email) => !acceptedSet.has(email) && !failedList.some((f) => f.email === email)
+      );
+
+      const isAllSent = acceptedList.length === totalRequested && failedList.length === 0;
+
+      let responseMessage = "";
+      if (isAllSent) {
+        responseMessage = `Newsletter enviat amb èxit a tots els ${acceptedList.length} subscriptors!`;
+      } else if (acceptedList.length > 0) {
+        responseMessage = `Enviament parcial: ${acceptedList.length} acceptats, ${failedList.length} fallits de ${totalRequested} totals.`;
+      } else {
+        responseMessage = `No s'ha pogut enviar el newsletter: cap destinatari acceptat (${failedList.length} errors).`;
+      }
+
       return res.status(200).json({
-        success: true,
-        sentCount,
-        failedCount,
-        totalRecipients: recipients.length,
-        message: `Newsletter enviat amb èxit a ${sentCount} subscriptors!`,
+        success: acceptedList.length > 0,
+        sentCount: acceptedList.length,
+        failedCount: failedList.length,
+        pendingCount: pendingList.length,
+        totalRecipients: totalRequested,
+        accepted: acceptedList,
+        failed: failedList,
+        pending: pendingList,
+        message: responseMessage,
       });
     }
 
