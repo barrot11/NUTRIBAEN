@@ -1020,9 +1020,20 @@ Per cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb 
         });
       }
 
+      const parseFormatting = (text: string) => {
+        return text
+          .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #ffffff; font-weight: 700;">$1</strong>')
+          .replace(/<b>(.*?)<\/b>/gi, '<strong style="color: #ffffff; font-weight: 700;">$1</strong>')
+          .replace(/<strong>(.*?)<\/strong>/gi, '<strong style="color: #ffffff; font-weight: 700;">$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em style="font-style: italic; color: #e5e5e5;">$1</em>')
+          .replace(/_(.*?)_/g, '<em style="font-style: italic; color: #e5e5e5;">$1</em>')
+          .replace(/<i>(.*?)<\/i>/gi, '<em style="font-style: italic; color: #e5e5e5;">$1</em>')
+          .replace(/<em>(.*?)<\/em>/gi, '<em style="font-style: italic; color: #e5e5e5;">$1</em>');
+      };
+
       const formattedBodyHtml = content
         .split("\n\n")
-        .map((p: string) => `<p style="margin: 0 0 16px 0;">${p.replace(/\n/g, "<br>")}</p>`)
+        .map((p: string) => `<p style="margin: 0 0 16px 0;">${parseFormatting(p).replace(/\n/g, "<br>")}</p>`)
         .join("");
 
       const newsletterHtml = `

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   X,
   Send,
@@ -14,6 +14,8 @@ import {
   Lock,
   Sparkles,
   RefreshCw,
+  Bold,
+  Italic,
 } from "lucide-react";
 import {
   fetchAllSubscribers,
@@ -59,6 +61,106 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
 
   // History State
   const [history, setHistory] = useState<NewsletterRecord[]>([]);
+
+  // Textarea ref and formatting helpers
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleFormat = (type: "bold" | "italic") => {
+    const textarea = textareaRef.current;
+    const marker = type === "bold" ? "**" : "*";
+    const placeholder = type === "bold" ? "text en negreta" : "text en cursiva";
+
+    if (!textarea) {
+      setContent((prev) => prev + `${marker}${placeholder}${marker}`);
+      return;
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentText = content;
+
+    if (start !== end) {
+      // User has selected a portion of text!
+      const selected = currentText.substring(start, end);
+      const newText =
+        currentText.substring(0, start) +
+        `${marker}${selected}${marker}` +
+        currentText.substring(end);
+      setContent(newText);
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + marker.length, end + marker.length);
+      }, 0);
+    } else {
+      // No text selected, insert placeholder and select it
+      const newText =
+        currentText.substring(0, start) +
+        `${marker}${placeholder}${marker}` +
+        currentText.substring(start);
+      setContent(newText);
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(
+          start + marker.length,
+          start + marker.length + placeholder.length
+        );
+      }, 0);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
+      e.preventDefault();
+      handleFormat("bold");
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "i") {
+      e.preventDefault();
+      handleFormat("italic");
+    }
+  };
+
+  const renderFormattedPreview = (rawContent: string) => {
+    if (!rawContent.trim()) {
+      return (
+        <p className="italic text-neutral-500">
+          (Escriu contingut per veure la vista prèvia...)
+        </p>
+      );
+    }
+
+    return rawContent.split("\n\n").map((p, pIdx) => {
+      const tokens = p.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+      return (
+        <p key={pIdx} className="mb-3 leading-relaxed">
+          {tokens.map((token, tIdx) => {
+            if (token.startsWith("**") && token.endsWith("**") && token.length >= 4) {
+              return (
+                <strong
+                  key={tIdx}
+                  className="font-bold text-white"
+                  style={{ color: "#ffffff" }}
+                >
+                  {token.slice(2, -2)}
+                </strong>
+              );
+            }
+            if (token.startsWith("*") && token.endsWith("*") && token.length >= 2) {
+              return (
+                <em key={tIdx} className="italic text-neutral-100">
+                  {token.slice(1, -1)}
+                </em>
+              );
+            }
+            return token.split("\n").map((line, lIdx, arr) => (
+              <React.Fragment key={lIdx}>
+                {line}
+                {lIdx < arr.length - 1 && <br />}
+              </React.Fragment>
+            ));
+          })}
+        </p>
+      );
+    });
+  };
 
   useEffect(() => {
     if (isOpen && isAuthenticated) {
@@ -361,36 +463,62 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
 
                 {/* Content Editor Toolbar & Textarea */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                     <label className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
-                      Contingut del Newsletter (Pots escriure paràgrafs amb espais)
+                      Contingut del Newsletter
                     </label>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {/* BOLD BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => handleFormat("bold")}
+                        title="Negreta: Selecciona text o fes clic per inserir (**text**)"
+                        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white font-bold transition-all border border-neutral-700 hover:border-neutral-500 active:scale-95 cursor-pointer shadow-sm"
+                        style={{ color: "#ffffff" }}
+                      >
+                        <Bold className="h-3.5 w-3.5 stroke-[2.8]" />
+                        <span>Negreta</span>
+                      </button>
+
+                      {/* ITALIC BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => handleFormat("italic")}
+                        title="Cursiva: Selecciona text o fes clic per inserir (*text*)"
+                        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white italic transition-all border border-neutral-700 hover:border-neutral-500 active:scale-95 cursor-pointer shadow-sm"
+                        style={{ color: "#ffffff" }}
+                      >
+                        <Italic className="h-3.5 w-3.5 stroke-[2.2]" />
+                        <span>Cursiva</span>
+                      </button>
+
+                      {/* CONSELL DESTACAT */}
                       <button
                         type="button"
                         onClick={() =>
                           setContent(
                             (c) =>
                               c +
-                              "\n\n⚡ Consell d'en Pol: Intenta sopar 3 hores abans d'anar a dormir per afavorir el descans digestiu i la melatonina."
+                              "\n\n⚡ **Consell d'en Pol:** Intenta sopar 3 hores abans d'anar a dormir per afavorir el descans digestiu i la melatonina."
                           )
                         }
-                        className="text-[11px] px-2.5 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-[#00FF66] transition-colors"
+                        className="text-xs px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-[#00FF66] font-medium transition-colors border border-neutral-800 hover:border-neutral-700 cursor-pointer"
                       >
                         + Consell Destacat
                       </button>
 
+                      {/* PREVIEW MODE TOGGLE */}
                       <button
                         type="button"
                         onClick={() => setPreviewMode(!previewMode)}
-                        className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded transition-colors ${
+                        className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                           previewMode
-                            ? "bg-[#00FF66] text-black font-bold"
-                            : "bg-neutral-800 text-neutral-300 hover:text-white"
+                            ? "bg-[#00FF66] text-black font-extrabold shadow-sm"
+                            : "bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-700"
                         }`}
                       >
-                        <Eye className="h-3 w-3" />
+                        <Eye className="h-3.5 w-3.5" />
                         <span>{previewMode ? "Editar Text" : "Vista Prèvia"}</span>
                       </button>
                     </div>
@@ -412,8 +540,8 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
                         {subject || "Sense Assumpte"}
                       </h4>
 
-                      <div className="space-y-3 leading-relaxed whitespace-pre-wrap font-light text-neutral-200">
-                        {content || "(Escriu contingut per veure la vista prèvia...)"}
+                      <div className="space-y-3 leading-relaxed font-light text-neutral-200">
+                        {renderFormattedPreview(content)}
                       </div>
 
                       <div className="mt-6 pt-4 border-t border-[#2a2e35] text-xs">
@@ -425,19 +553,27 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
                       </div>
                     </div>
                   ) : (
-                    <textarea
-                      rows={10}
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      placeholder="Bon dia! Avui a consulta hem tractat un cas molt habitual: l'error de pensar que menjar més carbohidrats a la nit engreixa directament...
+                    <div>
+                      <textarea
+                        ref={textareaRef}
+                        rows={10}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Bon dia! Avui a consulta hem tractat un cas molt habitual: l'error de pensar que menjar més carbohidrats a la nit engreixa directament...
 
 Aquí teniu 3 claus que canvien completament el vostre descans:
-1. La digestió pesada interfereix amb la fase REM.
-2. Si entrenes a la tarda, el glucogen muscular agraeix el reompliment.
+1. La **digestió pesada** interfereix amb la fase REM.
+2. Si entrenes a la tarda, el *glucogen muscular* agraeix el reompliment.
 3. La coherència circadiana sempre guanya als dogmes."
-                      className="w-full px-4 py-3 bg-[#0a0c0e] border border-neutral-800 rounded-xl text-[#ffffff] !text-[#ffffff] placeholder-neutral-500 text-sm focus:outline-none focus:border-[#00FF66] font-mono leading-relaxed"
-                      style={{ color: '#ffffff', caretColor: '#00FF66' }}
-                    />
+                        className="w-full px-4 py-3 bg-[#0a0c0e] border border-neutral-800 rounded-xl text-[#ffffff] !text-[#ffffff] placeholder-neutral-500 text-sm focus:outline-none focus:border-[#00FF66] font-mono leading-relaxed"
+                        style={{ color: '#ffffff', caretColor: '#00FF66' }}
+                      />
+                      <div className="flex items-center justify-between text-[11px] text-neutral-400 mt-1.5 px-1 font-mono">
+                        <span>Pots prémer **Negreta** o *Cursiva* a la barra d'eines o amb les dreceres <kbd className="px-1 py-0.5 rounded bg-neutral-800 text-neutral-300">Ctrl+B</kbd> i <kbd className="px-1 py-0.5 rounded bg-neutral-800 text-neutral-300">Ctrl+I</kbd>.</span>
+                        <span>{content.length} caràcters</span>
+                      </div>
+                    </div>
                   )}
                 </div>
 
