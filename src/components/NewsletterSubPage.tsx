@@ -103,9 +103,9 @@ export default function NewsletterSubPage({ onBackToHome }: NewsletterSubPagePro
                 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight"
                 style={{ color: "#ffffff" }}
               >
-                El Newsletter Clínic de{" "}
+                Newsletter 
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF66] via-emerald-400 to-[#00FF66]">
-                  Pol Barrot
+                  
                 </span>
               </h1>
 
@@ -113,8 +113,7 @@ export default function NewsletterSubPage({ onBackToHome }: NewsletterSubPagePro
                 className="text-neutral-200 text-base sm:text-lg max-w-xl mx-auto leading-relaxed"
                 style={{ color: "#e5e7eb" }}
               >
-                Sense filtres d'algoritmes ni publicitat. Apunts directes de consulta, sincronització
-                circadiana, digestió real i nutrició basada en ciència directament a la teva bústia.
+                
               </p>
             </div>
 
@@ -184,7 +183,7 @@ export default function NewsletterSubPage({ onBackToHome }: NewsletterSubPagePro
                     </div>
                   ) : (
                     <>
-                      <span>Vull subscriure'm de franc</span>
+                      <span>Vull subscriure'm</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
