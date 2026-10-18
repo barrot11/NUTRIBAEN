@@ -13,6 +13,7 @@ import QuiSocPage from "./components/QuiSocPage";
 import QuiVaDirigitPage from "./components/QuiVaDirigitPage";
 import NewsletterSection from "./components/NewsletterSection";
 import NewsletterAdminModal from "./components/NewsletterAdminModal";
+import NewsletterSubPage from "./components/NewsletterSubPage";
 
 export default function App() {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
@@ -20,8 +21,10 @@ export default function App() {
   const [isNewsletterAdminOpen, setIsNewsletterAdminOpen] = useState(
     window.location.pathname === "/admin-newsletter" || window.location.pathname === "/newsletter-admin"
   );
-  const [view, setView] = useState<'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut'>(
-    window.location.pathname === "/qui-soc" 
+  const [view, setView] = useState<'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut' | 'newsletter-sub'>(
+    window.location.pathname === "/newsletter-sub" || window.location.pathname.startsWith("/newsletter-sub")
+      ? "newsletter-sub"
+      : window.location.pathname === "/qui-soc" 
       ? "qui-soc" 
       : window.location.pathname === "/qui-va-dirigit" 
       ? "qui-va-dirigit" 
@@ -54,12 +57,13 @@ export default function App() {
     scrollToId("reserva");
   };
 
-  const navigateTo = (newView: 'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut', targetId?: string) => {
+  const navigateTo = (newView: 'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut' | 'newsletter-sub', targetId?: string) => {
     const newPath = 
       newView === 'qui-soc' ? '/qui-soc' 
       : newView === 'qui-va-dirigit' ? '/qui-va-dirigit' 
       : newView === 'full-de-ruta' ? '/full-de-ruta'
       : newView === 'valoracio-salut' ? '/valoracio-salut'
+      : newView === 'newsletter-sub' ? '/newsletter-sub'
       : '/';
       
     window.history.pushState({}, "", newPath);
@@ -96,7 +100,8 @@ export default function App() {
     const handlePopState = () => {
       const path = window.location.pathname;
       setView(
-        path === "/qui-soc" ? "qui-soc" 
+        path === "/newsletter-sub" || path.startsWith("/newsletter-sub") ? "newsletter-sub"
+        : path === "/qui-soc" ? "qui-soc" 
         : path === "/qui-va-dirigit" ? "qui-va-dirigit" 
         : path === "/full-de-ruta" ? "full-de-ruta"
         : path === "/valoracio-salut" || path === "/test-salut" ? "valoracio-salut"
@@ -116,7 +121,10 @@ export default function App() {
         const href = anchor.getAttribute("href");
         
         // Handle absolute-like paths
-        if (href && (href === "/qui-soc" || href.endsWith("/qui-soc"))) {
+        if (href && (href === "/newsletter-sub" || href.endsWith("/newsletter-sub"))) {
+          e.preventDefault();
+          navigateTo("newsletter-sub");
+        } else if (href && (href === "/qui-soc" || href.endsWith("/qui-soc"))) {
           e.preventDefault();
           navigateTo("qui-soc");
         } else if (href && (href === "/qui-va-dirigit" || href.endsWith("/qui-va-dirigit"))) {
@@ -146,8 +154,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-neutral-warm-50 text-neutral-warm-800 antialiased font-sans selection:bg-brand-500 selection:text-black">
-      {/* 1. Sticky Navbar with Scroll Detect (Hidden in standalone document view) */}
-      {view !== 'full-de-ruta' && (
+      {/* 1. Sticky Navbar with Scroll Detect (Hidden in standalone views) */}
+      {view !== 'full-de-ruta' && view !== 'newsletter-sub' && (
         <Navbar 
           onBookClick={() => view === 'home' ? scrollToId("reserva") : navigateTo('home', 'reserva')} 
           onTestClick={handleOpenTestWindow}
@@ -160,6 +168,9 @@ export default function App() {
         {view === 'full-de-ruta' ? (
           /* Full de Ruta: 5-Slide Official Presentation & Download */
           <FullDeRutaPage onBack={() => navigateTo('home')} />
+        ) : view === 'newsletter-sub' ? (
+          /* Standalone Instagram-specific Newsletter Subscription Page */
+          <NewsletterSubPage onBackToHome={() => navigateTo('home')} />
         ) : view === 'valoracio-salut' ? (
           /* Dedicated Standalone Test Window View */
           <div className="min-h-screen bg-neutral-warm-950">
@@ -246,7 +257,7 @@ export default function App() {
       />
 
       {/* 11. Footer with business schedule details and legal blocks */}
-      {view !== 'full-de-ruta' && (
+      {view !== 'full-de-ruta' && view !== 'newsletter-sub' && (
         <Footer onOpenAdminNewsletter={() => setIsNewsletterAdminOpen(true)} />
       )}
     </div>
