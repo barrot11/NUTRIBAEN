@@ -14,6 +14,7 @@ import QuiVaDirigitPage from "./components/QuiVaDirigitPage";
 import NewsletterSection from "./components/NewsletterSection";
 import NewsletterAdminModal from "./components/NewsletterAdminModal";
 import NewsletterSubPage from "./components/NewsletterSubPage";
+import ContactSubPage from "./components/ContactSubPage";
 
 export default function App() {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
@@ -21,9 +22,11 @@ export default function App() {
   const [isNewsletterAdminOpen, setIsNewsletterAdminOpen] = useState(
     window.location.pathname === "/admin-newsletter" || window.location.pathname === "/newsletter-admin"
   );
-  const [view, setView] = useState<'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut' | 'newsletter-sub'>(
+  const [view, setView] = useState<'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut' | 'newsletter-sub' | 'contacta'>(
     window.location.pathname === "/newsletter-sub" || window.location.pathname.startsWith("/newsletter-sub")
       ? "newsletter-sub"
+      : window.location.pathname === "/contacta" || window.location.pathname.startsWith("/contacta")
+      ? "contacta"
       : window.location.pathname === "/qui-soc" 
       ? "qui-soc" 
       : window.location.pathname === "/qui-va-dirigit" 
@@ -57,13 +60,14 @@ export default function App() {
     scrollToId("reserva");
   };
 
-  const navigateTo = (newView: 'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut' | 'newsletter-sub', targetId?: string) => {
+  const navigateTo = (newView: 'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut' | 'newsletter-sub' | 'contacta', targetId?: string) => {
     const newPath = 
       newView === 'qui-soc' ? '/qui-soc' 
       : newView === 'qui-va-dirigit' ? '/qui-va-dirigit' 
       : newView === 'full-de-ruta' ? '/full-de-ruta'
       : newView === 'valoracio-salut' ? '/valoracio-salut'
       : newView === 'newsletter-sub' ? '/newsletter-sub'
+      : newView === 'contacta' ? '/contacta'
       : '/';
       
     window.history.pushState({}, "", newPath);
@@ -101,6 +105,7 @@ export default function App() {
       const path = window.location.pathname;
       setView(
         path === "/newsletter-sub" || path.startsWith("/newsletter-sub") ? "newsletter-sub"
+        : path === "/contacta" || path.startsWith("/contacta") ? "contacta"
         : path === "/qui-soc" ? "qui-soc" 
         : path === "/qui-va-dirigit" ? "qui-va-dirigit" 
         : path === "/full-de-ruta" ? "full-de-ruta"
@@ -124,6 +129,9 @@ export default function App() {
         if (href && (href === "/newsletter-sub" || href.endsWith("/newsletter-sub"))) {
           e.preventDefault();
           navigateTo("newsletter-sub");
+        } else if (href && (href === "/contacta" || href.endsWith("/contacta"))) {
+          e.preventDefault();
+          navigateTo("contacta");
         } else if (href && (href === "/qui-soc" || href.endsWith("/qui-soc"))) {
           e.preventDefault();
           navigateTo("qui-soc");
@@ -155,7 +163,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-neutral-warm-50 text-neutral-warm-800 antialiased font-sans selection:bg-brand-500 selection:text-black">
       {/* 1. Sticky Navbar with Scroll Detect (Hidden in standalone views) */}
-      {view !== 'full-de-ruta' && view !== 'newsletter-sub' && (
+      {view !== 'full-de-ruta' && view !== 'newsletter-sub' && view !== 'contacta' && (
         <Navbar 
           onBookClick={() => view === 'home' ? scrollToId("reserva") : navigateTo('home', 'reserva')} 
           onTestClick={handleOpenTestWindow}
@@ -171,6 +179,9 @@ export default function App() {
         ) : view === 'newsletter-sub' ? (
           /* Standalone Instagram-specific Newsletter Subscription Page */
           <NewsletterSubPage onBackToHome={() => navigateTo('home')} />
+        ) : view === 'contacta' ? (
+          /* Standalone Instagram-specific Contact Page */
+          <ContactSubPage onBackToHome={() => navigateTo('home')} />
         ) : view === 'valoracio-salut' ? (
           /* Dedicated Standalone Test Window View */
           <div className="min-h-screen bg-neutral-warm-950">
@@ -204,10 +215,7 @@ export default function App() {
               onRoadmapClick={handleOpenRoadmap}
             />
 
-            {/* 4. About Me (Sobre Mi) biography and story */}
-            <About onLearnMore={() => navigateTo('qui-soc')} />
-
-            {/* 6. Servei Integral */}
+            {/* 3. Els Meus Serveis */}
             <ServeiIntegral 
               onExploreMoreClick={() => navigateTo('qui-va-dirigit')} 
               onBookService={(serviceId) => {
@@ -216,19 +224,22 @@ export default function App() {
               }}
             />
 
-            {/* 7. The 3-Step Interactive Booking Stepper */}
+            {/* 4. Qui sóc (Sobre Mi) */}
+            <About onLearnMore={() => navigateTo('qui-soc')} />
+
+            {/* 5. FAQ */}
+            <FAQ />
+
+            {/* 6. The 3-Step Interactive Booking Stepper */}
             <BookingStepper 
               selectedServiceId={selectedServiceId} 
               onBookingSuccess={() => setSelectedServiceId(null)} 
             />
 
-            {/* 7.5 Newsletter Subscription Section (abans de FAQ) */}
+            {/* 7. Newsletter Subscription Section */}
             <NewsletterSection onOpenAdmin={() => setIsNewsletterAdminOpen(true)} />
 
-            {/* 8. Accordion folding FAQs */}
-            <FAQ />
-
-            {/* 9. Contact form and address blocks */}
+            {/* 8. Contact form and address blocks */}
             <Contact />
           </>
         )}
@@ -257,7 +268,7 @@ export default function App() {
       />
 
       {/* 11. Footer with business schedule details and legal blocks */}
-      {view !== 'full-de-ruta' && view !== 'newsletter-sub' && (
+      {view !== 'full-de-ruta' && view !== 'newsletter-sub' && view !== 'contacta' && (
         <Footer onOpenAdminNewsletter={() => setIsNewsletterAdminOpen(true)} />
       )}
     </div>

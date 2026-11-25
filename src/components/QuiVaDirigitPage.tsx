@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   ArrowLeft, Calendar, Check, X, Sparkles,
   Zap, Clock, CalendarDays, Ruler, Users,
-  Dumbbell, Activity, Target, Flame, Heart, Stethoscope
+  Dumbbell, Activity, Target, Flame, Heart, Stethoscope, Crown
 } from "lucide-react";
 
 import futImg from "../assets/images/fut.png";
@@ -120,16 +120,32 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       id: "trimestral",
       type: "PROTOCOL",
       name: "PROTOCOL TRIMESTRAL",
-      sub: "Fase Reset",
-      desc: "Programa de tres mesos de seguiment personalitzat. Ideal per a qui busca un canvi de xip immediat i sortir de l'estat d'inflamació.",
+      sub: "Reeducació i Control",
+      desc: "Programa de tres mesos de seguiment personalitzat, per reeducar hàbits alimentaris, oblidar-te de la bàscula i recuperar el control.",
       buttonText: "RESERVAR ARA",
       popular: true,
       icon: Zap,
       details: [
         "3 mesos de seguiment estret i personalitzat.",
-        "Estudi de la situació de partida i objectius realistes.",
-        "Dues valoracions completes amb reprogramació nutricional.",
-        "Resolució de dubtes ràpida durant tota la fase de reset."
+        "Reeducació d'hàbits alimentaris adaptada al teu dia a dia.",
+        "Oblida't de la bàscula i recupera el control del teu benestar.",
+        "Resolució de dubtes ràpida durant tota la fase de canvi."
+      ]
+    },
+    {
+      id: "semestral",
+      type: "PROTOCOL",
+      name: "PROTOCOL SEMESTRAL",
+      sub: "Experiència VIP",
+      desc: "Programa de sis mesos de seguiment personalitzat. Experiència VIP per a una transformació definitiva fins a l'autonomia.",
+      buttonText: "RESERVAR ARA",
+      popular: false,
+      icon: Crown,
+      details: [
+        "6 mesos de seguiment personalitzat d'alt nivell.",
+        "Experiència VIP amb acompanyament estret i estratègic.",
+        "Consolidació definitiva dels hàbits a llarg termini.",
+        "Acompanyament complet fins a assolir la teva autonomia total."
       ]
     },
     {
@@ -204,7 +220,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
 
         {/* 2. FIRST SECTION: PROTOCOLS AND SERVICES */}
         <div className="mb-28 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch w-full text-center">
+          <div className="flex flex-wrap justify-center gap-8 max-w-5xl mx-auto items-stretch w-full text-center">
             {protocols.map((proto, index) => {
               const IconComponent = proto.icon;
               return (
@@ -214,7 +230,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex flex-col justify-between w-full rounded-3xl border border-neutral-warm-800/60 bg-[#121212] overflow-hidden shadow-xl hover:border-[#1ed760]/30 hover:-translate-y-1 transition-all group relative p-8 sm:p-10 text-center items-center"
+                  className="flex flex-col justify-between w-full md:w-[calc(50%-1rem)] max-w-md rounded-3xl border border-neutral-warm-800/60 bg-[#121212] overflow-hidden shadow-xl hover:border-[#1ed760]/30 hover:-translate-y-1 transition-all group relative p-8 sm:p-10 text-center items-center"
                   id={`protocol-card-${proto.id}`}
                 >
                   {/* POPULAR BADGE */}

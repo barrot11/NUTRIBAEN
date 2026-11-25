@@ -639,7 +639,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error("Failed to save health test result to Firestore:", dbErr);
       }
 
-      // 2. Build Client Email with Full Initial Roadmap
+      // 2. Build Client Confirmation Email (without Full de Ruta)
       const clientHtml = `
         <!DOCTYPE html>
         <html>
@@ -663,11 +663,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .block-item:last-child { border-bottom: none; }
             .block-name { color: #d4d4d8; font-weight: 600; }
             .block-pts { color: #00FF66; font-weight: 800; }
-            .section-title { font-size: 17px; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; margin: 30px 0 15px 0; border-left: 4px solid #00FF66; padding-left: 12px; }
-            .roadmap-card { background-color: #18181c; border-radius: 12px; padding: 16px 20px; margin-bottom: 14px; border: 1px solid #27272a; }
-            .roadmap-card strong { color: #00FF66; }
-            .roadmap-card h3 { color: #ffffff; font-size: 15px; margin: 0 0 6px 0; font-weight: 700; }
-            .btn-cta { display: block; text-align: center; background-color: #00FF66; color: #000000; font-weight: 800; font-size: 16px; padding: 16px 28px; border-radius: 14px; text-decoration: none; margin: 30px 0 15px 0; box-shadow: 0 4px 20px rgba(0, 255, 102, 0.35); }
+            .contact-box { background-color: #18181c; border-radius: 14px; padding: 20px; border: 1px solid rgba(0, 255, 102, 0.25); margin-top: 24px; }
             .footer { background-color: #0a0a0a; padding: 25px 30px; text-align: center; border-top: 1px solid #1a1a1a; font-size: 12px; color: #71717a; }
           </style>
         </head>
@@ -675,11 +671,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           <div class="container">
             <div class="header">
               <div class="logo">NUTRI<span>BAEN</span></div>
-              <p style="margin: 8px 0 0 0; font-size: 12px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px;">Pol Barrot • Dietista-Nutricionista</p>
+              <p style="margin: 8px 0 0 0; font-size: 12px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px;">Pol Barrot • Dietista</p>
             </div>
             <div class="content">
               <h1>Hola, ${name}!</h1>
-              <p>Has completat amb èxit el <strong>Test de Salut i Energia</strong>. Aquí tens el desglossament del teu estat biològic actual i el teu <strong>Full de Ruta Inicial gratuït</strong> per començar a optimitzar la teva vitalitat des d'avui mateix.</p>
+              <p>Has completat amb èxit la teva <strong>Valoració de Salut i Energia</strong>. Aquí tens el resum de la teva puntuació:</p>
 
               <div class="score-box">
                 <div class="score-value">${score} <span style="font-size: 24px; color: #71717a;">/ 100</span></div>
@@ -706,41 +702,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 </div>
               </div>
 
-              <div class="section-title">📍 El Teu Full de Ruta Inicial (Pas a Pas)</div>
-              
-              <div class="roadmap-card">
-                <h3>1. Regla del Menjar Real (80-90% un sol ingredient)</h3>
-                <p style="font-size: 13px; margin: 0; color: #a1a1aa;">Elimina ultraprocessats, olis vegetals refinats i farines industrials. Basa els teus plats en proteïna de qualitat (ous, peix, carn no processada), verdures fresques, tubercles (patata, moniato), fruita sencera i greixos saludables (oli d'oliva verge extra, alvocat, fruits secs).</p>
-              </div>
-
-              <div class="roadmap-card">
-                <h3>2. Sincronització Circadiana i Descans Fisiològic</h3>
-                <p style="font-size: 13px; margin: 0; color: #a1a1aa;">Exposa't a la llum natural del sol durant els primers 30 minuts en llevar-te. Sopa com a mínim 2 o 3 hores abans d'anar a dormir per permetre una digestió completa. Respecta un descans digestiu nocturn de 12 hores (ex: sopar a les 20:30h i esmorzar a les 8:30h).</p>
-              </div>
-
-              <div class="roadmap-card">
-                <h3>3. Moviment no estructurat (NEAT) i Força Essencial</h3>
-                <p style="font-size: 13px; margin: 0; color: #a1a1aa;">Assegura entre 8.000 i 10.000 passos al dia per mantenir la sensibilitat a la insulina. Fes un mínim de 3 sessions de força a la setmana (el múscul és el teu principal òrgan metabòlic i de protecció biològica).</p>
-              </div>
-
-              <div class="roadmap-card">
-                <h3>4. Hidratació Cel·lular i Digestió Conscient</h3>
-                <p style="font-size: 13px; margin: 0; color: #a1a1aa;">Beu aigua mineral o filtrada amb una petita mica de sal marina no refinada en despertar per reposar electròlits. Menja assegut/da, sense pantalles i mastegant 20-30 vegades cada mossegada per evitar inflor abdominal i gasos.</p>
-              </div>
-
-              <div class="roadmap-card" style="border-left: 4px solid #00FF66;">
-                <h3>🗓️ Protocol dels Primers 7 Dies</h3>
-                <ul style="font-size: 13px; color: #a1a1aa; padding-left: 20px; margin: 8px 0 0 0; line-height: 1.6;">
-                  <li><strong>Dies 1-2:</strong> Neteja de la cuina i primers 10.000 passos diaris.</li>
-                  <li><strong>Dies 3-4:</strong> Esmorzar proteic (ous, pernil o peix) en lloc de brioixeria o sucres.</li>
-                  <li><strong>Dies 5-6:</strong> Allunyar pantalles blaves 60 minuts abans d'anar a dormir.</li>
-                  <li><strong>Dia 7:</strong> Avalua la reducció d'inflor i l'augment d'energia matinal!</li>
-                </ul>
+              <div class="contact-box">
+                <p style="color: #ffffff; font-weight: 700; margin-bottom: 6px;">Hem rebut les teves dades de contacte</p>
+                <p style="margin: 0; font-size: 14px; color: #a1a1aa;">En Pol Barrot revisarà les teves respostes i es posarà en contacte amb tu al més aviat possible per orientar-te de forma personalitzada.</p>
               </div>
             </div>
             <div class="footer">
               &copy; ${new Date().getFullYear()} NUTRIBAEN • Pol Barrot.<br>
-              Aquest correu conté la teva guia inicial basada en les teves respostes a la valoració de salut.<br><br>
+              Aquest correu conté el resum de la teva valoració de salut.<br><br>
               <a href="mailto:info@polbarrotdietista.com?subject=Cancel%C2%B7lar%20Subscripci%C3%B3&body=Sol%C2%B7licito%20cancel%C2%B7lar%20la%20meva%20subscripci%C3%B3%20de%20NutriBaen." style="color: #a1a1aa; text-decoration: underline;">Cancel·lar la subscripció / Donar-se de baixa</a>
             </div>
           </div>
@@ -848,7 +817,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       let clientEmailSent = false;
       let sandboxWarning = false;
 
-      // 5. Send Client Confirmation Email with Full Roadmap
+      // 5. Send Client Confirmation Email
       try {
         const clientEmailResponse = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -860,8 +829,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             from: "Pol Barrot <info@polbarrotdietista.com>",
             reply_to: "info@polbarrotdietista.com",
             to: email,
-            subject: `El teu Resultat del Test de Salut (${score}/100) - Pol Barrot`,
-            text: `Hola ${name ? name : ""},\n\nAquí tens el teu resultat de la Valoració de Salut de NutriBaen: ${score}/100 punts.\nNivell: ${levelTitle}\n\nPots descarregar el teu protocol i Full de Ruta complet en format PDF directament des de la web oficial de NutriBaen.\n\nAtentament,\nPol Barrot\n\nPer cancel·lar la subscripció o donar-te de baixa, respon a aquest correu amb la paraula 'Baixa'.`,
+            subject: `El teu Resultat de la Valoració de Salut (${score}/100) - Pol Barrot`,
+            text: `Hola ${name ? name : ""},\n\nAquí tens el teu resultat de la Valoració de Salut de NutriBaen: ${score}/100 punts.\nNivell: ${levelTitle}\n\nHem rebut les teves dades de contacte i en Pol Barrot es posarà en contacte amb tu al més aviat possible.\n\nAtentament,\nPol Barrot`,
             html: clientHtml,
           }),
         });
@@ -890,7 +859,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             body: JSON.stringify({
               from: "info@polbarrotdietista.com",
               to: "polbaen@gmail.com",
-              subject: `📩 [RETRANSMETRE AL PACIENT] Full de Ruta & Resultat Test (${score}/100) per a ${name}`,
+              subject: `📩 [RETRANSMETRE AL PACIENT] Resultat Valoració (${score}/100) per a ${name}`,
               html: clientHtml,
             }),
           });
@@ -903,7 +872,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         success: true,
         clientEmailSent,
         sandboxWarning,
-        message: "Test completat amb èxit! Hem enviat el teu Full de Ruta Inicial.",
+        message: "Valoració enviada amb èxit! En Pol Barrot es posarà en contacte amb tu al més aviat possible.",
       });
     }
 
@@ -1058,12 +1027,32 @@ O respon a aquest correu amb la paraula 'Baixa'.`;
     // NEWSLETTER BROADCAST DISPATCHER (Resend Batch API /emails/batch)
     // ==============================================================
     if (type === "newsletter_broadcast") {
-      const { subject, content, recipients, preheader } = payload;
+      const { subject, content, recipients, preheader, scheduledAt } = payload;
 
       if (!subject || !content || !Array.isArray(recipients) || recipients.length === 0) {
         return res.status(400).json({
           error: "Assumpte, contingut i almenys un destinatari són obligatoris.",
         });
+      }
+
+      let scheduledAtIso: string | null = null;
+      if (scheduledAt) {
+        const parsedDate = new Date(scheduledAt);
+        if (isNaN(parsedDate.getTime())) {
+          return res.status(400).json({ error: "La data i hora de programació no són vàlides." });
+        }
+        const diffMs = parsedDate.getTime() - Date.now();
+        if (diffMs < 60 * 1000) {
+          return res.status(400).json({
+            error: "La data i hora programades han de ser almenys 1 minut en el futur.",
+          });
+        }
+        if (diffMs > 30 * 24 * 60 * 60 * 1000) {
+          return res.status(400).json({
+            error: "Només es poden programar enviaments fins a un màxim de 30 dies vista.",
+          });
+        }
+        scheduledAtIso = parsedDate.toISOString();
       }
 
       // 1. Sanitize & deduplicate recipients
@@ -1176,6 +1165,7 @@ O respon a aquest correu amb la paraula 'Baixa'.`;
         subject: subject,
         text: buildPlainText(toEmail),
         html: buildNewsletterHtml(toEmail),
+        ...(scheduledAtIso ? { scheduled_at: scheduledAtIso } : {}),
         headers: {
           "List-Unsubscribe": `<https://polbarrotdietista.com/api/unsubscribe?email=${encodeURIComponent(toEmail)}>, <mailto:info@polbarrotdietista.com?subject=Baixa%20Newsletter>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
@@ -1185,11 +1175,16 @@ O respon a aquest correu amb la paraula 'Baixa'.`;
       // Tracking sets to guarantee no duplicates and precise reporting
       const acceptedSet = new Set<string>();
       const failedList: Array<{ email: string; reason: string }> = [];
+      const scheduledIds: Array<{ email: string; id: string }> = [];
 
-      // If in development mode without API key, simulate sending
+      // If in development mode without API key, simulate sending or scheduling
       if (!apiKey) {
         console.log("-----------------------------------------");
-        console.log(`[NEWSLETTER BROADCAST MOCK BATCH] Assumpte: "${subject}"`);
+        console.log(
+          scheduledAtIso
+            ? `[NEWSLETTER SCHEDULED MOCK] Programat per a ${scheduledAtIso} | Assumpte: "${subject}"`
+            : `[NEWSLETTER BROADCAST MOCK BATCH] Assumpte: "${subject}"`
+        );
         console.log(`Destinataris (${targetsToSend.length}):`, targetsToSend.join(", "));
         console.log("-----------------------------------------");
         return res.status(200).json({
@@ -1202,7 +1197,93 @@ O respon a aquest correu amb la paraula 'Baixa'.`;
           accepted: targetsToSend,
           failed: [],
           pending: [],
-          message: `Newsletter enviat (Mode desenvolupament: simulat per a ${targetsToSend.length} subscriptors).`,
+          ...(scheduledAtIso ? { scheduledAt: scheduledAtIso, scheduledIds: [] } : {}),
+          message: scheduledAtIso
+            ? `Newsletter programat per al ${new Date(scheduledAtIso).toLocaleString("ca-ES")} (simulat en desenvolupament per a ${targetsToSend.length} subscriptors).`
+            : `Newsletter enviat (Mode desenvolupament: simulat per a ${targetsToSend.length} subscriptors).`,
+        });
+      }
+
+      // If scheduledAtIso is set, Resend /emails/batch does not support scheduled_at,
+      // so we schedule each personalized email via POST /emails with scheduled_at and save the returned IDs.
+      if (scheduledAtIso) {
+        for (const toEmail of targetsToSend) {
+          if (acceptedSet.has(toEmail)) continue;
+
+          let emailScheduled = false;
+          let lastErr = "Error programant l'enviament";
+
+          for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+              const singleRes = await fetch("https://api.resend.com/emails", {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${apiKey}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(buildEmailPayload(toEmail)),
+              });
+
+              const singleData: any = await singleRes.json().catch(() => ({}));
+
+              if (singleRes.ok) {
+                acceptedSet.add(toEmail);
+                if (singleData?.id) {
+                  scheduledIds.push({ email: toEmail, id: singleData.id });
+                }
+                emailScheduled = true;
+                break;
+              }
+
+              lastErr = singleData?.message || `HTTP ${singleRes.status}`;
+
+              if (singleRes.status === 429 || singleRes.status >= 500) {
+                const delay = 1000 * (attempt + 1);
+                await new Promise((r) => setTimeout(r, delay));
+                continue;
+              }
+
+              break;
+            } catch (err: any) {
+              lastErr = err?.message || String(err);
+              await new Promise((r) => setTimeout(r, 1000));
+            }
+          }
+
+          if (!emailScheduled) {
+            failedList.push({ email: toEmail, reason: lastErr });
+          }
+
+          await new Promise((r) => setTimeout(r, 550));
+        }
+
+        const totalRequested = recipients.length;
+        const acceptedList = Array.from(acceptedSet);
+        const pendingList = targetsToSend.filter(
+          (email) => !acceptedSet.has(email) && !failedList.some((f) => f.email === email)
+        );
+
+        let responseMessage = "";
+        if (acceptedList.length === totalRequested && failedList.length === 0) {
+          responseMessage = `Newsletter programat amb èxit per a ${acceptedList.length} subscriptors!`;
+        } else if (acceptedList.length > 0) {
+          responseMessage = `Programació parcial: ${acceptedList.length} programats, ${failedList.length} fallits de ${totalRequested} totals.`;
+        } else {
+          responseMessage = `No s'ha pogut programar el newsletter (${failedList.length} errors).`;
+        }
+
+        return res.status(200).json({
+          success: acceptedList.length > 0,
+          sentCount: acceptedList.length,
+          failedCount: failedList.length,
+          pendingCount: pendingList.length,
+          totalRecipients: totalRequested,
+          accepted: acceptedList,
+          failed: failedList,
+          pending: pendingList,
+          scheduledAt: scheduledAtIso,
+          scheduledIds,
+          message: responseMessage,
         });
       }
 
@@ -1347,6 +1428,78 @@ O respon a aquest correu amb la paraula 'Baixa'.`;
         failed: failedList,
         pending: pendingList,
         message: responseMessage,
+      });
+    }
+
+    // ==============================================================
+    // CANCEL SCHEDULED NEWSLETTER EMAILS IN RESEND
+    // ==============================================================
+    if (type === "newsletter_cancel_scheduled") {
+      const { scheduledIds } = payload;
+      const refs: Array<{ email?: string; id: string }> = Array.isArray(scheduledIds)
+        ? scheduledIds.filter((item: any) => item && typeof item.id === "string" && item.id.trim())
+        : [];
+
+      if (!apiKey) {
+        return res.status(200).json({
+          success: true,
+          mocked: true,
+          cancelledCount: refs.length,
+          message: "Programació cancel·lada (Mode desenvolupament).",
+        });
+      }
+
+      let cancelledCount = 0;
+      const errors: Array<{ id: string; reason: string }> = [];
+
+      for (const ref of refs) {
+        let cancelled = false;
+        let lastErr = "Error cancel·lant l'enviament";
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+          try {
+            const cancelRes = await fetch(`https://api.resend.com/emails/${encodeURIComponent(ref.id)}/cancel`, {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (cancelRes.ok) {
+              cancelledCount++;
+              cancelled = true;
+              break;
+            }
+
+            const errData: any = await cancelRes.json().catch(() => ({}));
+            lastErr = errData?.message || `HTTP ${cancelRes.status}`;
+
+            if (cancelRes.status === 429 || cancelRes.status >= 500) {
+              await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+              continue;
+            }
+
+            break;
+          } catch (err: any) {
+            lastErr = err?.message || String(err);
+            await new Promise((r) => setTimeout(r, 1000));
+          }
+        }
+
+        if (!cancelled) {
+          errors.push({ id: ref.id, reason: lastErr });
+        }
+
+        await new Promise((r) => setTimeout(r, 550));
+      }
+
+      return res.status(200).json({
+        success: cancelledCount > 0 || refs.length === 0,
+        cancelledCount,
+        failedCount: errors.length,
+        errors,
+        message: `Cancel·lats ${cancelledCount} enviaments programats.`,
       });
     }
 

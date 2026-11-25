@@ -80,6 +80,8 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
         setFormData(prev => ({ ...prev, interestedService: "Consulta Única (40 min)" }));
       } else if (selectedServiceId === "trimestral") {
         setFormData(prev => ({ ...prev, interestedService: "Protocol Trimestral ⭐ (Popular)" }));
+      } else if (selectedServiceId === "semestral") {
+        setFormData(prev => ({ ...prev, interestedService: "Protocol Semestral (VIP)" }));
       } else if (selectedServiceId === "xerrades-tallers" || selectedServiceId === "tallers") {
         setFormData(prev => ({ ...prev, interestedService: "Xerrades i tallers" }));
       } else if (selectedServiceId === "antropometria") {
@@ -928,6 +930,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                           {[
                             "Consulta Única (40 min)",
                             "Protocol Trimestral ⭐ (Popular)",
+                            "Protocol Semestral (VIP)",
                             "Xerrades i tallers",
                             "Antropometria"
                           ].map((service) => (

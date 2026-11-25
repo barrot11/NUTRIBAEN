@@ -18,7 +18,7 @@ export const SERVICES: Service[] = [
     id: "trimestral",
     title: "Protocol Trimestral",
     popular: true,
-    description: "Programa de tres mesos de seguiment personalitzat. Ideal per a qui busca un canvi de xip, trencar la inflamació i consolidar hàbits reals.",
+    description: "Programa de tres mesos de seguiment personalitzat, per reeducar hàbits alimentaris, oblidar-te de la bàscula i recuperar el control.",
     bullets: [
       "3 mesos d'acompanyament i seguiment estret",
       "Estudi de la situació de partida i reprogramació nutricional",
@@ -27,6 +27,19 @@ export const SERVICES: Service[] = [
     ],
     icon: "Zap",
     duration: "Programa complet de 3 mesos"
+  },
+  {
+    id: "semestral",
+    title: "Protocol Semestral",
+    description: "Programa de sis mesos de seguiment personalitzat. Experiència VIP per a una transformació definitiva fins a l'autonomia.",
+    bullets: [
+      "6 mesos d'acompanyament integral i seguiment VIP",
+      "Consolidació profunda d'hàbits fins a aconseguir l'autonomia total",
+      "Revisions periòdiques, ajustos estratègics i suport directe continu",
+      "Transformació definitiva del teu metabolisme, digestió i rendiment"
+    ],
+    icon: "Crown",
+    duration: "Programa VIP de 6 mesos"
   },
   {
     id: "xerrades-tallers",
@@ -98,7 +111,7 @@ export const FAQS: FAQItem[] = [
   {
     id: "faq-8",
     question: "Quins mètodes de pagament accepta NutriBaen?",
-    answer: "Pots optar pel pagament únic del protocol sencer o bé la subscripció mensual, on el càrrec s'efectua automàticament cada mes per evitar interrupcions en el teu assessorament."
+    answer: "Pots optar pel pagament únic del protocol sencer o bé el pagament dividit en 3, 6, 9 o 12 mesos, adaptant-se a les teves necessitats per evitar interrupcions en el teu assessorament."
   },
   {
     id: "faq-9",

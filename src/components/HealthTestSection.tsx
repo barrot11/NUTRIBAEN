@@ -1,23 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
-  Activity,
   CheckCircle2,
   ChevronRight,
   ChevronLeft,
-  Download,
   Mail,
   Phone,
   User,
   Sparkles,
-  BookOpen,
   ArrowRight,
   RefreshCw,
-  Printer,
-  ShieldCheck,
   Calendar,
   AlertCircle,
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
 
 export interface Question {
   id: number;
@@ -593,7 +587,6 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<number, { letter: "A" | "B" | "C"; points: number; text: string }>>({});
   const [showResults, setShowResults] = useState(false);
-  const [showRoadmapModal, setShowRoadmapModal] = useState(false);
 
   // Form states
   const [name, setName] = useState("");
@@ -603,8 +596,19 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const currentQ = QUESTIONS_DATA[currentIdx];
+  const advanceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (advanceTimeoutRef.current) {
+        clearTimeout(advanceTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const totalQuestions = QUESTIONS_DATA.length;
+  const safeIdx = Math.min(Math.max(0, currentIdx), totalQuestions - 1);
+  const currentQ = QUESTIONS_DATA[safeIdx];
   const answeredCount = Object.keys(answers).length;
   const progressPercent = Math.round((answeredCount / totalQuestions) * 100);
 
@@ -648,7 +652,7 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
     levelTitle = "Estat Intermedi: Alerta Biològica";
     levelColor = "text-amber-500 border-amber-500/40 bg-amber-500/10";
     levelDescription =
-      "El teu cos funciona, però arrossega friccions metabòliques o digestives (inflor, pujades i baixades d'energia, estrès) que et resten vitalitat. És el moment ideal per intervenir amb el Full de Ruta abans que es cronifiqui.";
+      "El teu cos funciona, però arrossega friccions metabòliques o digestives (inflor, pujades i baixades d'energia, estrès) que et resten vitalitat. És el moment ideal per intervenir amb un pla personalitzat abans que es cronifiqui.";
   } else {
     levelTitle = "Desconnexió Biològica / Fatiga Crònica";
     levelColor = "text-rose-500 border-rose-500/40 bg-rose-500/10";
@@ -656,7 +660,16 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
       "El teu organisme està operant en mode supervivència. La manca d'energia, la inflamació i el sedentarisme requereixen un canvi de prioritats i un protocol pas a pas supervisat per reiniciar els teus sistemes.";
   }
 
+  const clearAdvanceTimeout = () => {
+    if (advanceTimeoutRef.current) {
+      clearTimeout(advanceTimeoutRef.current);
+      advanceTimeoutRef.current = null;
+    }
+  };
+
   const handleSelectOption = (option: Question["options"][0]) => {
+    if (!currentQ) return;
+
     setAnswers((prev) => ({
       ...prev,
       [currentQ.id]: {
@@ -666,18 +679,22 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
       },
     }));
 
-    if (currentIdx < totalQuestions - 1) {
-      setTimeout(() => {
-        setCurrentIdx((prev) => prev + 1);
+    clearAdvanceTimeout();
+
+    if (safeIdx < totalQuestions - 1) {
+      const nextIdx = Math.min(totalQuestions - 1, safeIdx + 1);
+      advanceTimeoutRef.current = setTimeout(() => {
+        setCurrentIdx(nextIdx);
       }, 180);
     } else {
-      setTimeout(() => {
+      advanceTimeoutRef.current = setTimeout(() => {
         setShowResults(true);
       }, 200);
     }
   };
 
   const handleResetTest = () => {
+    clearAdvanceTimeout();
     setAnswers({});
     setCurrentIdx(0);
     setShowResults(false);
@@ -685,11 +702,11 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
     setErrorMessage("");
   };
 
-  // Submit test and send email
+  // Submit test and send contact details
   const handleSubmitLead = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) {
-      setErrorMessage("Si us plau, introdueix el teu nom i correu electrònic.");
+    if (!name.trim() || !email.trim() || !phone.trim()) {
+      setErrorMessage("Si us plau, introdueix el teu nom, correu electrònic i telèfon.");
       return;
     }
 
@@ -727,19 +744,6 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Direct download / open Full de Ruta in new tab
-  const handleDownloadRoadmap = (e?: React.MouseEvent) => {
-    if (e) e.preventDefault();
-    const link = document.createElement("a");
-    link.href = "/Full_de_Ruta_NutriBaen.pdf";
-    link.download = "Full_de_Ruta_NutriBaen.pdf";
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   return (
@@ -890,8 +894,11 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
               {/* Footer navigation inside questionnaire */}
               <div className="flex items-center justify-between pt-6 border-t border-neutral-warm-800 text-sm">
                 <button
-                  onClick={() => setCurrentIdx((prev) => Math.max(0, prev - 1))}
-                  disabled={currentIdx === 0}
+                  onClick={() => {
+                    clearAdvanceTimeout();
+                    setCurrentIdx((prev) => Math.max(0, Math.min(totalQuestions - 1, prev) - 1));
+                  }}
+                  disabled={safeIdx === 0}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-neutral-warm-400 hover:text-white disabled:opacity-30 disabled:hover:text-neutral-warm-400 transition-colors font-medium"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -902,9 +909,12 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
                   {answeredCount} de {totalQuestions} respostes completes
                 </div>
 
-                {currentIdx < totalQuestions - 1 ? (
+                {safeIdx < totalQuestions - 1 ? (
                   <button
-                    onClick={() => setCurrentIdx((prev) => Math.min(totalQuestions - 1, prev + 1))}
+                    onClick={() => {
+                      clearAdvanceTimeout();
+                      setCurrentIdx((prev) => Math.min(totalQuestions - 1, prev + 1));
+                    }}
                     disabled={!answers[currentQ.id]}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-500 text-black font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-brand-600 transition-all"
                   >
@@ -913,7 +923,10 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
                   </button>
                 ) : (
                   <button
-                    onClick={() => setShowResults(true)}
+                    onClick={() => {
+                      clearAdvanceTimeout();
+                      setShowResults(true);
+                    }}
                     disabled={answeredCount < 10}
                     className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-brand-500 text-black font-extrabold hover:bg-brand-600 transition-all shadow-[0_0_15px_rgba(0,255,102,0.3)]"
                   >
@@ -1002,50 +1015,25 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
                 </div>
               </div>
 
-              {/* Roadmap Download & Email Form */}
+              {/* Contact Form (Name, Email & Phone) */}
               <div className="bg-neutral-warm-950 border border-brand-500/30 rounded-2xl p-6 sm:p-8 mb-8 shadow-lg">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                  <div>
-                    <h4 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-brand-500" />
-                      Rep el teu Full de Ruta Inicial al correu
-                    </h4>
-                    <p className="text-xs sm:text-sm text-neutral-warm-400 mt-1">
-                      T'enviarem el desglossament del teu resultat i la guia completa amb el protocol de 7 dies.
-                    </p>
-                  </div>
-
-                  <a
-                    href="/Full_de_Ruta_NutriBaen.pdf"
-                    download="Full_de_Ruta_NutriBaen.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-500 text-black text-xs sm:text-sm font-extrabold hover:bg-brand-400 transition-all shadow-[0_0_15px_rgba(0,255,102,0.25)] cursor-pointer"
-                    id="btn-download-roadmap-test"
-                  >
-                    <Download className="h-4 w-4 stroke-[2.5]" />
-                    Descarregar PDF ara
-                  </a>
+                <div className="mb-6">
+                  <h4 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                    <Mail className="h-5 w-5 text-brand-500" />
+                    Contacta amb mi
+                  </h4>
+                  <p className="text-xs sm:text-sm text-neutral-warm-400 mt-1">
+                    Deixa'm el teu nom, correu electrònic i telèfon perquè pugui revisar el teu resultat i contactar amb tu personalment.
+                  </p>
                 </div>
 
                 {submitSuccess ? (
                   <div className="p-5 rounded-2xl bg-brand-500/10 border border-brand-500/40 text-center">
                     <CheckCircle2 className="h-10 w-10 text-brand-500 mx-auto mb-2" />
-                    <h5 className="font-bold text-white text-base">Full de Ruta enviat correctament!</h5>
-                    <p className="text-xs sm:text-sm text-neutral-warm-300 mt-1 mb-4">
-                      Hem enviat el teu informe a <span className="text-brand-400 font-semibold">{email}</span>. També pots descarregar-lo al teu mòbil directament aquí sota:
+                    <h5 className="font-bold text-white text-base">Dades enviades correctament!</h5>
+                    <p className="text-xs sm:text-sm text-neutral-warm-300 mt-1">
+                      Gràcies, <span className="text-brand-400 font-semibold">{name}</span>. He rebut la teva valoració i em posaré en contacte amb tu al més aviat possible.
                     </p>
-                    <a
-                      href="/Full_de_Ruta_NutriBaen.pdf"
-                      download="Full_de_Ruta_NutriBaen.pdf"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 text-black font-extrabold text-xs sm:text-sm transition-all shadow-[0_0_20px_rgba(0,255,102,0.3)] cursor-pointer"
-                      id="btn-download-roadmap-after-submit"
-                    >
-                      <Download className="h-4 w-4 stroke-[2.5]" />
-                      Descarregar Full de Ruta (PDF)
-                    </a>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmitLead} className="flex flex-col gap-4">
@@ -1086,12 +1074,13 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
 
                       <div>
                         <label className="block text-xs font-semibold text-neutral-warm-300 uppercase tracking-wider mb-1.5">
-                          Telèfon (Opcional)
+                          Telèfon *
                         </label>
                         <div className="relative">
                           <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-warm-500" />
                           <input
                             type="tel"
+                            required
                             placeholder="612 345 678"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
@@ -1111,17 +1100,17 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto self-start mt-2 inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-brand-500 text-black font-extrabold text-sm rounded-xl hover:bg-brand-600 disabled:opacity-50 transition-all shadow-[0_0_20px_rgba(0,255,102,0.3)]"
+                      className="w-full sm:w-auto self-start mt-2 inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-brand-500 text-black font-extrabold text-sm rounded-xl hover:bg-brand-600 disabled:opacity-50 transition-all shadow-[0_0_20px_rgba(0,255,102,0.3)] cursor-pointer"
                     >
                       {isSubmitting ? (
                         <>
                           <RefreshCw className="h-4 w-4 animate-spin" />
-                          Enviant el teu Full de Ruta...
+                          Enviant les dades...
                         </>
                       ) : (
                         <>
                           <Mail className="h-4 w-4 stroke-[2.5]" />
-                          Enviar-me el Full de Ruta al Correu
+                          Enviar dades de contacte
                         </>
                       )}
                     </button>
@@ -1133,143 +1122,31 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-neutral-warm-800">
                 <button
                   onClick={handleResetTest}
-                  className="flex items-center gap-2 text-xs font-semibold text-neutral-warm-400 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-xs font-semibold text-neutral-warm-400 hover:text-white transition-colors cursor-pointer"
                 >
                   <RefreshCw className="h-4 w-4" />
                   Tornar a fer el test
                 </button>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    onClick={() => setShowRoadmapModal(true)}
-                    className="px-5 py-3 rounded-xl bg-neutral-warm-800 border border-neutral-warm-700 text-white text-xs sm:text-sm font-bold hover:bg-neutral-warm-700 transition-all"
-                  >
-                    Llegir Full de Ruta ara
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      if (onBookClick) {
-                        onBookClick();
-                      } else {
-                        const el = document.getElementById("reserva");
-                        if (el) el.scrollIntoView({ behavior: "smooth" });
-                      }
-                    }}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-500 text-black font-extrabold text-xs sm:text-sm hover:bg-brand-600 shadow-[0_0_20px_rgba(0,255,102,0.3)] transition-all hover:scale-[1.02]"
-                  >
-                    <Calendar className="h-4 w-4 stroke-[2.5]" />
-                    Reservar Consulta amb Pol
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    if (onBookClick) {
+                      onBookClick();
+                    } else {
+                      const el = document.getElementById("reserva");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-500 text-black font-extrabold text-xs sm:text-sm hover:bg-brand-600 shadow-[0_0_20px_rgba(0,255,102,0.3)] transition-all hover:scale-[1.02] cursor-pointer"
+                >
+                  <Calendar className="h-4 w-4 stroke-[2.5]" />
+                  Reservar Consulta amb Pol
+                </button>
               </div>
             </div>
           )}
         </div>
       </div>
-
-      {/* ROADMAP MODAL VIEWER */}
-      <AnimatePresence>
-        {showRoadmapModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-neutral-warm-900 border border-brand-500/40 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl relative text-white"
-            >
-              <div className="flex items-center justify-between pb-4 border-b border-neutral-warm-800 mb-6">
-                <div>
-                  <div className="text-xs uppercase tracking-widest text-brand-400 font-bold">
-                    Document Exclusiu
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-black">
-                    Full de Ruta Inicial: Salut & Vitalitat
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowRoadmapModal(false)}
-                  className="p-2 rounded-xl bg-neutral-warm-800 hover:bg-neutral-warm-700 text-neutral-warm-300 hover:text-white transition-colors"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="space-y-6 text-sm sm:text-base text-neutral-warm-300 leading-relaxed font-light">
-                <div className="p-4 rounded-2xl bg-brand-500/10 border border-brand-500/30 text-xs sm:text-sm text-neutral-warm-200">
-                  <strong className="text-brand-400">Objectiu del Full de Ruta:</strong> Aquest document sintetitza els 4 pilars biològics innegociables per eliminar la inflamació abdominal, estabilitzar la teva glucosa i despertar amb energia real.
-                </div>
-
-                <div>
-                  <h4 className="text-base font-bold text-white uppercase tracking-wider text-brand-400 mb-2">
-                    1. Menjar Real (80-90% un sol ingredient)
-                  </h4>
-                  <p>
-                    Elimina ultraprocessats, olis refinats i sucres afegits. Basa cada àpat en proteïna de qualitat (ous de pastura, peix blau i blanc, carn no processada), tubercles (patata, moniato), verdures fresques i greixos bons (oli d'oliva verge extra, alvocat, olives).
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-base font-bold text-white uppercase tracking-wider text-brand-400 mb-2">
-                    2. Sincronització Circadiana i Descans Fisiològic
-                  </h4>
-                  <p>
-                    El metabolisme funciona amb rellotges biològics. Exposa't a la llum del sol en llevar-te abans de mirar pantalles. Mantén un dejuni fisiològic de 12 hores nocturnes (de 20:30h a 8:30h) per reparar el tracte digestiu. Sopa lleuger i 2-3h abans d'anar al llit.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-base font-bold text-white uppercase tracking-wider text-brand-400 mb-2">
-                    3. Moviment Diari NEAT i Força
-                  </h4>
-                  <p>
-                    El sedentarisme apaga la sensibilitat a la insulina. Assegura un mínim de 8.000 a 10.000 passos cada dia. Afegeix 3 sessions setmanals d'exercici de força (múscul com a òrgan protector i metabòlic).
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-base font-bold text-white uppercase tracking-wider text-brand-400 mb-2">
-                    4. Hidratació i Sistema Nerviós
-                  </h4>
-                  <p>
-                    Comença el dia amb un got gran d'aigua mineral i una petita mica de sal marina verge per recuperar electròlits. Allunya pantalles blaves almenys 60 minuts abans d'anar a dormir per afavorir la producció natural de melatonina.
-                  </p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-neutral-warm-950 border border-neutral-warm-800">
-                  <h4 className="text-sm font-bold text-white mb-2">🗓️ Protocol d'Iniciació de 7 Dies</h4>
-                  <ul className="text-xs sm:text-sm space-y-1.5 text-neutral-warm-400 pl-4 list-disc">
-                    <li><strong>Dies 1-2:</strong> Neteja de la cuina i primers 10.000 passos diaris.</li>
-                    <li><strong>Dies 3-4:</strong> Esmorzar proteic (ous, pernil o peix) en lloc de sucres.</li>
-                    <li><strong>Dies 5-6:</strong> Sopar d'hora (abans de les 21h) i llum càlida al vespre.</li>
-                    <li><strong>Dia 7:</strong> Avalua la reducció d'inflor i l'augment d'energia matinal.</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-neutral-warm-800">
-                <a
-                  href="/Full_de_Ruta_NutriBaen.pdf"
-                  download="Full_de_Ruta_NutriBaen.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-brand-500 text-black font-extrabold text-xs sm:text-sm hover:bg-brand-400 transition-all cursor-pointer"
-                  id="btn-modal-download-roadmap-pdf"
-                >
-                  <Download className="h-4 w-4 stroke-[2.5]" />
-                  Descarregar al Mòbil / PDF
-                </a>
-                <button
-                  onClick={() => setShowRoadmapModal(false)}
-                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-neutral-warm-800 text-neutral-warm-300 font-semibold text-xs sm:text-sm hover:bg-neutral-warm-700 transition-all"
-                >
-                  Tancar
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }

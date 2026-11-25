@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Bold,
   Italic,
+  Calendar,
 } from "lucide-react";
 import {
   fetchAllSubscribers,
@@ -23,6 +24,7 @@ import {
   fetchPastNewsletters,
   removeSubscriber,
   addManualSubscriber,
+  cancelScheduledNewsletter,
   Subscriber,
   NewsletterRecord,
   BroadcastResult,
@@ -39,8 +41,8 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState(false);
 
-  // Active Tab: 'compose' | 'subscribers' | 'history'
-  const [tab, setTab] = useState<"compose" | "subscribers" | "history">("compose");
+  // Active Tab: 'compose' | 'scheduled' | 'subscribers' | 'history'
+  const [tab, setTab] = useState<"compose" | "scheduled" | "subscribers" | "history">("compose");
 
   // Subscribers
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
@@ -55,6 +57,19 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
   const [content, setContent] = useState("");
   const [previewMode, setPreviewMode] = useState(false);
 
+  // Scheduling State
+  const getDefaultScheduleDate = () => {
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const y = tomorrow.getFullYear();
+    const m = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const d = String(tomorrow.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+  const [sendMode, setSendMode] = useState<"now" | "schedule">("now");
+  const [scheduledDate, setScheduledDate] = useState<string>(getDefaultScheduleDate);
+  const [scheduledTime, setScheduledTime] = useState<string>("08:00");
+  const [isCancellingId, setIsCancellingId] = useState<string | null>(null);
+
   // Sending State & Detailed Reporting
   const [isSending, setIsSending] = useState(false);
   const [sendSuccessMessage, setSendSuccessMessage] = useState("");
@@ -65,6 +80,8 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
 
   // History State
   const [history, setHistory] = useState<NewsletterRecord[]>([]);
+  const scheduledNewsletters = history.filter((item) => item.status === "scheduled");
+  const pastNewsletters = history.filter((item) => item.status !== "scheduled");
 
   // Textarea ref and formatting helpers
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -236,6 +253,22 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
     }
   };
 
+  const formatTodayInput = () => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  const formatMaxScheduleDate = () => {
+    const maxD = new Date(Date.now() + 29 * 24 * 60 * 60 * 1000);
+    const y = maxD.getFullYear();
+    const m = String(maxD.getMonth() + 1).padStart(2, "0");
+    const d = String(maxD.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
   const handleSendBroadcast = async (isTestOnly = false) => {
     setSendSuccessMessage("");
     setSendErrorMessage("");
@@ -248,6 +281,29 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
     if (!content.trim()) {
       setSendErrorMessage("El contingut del newsletter està buit.");
       return;
+    }
+
+    let scheduledIso: string | undefined;
+    if (!isTestOnly && sendMode === "schedule") {
+      if (!scheduledDate || !scheduledTime) {
+        setSendErrorMessage("Selecciona el dia i l'hora per programar el newsletter.");
+        return;
+      }
+      const localDate = new Date(`${scheduledDate}T${scheduledTime}:00`);
+      if (isNaN(localDate.getTime())) {
+        setSendErrorMessage("La data o hora seleccionada no és vàlida.");
+        return;
+      }
+      const diffMs = localDate.getTime() - Date.now();
+      if (diffMs < 60 * 1000) {
+        setSendErrorMessage("La data i hora programades han de ser almenys 1 minut en el futur.");
+        return;
+      }
+      if (diffMs > 30 * 24 * 60 * 60 * 1000) {
+        setSendErrorMessage("Només pots programar enviaments fins a un màxim de 30 dies vista.");
+        return;
+      }
+      scheduledIso = localDate.toISOString();
     }
 
     const activeRecipients = subscribers.filter((s) => s.active).map((s) => s.email);
@@ -271,13 +327,16 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
       return;
     }
 
-    if (
-      !isTestOnly &&
-      !window.confirm(
-        `Atenció: Aquest newsletter s'enviarà en lot (Resend Batch API) a TOTS els ${targetRecipients.length} subscriptors actius. Vols continuar?`
-      )
-    ) {
-      return;
+    if (!isTestOnly) {
+      const confirmMsg = scheduledIso
+        ? `Vols programar aquest newsletter per al ${new Date(scheduledIso).toLocaleString("ca-ES", {
+            dateStyle: "short",
+            timeStyle: "short",
+          })} per a tots els ${targetRecipients.length} subscriptors actius?`
+        : `Atenció: Aquest newsletter s'enviarà en lot (Resend Batch API) a TOTS els ${targetRecipients.length} subscriptors actius. Vols continuar?`;
+      if (!window.confirm(confirmMsg)) {
+        return;
+      }
     }
 
     setIsSending(true);
@@ -286,24 +345,36 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
         subject,
         content,
         targetRecipients,
-        preheader
+        preheader,
+        scheduledIso
       );
 
       setSendReport(result);
 
       if (result.failedCount === 0 && result.sentCount > 0) {
-        setSendSuccessMessage(
-          isTestOnly
-            ? `Prova enviada amb èxit a ${result.sentCount} adreces (${result.accepted.join(", ")})!`
-            : `Newsletter transmès amb èxit a tots els ${result.sentCount} subscriptors!`
-        );
+        if (isTestOnly) {
+          setSendSuccessMessage(
+            `Prova enviada amb èxit a ${result.sentCount} adreces (${result.accepted.join(", ")})!`
+          );
+        } else if (scheduledIso) {
+          setSendSuccessMessage(
+            `Newsletter programat amb èxit per al ${new Date(scheduledIso).toLocaleString("ca-ES", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            })} a ${result.sentCount} subscriptors!`
+          );
+        } else {
+          setSendSuccessMessage(
+            `Newsletter transmès amb èxit a tots els ${result.sentCount} subscriptors!`
+          );
+        }
       } else if (result.sentCount > 0 && result.failedCount > 0) {
         setSendErrorMessage(
-          `Enviament parcial: ${result.sentCount} acceptats, ${result.failedCount} fallits de ${result.totalRecipients} totals.`
+          `${scheduledIso ? "Programació parcial" : "Enviament parcial"}: ${result.sentCount} acceptats, ${result.failedCount} fallits de ${result.totalRecipients} totals.`
         );
       } else {
         setSendErrorMessage(
-          `No s'ha pogut transmetre: cap destinatari acceptat (${result.failedCount} fallits).`
+          `No s'ha pogut ${scheduledIso ? "programar" : "transmetre"}: cap destinatari acceptat (${result.failedCount} fallits).`
         );
       }
 
@@ -311,12 +382,48 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
         setSubject("");
         setContent("");
         setPreheader("");
+        setSendMode("now");
         loadData();
       }
     } catch (err: any) {
-      setSendErrorMessage(err.message || "Hi ha hagut un error en enviar el newsletter.");
+      setSendErrorMessage(err.message || "Hi ha hagut un error en processar el newsletter.");
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleCancelScheduled = async (item: NewsletterRecord, editInComposer = false) => {
+    const confirmText = editInComposer
+      ? `Vols cancel·lar l'enviament programat de "${item.subject}" i carregar-lo al redactor per editar-lo?`
+      : `Estàs segur que vols cancel·lar l'enviament programat de "${item.subject}"? No s'enviarà als subscriptors.`;
+    if (!window.confirm(confirmText)) return;
+
+    setIsCancellingId(item.id);
+    try {
+      await cancelScheduledNewsletter(item.id, item.scheduledIds);
+      if (editInComposer) {
+        setSubject(item.subject);
+        setContent(item.content);
+        setPreheader(item.preheader || "");
+        if (item.scheduledFor) {
+          const d = new Date(item.scheduledFor);
+          setScheduledDate(
+            `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+              d.getDate()
+            ).padStart(2, "0")}`
+          );
+          setScheduledTime(
+            `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
+          );
+        }
+        setSendMode("schedule");
+        setTab("compose");
+      }
+      await loadData();
+    } catch (err: any) {
+      alert("Error cancel·lant la programació: " + (err.message || err));
+    } finally {
+      setIsCancellingId(null);
     }
   };
 
@@ -393,10 +500,10 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Tabs Bar */}
             <div className="px-6 py-2.5 bg-neutral-950/60 border-b border-neutral-800 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => setTab("compose")}
-                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                     tab === "compose"
                       ? "bg-[#00FF66] text-black"
                       : "text-neutral-400 hover:text-white hover:bg-neutral-800"
@@ -407,8 +514,20 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
                 </button>
 
                 <button
+                  onClick={() => setTab("scheduled")}
+                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                    tab === "scheduled"
+                      ? "bg-[#00FF66] text-black"
+                      : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  }`}
+                >
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>Programades ({scheduledNewsletters.length})</span>
+                </button>
+
+                <button
                   onClick={() => setTab("subscribers")}
-                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                     tab === "subscribers"
                       ? "bg-[#00FF66] text-black"
                       : "text-neutral-400 hover:text-white hover:bg-neutral-800"
@@ -420,14 +539,14 @@ export default function NewsletterAdminModal({ isOpen, onClose }: NewsletterAdmi
 
                 <button
                   onClick={() => setTab("history")}
-                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                     tab === "history"
                       ? "bg-[#00FF66] text-black"
                       : "text-neutral-400 hover:text-white hover:bg-neutral-800"
                   }`}
                 >
                   <Clock className="h-3.5 w-3.5" />
-                  <span>Històric d'Enviats ({history.length})</span>
+                  <span>Històric ({pastNewsletters.length})</span>
                 </button>
               </div>
 
@@ -647,8 +766,78 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
                   )}
                 </div>
 
-                {/* Dispatch Controls */}
-                <div className="pt-4 border-t border-neutral-800 flex flex-col gap-3">
+                {/* Dispatch Controls & Scheduling */}
+                <div className="pt-4 border-t border-neutral-800 flex flex-col gap-4">
+                  {/* Send Now vs Schedule Selector */}
+                  <div className="p-4 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <span className="text-xs font-bold text-neutral-200 uppercase tracking-wider flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-[#00FF66]" />
+                        Quan vols enviar aquest newsletter?
+                      </span>
+
+                      <div className="inline-flex rounded-xl bg-neutral-900 p-1 border border-neutral-800 self-start sm:self-auto">
+                        <button
+                          type="button"
+                          onClick={() => setSendMode("now")}
+                          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            sendMode === "now"
+                              ? "bg-[#00FF66] text-black shadow-sm"
+                              : "text-neutral-400 hover:text-white"
+                          }`}
+                        >
+                          Enviar ara
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSendMode("schedule")}
+                          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                            sendMode === "schedule"
+                              ? "bg-[#00FF66] text-black shadow-sm"
+                              : "text-neutral-400 hover:text-white"
+                          }`}
+                        >
+                          <Clock className="h-3.5 w-3.5" />
+                          <span>Programar dia i hora</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {sendMode === "schedule" && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-neutral-800/80 animate-fadeIn">
+                        <div>
+                          <label className="block text-[11px] font-bold text-neutral-300 uppercase tracking-wider mb-1">
+                            Dia de publicació *
+                          </label>
+                          <input
+                            type="date"
+                            value={scheduledDate}
+                            min={formatTodayInput()}
+                            max={formatMaxScheduleDate()}
+                            onChange={(e) => setScheduledDate(e.target.value)}
+                            className="w-full px-3.5 py-2.5 bg-[#0a0c0e] border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-[#00FF66]"
+                            style={{ color: "#ffffff", colorScheme: "dark" }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold text-neutral-300 uppercase tracking-wider mb-1">
+                            Hora exacta *
+                          </label>
+                          <input
+                            type="time"
+                            value={scheduledTime}
+                            onChange={(e) => setScheduledTime(e.target.value)}
+                            className="w-full px-3.5 py-2.5 bg-[#0a0c0e] border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-[#00FF66]"
+                            style={{ color: "#ffffff", colorScheme: "dark" }}
+                          />
+                        </div>
+                        <p className="sm:col-span-2 text-[11px] text-neutral-400">
+                          S'enviarà automàticament el dia i hora escollits (fins a 30 dies vista), encara que tanquis aquesta finestra.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="text-xs text-neutral-300">
                       Destinataris:{" "}
@@ -694,7 +883,12 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
                         {isSending ? (
                           <>
                             <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                            <span>Transmetent en lot...</span>
+                            <span>{sendMode === "schedule" ? "Programant..." : "Transmetent en lot..."}</span>
+                          </>
+                        ) : sendMode === "schedule" ? (
+                          <>
+                            <Calendar className="h-3.5 w-3.5" />
+                            <span>Programar ({subscribers.length})</span>
                           </>
                         ) : (
                           <>
@@ -839,16 +1033,95 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
               </div>
             )}
 
+            {/* TAB CONTENT: SCHEDULED */}
+            {tab === "scheduled" && (
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {scheduledNewsletters.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-neutral-400 space-y-3">
+                    <Calendar className="h-8 w-8 text-neutral-600 mx-auto" />
+                    <p>No tens cap newsletter programat pendent d'enviar.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSendMode("schedule");
+                        setTab("compose");
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#00FF66] text-black font-bold text-xs cursor-pointer"
+                    >
+                      <PenTool className="h-3.5 w-3.5" />
+                      <span>Programar un newsletter ara</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {scheduledNewsletters.map((item) => (
+                      <div
+                        key={item.id}
+                        className="p-4 bg-neutral-950 border border-[#00FF66]/30 rounded-2xl space-y-3"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div>
+                            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#00FF66] mb-1">
+                              <Clock className="h-3.5 w-3.5" />
+                              <span>
+                                Programat per al{" "}
+                                {item.scheduledFor
+                                  ? new Date(item.scheduledFor).toLocaleString("ca-ES", {
+                                      dateStyle: "medium",
+                                      timeStyle: "short",
+                                    })
+                                  : ""}
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-bold text-white" style={{ color: "#ffffff" }}>
+                              {item.subject}
+                            </h4>
+                          </div>
+                          <span className="text-[11px] text-neutral-300 font-mono">
+                            {item.recipientsCount} destinataris
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+                          {item.content}
+                        </p>
+
+                        <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-neutral-900">
+                          <button
+                            type="button"
+                            disabled={isCancellingId === item.id}
+                            onClick={() => handleCancelScheduled(item, true)}
+                            className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                            style={{ color: "#ffffff" }}
+                          >
+                            Cancel·lar i editar
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isCancellingId === item.id}
+                            onClick={() => handleCancelScheduled(item, false)}
+                            className="px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900/60 border border-red-700/50 text-red-300 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                          >
+                            {isCancellingId === item.id ? "Cancel·lant..." : "Cancel·lar enviament"}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* TAB CONTENT: HISTORY */}
             {tab === "history" && (
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {history.length === 0 ? (
+                {pastNewsletters.length === 0 ? (
                   <div className="p-8 text-center text-xs text-neutral-500">
                     Encara no s'ha transmès cap edició de newsletter.
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {history.map((item) => (
+                    {pastNewsletters.map((item) => (
                       <div
                         key={item.id}
                         className="p-4 bg-neutral-950 border border-neutral-800 rounded-2xl hover:border-neutral-700 transition-colors"
@@ -857,8 +1130,14 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
                           <span className="text-xs font-bold text-white">
                             {item.subject}
                           </span>
-                          <span className="text-[11px] text-[#00FF66] font-mono">
-                            {item.recipientsCount} lectors
+                          <span
+                            className={`text-[11px] font-mono ${
+                              item.status === "cancelled" ? "text-red-400" : "text-[#00FF66]"
+                            }`}
+                          >
+                            {item.status === "cancelled"
+                              ? "Cancel·lat"
+                              : `${item.recipientsCount} lectors`}
                           </span>
                         </div>
 
@@ -868,7 +1147,13 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
 
                         <div className="flex items-center justify-between text-[10px] text-neutral-500 border-t border-neutral-900 pt-2">
                           <span>
-                            Enviat el {new Date(item.sentAt || item.createdAt).toLocaleString("ca-ES")}
+                            {item.status === "cancelled"
+                              ? `Cancel·lat el ${new Date(
+                                  item.cancelledAt || item.createdAt
+                                ).toLocaleString("ca-ES")}`
+                              : `Enviat el ${new Date(
+                                  item.sentAt || item.createdAt
+                                ).toLocaleString("ca-ES")}`}
                           </span>
                           <button
                             onClick={() => {
@@ -877,7 +1162,7 @@ Aquí teniu 3 claus que canvien completament el vostre descans:
                               setPreheader(item.preheader || "");
                               setTab("compose");
                             }}
-                            className="text-[#00FF66] hover:underline font-semibold"
+                            className="text-[#00FF66] hover:underline font-semibold cursor-pointer"
                           >
                             Duplicar al Redactor
                           </button>

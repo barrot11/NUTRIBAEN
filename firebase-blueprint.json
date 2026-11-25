@@ -90,7 +90,7 @@
     },
     "newsletter": {
       "title": "Newsletter",
-      "description": "A drafted or broadcast newsletter edition sent to subscribers",
+      "description": "A drafted, scheduled, cancelled, or broadcast newsletter edition sent to subscribers",
       "type": "object",
       "properties": {
         "subject": {
@@ -101,17 +101,33 @@
           "type": "string",
           "description": "Body text or HTML of the newsletter"
         },
+        "preheader": {
+          "type": "string",
+          "description": "Optional preheader summary text"
+        },
         "status": {
           "type": "string",
-          "description": "Status: draft or sent"
+          "description": "Status: draft, scheduled, sent, or cancelled"
         },
         "recipientsCount": {
           "type": "number",
           "description": "Number of subscribers receiving this newsletter"
         },
+        "failedCount": {
+          "type": "number",
+          "description": "Number of failed recipient deliveries"
+        },
+        "scheduledFor": {
+          "type": "string",
+          "description": "ISO timestamp when a scheduled newsletter is set to be sent"
+        },
         "sentAt": {
           "type": "string",
           "description": "ISO timestamp when the newsletter was sent"
+        },
+        "cancelledAt": {
+          "type": "string",
+          "description": "ISO timestamp when a scheduled newsletter was cancelled"
         }
       },
       "required": ["subject", "content", "status"]

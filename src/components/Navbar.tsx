@@ -16,10 +16,10 @@ export default function Navbar({ onBookClick, onTestClick, onNavigateToSection }
 
   const navLinks = [
     { name: "Inici", id: "inici" },
-    { name: "Sobre Mi", id: "sobre-mi" },
     { name: "Els Meus Serveis", id: "servei-integral" },
-    { name: "Newsletter", id: "newsletter" },
+    { name: "Sobre Mi", id: "sobre-mi" },
     { name: "FAQ", id: "faq" },
+    { name: "Newsletter", id: "newsletter" },
     { name: "Contacte", id: "contacte" },
   ];
 
