@@ -3,7 +3,6 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import ServeiIntegral from "./components/ServeiIntegral";
-import BookingStepper from "./components/BookingStepper";
 import FAQ from "./components/FAQ";
 import HealthTestSection from "./components/HealthTestSection";
 import FullDeRutaPage from "./components/FullDeRutaPage";
@@ -16,7 +15,6 @@ import NewsletterSubPage from "./components/NewsletterSubPage";
 import ContactSubPage from "./components/ContactSubPage";
 
 export default function App() {
-  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [isNewsletterAdminOpen, setIsNewsletterAdminOpen] = useState(
     window.location.pathname === "/admin-newsletter" || window.location.pathname === "/newsletter-admin"
@@ -52,11 +50,6 @@ export default function App() {
         behavior: "smooth"
       });
     }
-  };
-
-  const handleSelectService = (serviceId: string) => {
-    setSelectedServiceId(serviceId);
-    scrollToId("reserva");
   };
 
   const navigateTo = (newView: 'home' | 'qui-soc' | 'qui-va-dirigit' | 'full-de-ruta' | 'valoracio-salut' | 'newsletter-sub' | 'contacta', targetId?: string) => {
@@ -164,7 +157,7 @@ export default function App() {
       {/* 1. Sticky Navbar with Scroll Detect (Hidden in standalone views) */}
       {view !== 'full-de-ruta' && view !== 'newsletter-sub' && view !== 'contacta' && (
         <Navbar 
-          onBookClick={() => view === 'home' ? scrollToId("reserva") : navigateTo('home', 'reserva')} 
+          onContactClick={() => view === 'home' ? scrollToId("contacte") : navigateTo('home', 'contacte')} 
           onTestClick={handleOpenTestWindow}
           onNewsletterClick={() => navigateTo('newsletter-sub')}
           onNavigateToSection={(sectionId) => navigateTo('home', sectionId)}
@@ -188,7 +181,7 @@ export default function App() {
             <HealthTestSection 
               isModal={true} 
               onClose={() => navigateTo('home')} 
-              onBookClick={() => navigateTo('home', 'reserva')} 
+              onContactClick={() => navigateTo('home', 'contacte')} 
             />
           </div>
         ) : view === 'qui-soc' ? (
@@ -199,17 +192,12 @@ export default function App() {
           <QuiVaDirigitPage 
             onBack={() => navigateTo('home')} 
             onContactClick={() => navigateTo('home', 'contacte')} 
-            onBookClick={(serviceId) => {
-              if (serviceId) setSelectedServiceId(serviceId);
-              navigateTo('home', 'reserva');
-            }}
           />
         ) : (
           /* Home page view */
           <>
             {/* 2. Hero Section */}
             <Hero 
-              onBookClick={() => scrollToId("reserva")} 
               onAboutClick={() => scrollToId("sobre-mi")} 
               onTestClick={handleOpenTestWindow}
               onRoadmapClick={handleOpenRoadmap}
@@ -218,10 +206,6 @@ export default function App() {
             {/* 3. Els Meus Serveis */}
             <ServeiIntegral 
               onExploreMoreClick={() => navigateTo('qui-va-dirigit')} 
-              onBookService={(serviceId) => {
-                setSelectedServiceId(serviceId);
-                scrollToId("reserva");
-              }}
             />
 
             {/* 4. Qui sóc (Sobre Mi) */}
@@ -230,13 +214,7 @@ export default function App() {
             {/* 5. FAQ */}
             <FAQ />
 
-            {/* 6. The 3-Step Interactive Booking Stepper */}
-            <BookingStepper 
-              selectedServiceId={selectedServiceId} 
-              onBookingSuccess={() => setSelectedServiceId(null)} 
-            />
-
-            {/* 7. Contact form and address blocks */}
+            {/* 6. Contact form and address blocks */}
             <Contact />
           </>
         )}
@@ -249,9 +227,9 @@ export default function App() {
             <HealthTestSection 
               isModal={true} 
               onClose={() => setIsTestModalOpen(false)} 
-              onBookClick={() => {
+              onContactClick={() => {
                 setIsTestModalOpen(false);
-                scrollToId("reserva");
+                scrollToId("contacte");
               }} 
             />
           </div>

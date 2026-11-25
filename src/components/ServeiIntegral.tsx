@@ -3,7 +3,6 @@ import { BookOpen, Heart, Flame, ArrowRight } from "lucide-react";
 
 interface ServeiIntegralProps {
   onExploreMoreClick?: () => void;
-  onBookService?: (serviceId: string) => void;
 }
 
 export default function ServeiIntegral({ onExploreMoreClick }: ServeiIntegralProps) {

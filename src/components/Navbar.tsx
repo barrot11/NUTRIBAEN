@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Calendar, Sparkles } from "lucide-react";
+import { Menu, X, Mail, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Logo from "./Logo";
 
 interface NavbarProps {
-  onBookClick: () => void;
+  onContactClick: () => void;
   onTestClick?: () => void;
   onNewsletterClick?: () => void;
   onNavigateToSection?: (sectionId: string) => void;
 }
 
-export default function Navbar({ onBookClick, onTestClick, onNewsletterClick, onNavigateToSection }: NavbarProps) {
+export default function Navbar({ onContactClick, onTestClick, onNewsletterClick, onNavigateToSection }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("inici");
@@ -127,7 +127,7 @@ export default function Navbar({ onBookClick, onTestClick, onNewsletterClick, on
           ))}
         </div>
 
-        {/* Desktop CTA Buttons: Valoració de salut & Reserva Cita */}
+        {/* Desktop CTA Buttons: Valoració de salut & Contacta amb mi */}
         <div className="hidden lg:flex items-center gap-3">
           <button
             onClick={() => {
@@ -141,12 +141,12 @@ export default function Navbar({ onBookClick, onTestClick, onNewsletterClick, on
           </button>
 
           <button
-            onClick={onBookClick}
+            onClick={onContactClick}
             className="flex items-center gap-2 px-5 py-2.5 bg-brand-500 text-black font-sans font-extrabold text-sm rounded-xl hover:bg-brand-600 hover:scale-[1.03] shadow-[0_0_15px_rgba(0,255,102,0.3)] transition-all transform active:scale-95"
             id="nav-cta-btn"
           >
-            <Calendar className="h-4 w-4 stroke-[2.5]" />
-            Reserva Cita
+            <Mail className="h-4 w-4 stroke-[2.5]" />
+            Contacta amb mi
           </button>
         </div>
 
@@ -204,13 +204,13 @@ export default function Navbar({ onBookClick, onTestClick, onNewsletterClick, on
                 <button
                   onClick={() => {
                     setIsOpen(false);
-                    onBookClick();
+                    onContactClick();
                   }}
                   className="flex items-center justify-center gap-2 px-5 py-3 bg-brand-500 text-black font-sans font-extrabold text-base rounded-xl hover:bg-brand-600 shadow-md transition-all active:scale-95"
                   id="mobile-cta-btn"
                 >
-                  <Calendar className="h-5 w-5 stroke-[2.5]" />
-                  Reserva Cita
+                  <Mail className="h-5 w-5 stroke-[2.5]" />
+                  Contacta amb mi
                 </button>
               </div>
             </div>

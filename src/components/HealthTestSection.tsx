@@ -578,12 +578,12 @@ export const QUESTIONS_DATA: Question[] = [
 ];
 
 interface HealthTestSectionProps {
-  onBookClick?: () => void;
+  onContactClick?: () => void;
   isModal?: boolean;
   onClose?: () => void;
 }
 
-export default function HealthTestSection({ onBookClick, isModal, onClose }: HealthTestSectionProps) {
+export default function HealthTestSection({ onContactClick, isModal, onClose }: HealthTestSectionProps) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<number, { letter: "A" | "B" | "C"; points: number; text: string }>>({});
   const [showResults, setShowResults] = useState(false);
@@ -1118,7 +1118,7 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
                 )}
               </div>
 
-              {/* Action Buttons: Booking & Reset */}
+              {/* Action Buttons: Contact & Reset */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-neutral-warm-800">
                 <button
                   onClick={handleResetTest}
@@ -1130,17 +1130,17 @@ export default function HealthTestSection({ onBookClick, isModal, onClose }: Hea
 
                 <button
                   onClick={() => {
-                    if (onBookClick) {
-                      onBookClick();
+                    if (onContactClick) {
+                      onContactClick();
                     } else {
-                      const el = document.getElementById("reserva");
+                      const el = document.getElementById("contacte");
                       if (el) el.scrollIntoView({ behavior: "smooth" });
                     }
                   }}
                   className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-500 text-black font-extrabold text-xs sm:text-sm hover:bg-brand-600 shadow-[0_0_20px_rgba(0,255,102,0.3)] transition-all hover:scale-[1.02] cursor-pointer"
                 >
-                  <Calendar className="h-4 w-4 stroke-[2.5]" />
-                  Reservar Consulta amb Pol
+                  <Mail className="h-4 w-4 stroke-[2.5]" />
+                  Contacta amb mi
                 </button>
               </div>
             </div>

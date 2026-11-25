@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
-  ArrowLeft, Calendar, Check, X, Sparkles,
-  Zap, Clock, CalendarDays, Ruler, Users,
+  ArrowLeft, Check, X, Sparkles,
+  Zap, Ruler, Users,
   Dumbbell, Activity, Target, Flame, Heart, Crown
 } from "lucide-react";
 
@@ -15,10 +15,9 @@ import padrImg from "../assets/images/padr.jpg";
 interface QuiVaDirigitPageProps {
   onBack: () => void;
   onContactClick: () => void;
-  onBookClick?: (serviceId?: string) => void;
 }
 
-export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }: QuiVaDirigitPageProps) {
+export default function QuiVaDirigitPage({ onBack, onContactClick }: QuiVaDirigitPageProps) {
   const [activeModal, setActiveModal] = useState<{
     title: string;
     sub: string;
@@ -106,7 +105,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       name: "PROTOCOL TRIMESTRAL",
       sub: "Reeducació i Control",
       desc: "Programa de tres mesos de seguiment personalitzat, per reeducar hàbits alimentaris, oblidar-te de la bàscula i recuperar el control.",
-      buttonText: "RESERVAR ARA",
+      buttonText: "CONTACTA AMB MI",
       popular: true,
       icon: Zap,
       details: [
@@ -122,7 +121,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       name: "PROTOCOL SEMESTRAL",
       sub: "Experiència VIP",
       desc: "Programa de sis mesos de seguiment personalitzat. Experiència VIP per a una transformació definitiva fins a l'autonomia.",
-      buttonText: "RESERVAR ARA",
+      buttonText: "CONTACTA AMB MI",
       popular: false,
       icon: Crown,
       details: [
@@ -138,7 +137,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       name: "XERRADES / TALLERS",
       sub: "Tallers Pràctics",
       desc: "Dirigit a clubs esportius, gimnasos, empreses o col·lectius que volen comprendre com la nutrició i els hàbits marquen el seu futur.",
-      buttonText: "SOL·LICITA PROPOSTA",
+      buttonText: "CONTACTA AMB MI",
       popular: false,
       icon: Users,
       details: [
@@ -154,7 +153,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
       name: "ANTROPOMETRIA",
       sub: "Anàlisi Corporal Complet",
       desc: "Valoració física objectiva i evolució. El punt de partida de qualsevol canvi real mitjançant mesures i plecs de precisió.",
-      buttonText: "RESERVAR ARA",
+      buttonText: "CONTACTA AMB MI",
       popular: false,
       icon: Ruler,
       details: [
@@ -250,12 +249,12 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
                     {proto.desc}
                   </p>
 
-                  {/* Button "RESERVAR ARA" in green background */}
+                  {/* Button "CONTACTA AMB MI" in green background */}
                   <button
-                    onClick={() => onBookClick && onBookClick(proto.id)}
+                    onClick={onContactClick}
                     className="w-full py-3 bg-[#1ed760] hover:bg-[#1db954] text-black font-sans font-extrabold text-xs rounded-xl shadow-md uppercase tracking-wider transition-all active:scale-[0.98] cursor-pointer text-center"
                   >
-                    RESERVAR ARA
+                    {proto.buttonText}
                   </button>
                 </motion.div>
               );
@@ -329,12 +328,12 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
                       {profile.desc}
                     </p>
 
-                    {/* Button "RESERVAR ARA" in green background */}
+                    {/* Button "CONTACTA AMB MI" in green background */}
                     <button
-                      onClick={onBookClick}
+                      onClick={onContactClick}
                       className="w-full py-3 bg-[#1ed760] hover:bg-[#1db954] text-black font-sans font-extrabold text-xs rounded-xl shadow-md uppercase tracking-wider transition-all active:scale-[0.98] cursor-pointer text-center"
                     >
-                      RESERVAR ARA
+                      CONTACTA AMB MI
                     </button>
                   </div>
                 </motion.div>
@@ -445,7 +444,7 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
                   }}
                   className="flex-1 py-3 bg-[#1ed760] hover:bg-[#1db954] text-black font-sans font-black text-xs rounded-xl uppercase tracking-wider transition-colors cursor-pointer text-center"
                 >
-                  SOL·LICITAR CITA
+                  CONTACTA AMB MI
                 </button>
               </div>
 

@@ -4,7 +4,6 @@ import { motion } from "motion/react";
 import polHeroImg from "../assets/images/polba.png";
 
 interface HeroProps {
-  onBookClick: () => void;
   onAboutClick: () => void;
   onTestClick?: () => void;
   onRoadmapClick?: () => void;
