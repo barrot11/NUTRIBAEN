@@ -6,10 +6,11 @@ import Logo from "./Logo";
 interface NavbarProps {
   onBookClick: () => void;
   onTestClick?: () => void;
+  onNewsletterClick?: () => void;
   onNavigateToSection?: (sectionId: string) => void;
 }
 
-export default function Navbar({ onBookClick, onTestClick, onNavigateToSection }: NavbarProps) {
+export default function Navbar({ onBookClick, onTestClick, onNewsletterClick, onNavigateToSection }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("inici");
@@ -52,6 +53,10 @@ export default function Navbar({ onBookClick, onTestClick, onNavigateToSection }
 
   const scrollToSection = (id: string) => {
     setIsOpen(false);
+    if (id === "newsletter" && onNewsletterClick) {
+      onNewsletterClick();
+      return;
+    }
     const el = document.getElementById(id);
     if (el) {
       const offset = 80; // height of navbar

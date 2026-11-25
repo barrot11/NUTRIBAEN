@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   ArrowLeft, Calendar, Check, X, Sparkles,
   Zap, Clock, CalendarDays, Ruler, Users,
-  Dumbbell, Activity, Target, Flame, Heart, Stethoscope, Crown
+  Dumbbell, Activity, Target, Flame, Heart, Crown
 } from "lucide-react";
 
 import futImg from "../assets/images/fut.png";
@@ -100,22 +100,6 @@ export default function QuiVaDirigitPage({ onBack, onContactClick, onBookClick }
   ];
 
   const protocols = [
-    {
-      id: "consulta-unica",
-      type: "INDIVIDUAL",
-      name: "CONSULTA ÚNICA",
-      sub: "Valoració Inicial",
-      desc: "Sessió individual de 40 minuts on farem una valoració inicial completa del teu estat actual.",
-      buttonText: "RESERVAR ARA",
-      popular: false,
-      icon: Stethoscope,
-      details: [
-        "Sessió individual de 40 minuts centrada exclusivament en tu.",
-        "Valoració inicial completa del teu estat metabòlic, digestiu i hàbits.",
-        "Anàlisi del teu context diari, descans i nivell d'estrès.",
-        "Pla d'acció immediat per començar a notar canvis des del primer moment."
-      ]
-    },
     {
       id: "trimestral",
       type: "PROTOCOL",

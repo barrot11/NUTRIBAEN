@@ -18,7 +18,7 @@ export default function Footer({ onOpenAdminNewsletter }: FooterProps) {
             <div className="font-sans text-xs text-neutral-warm-500 font-light">
               <p className="font-semibold text-neutral-warm-800 uppercase tracking-tight">NUTRIBAEN &bull; <span className="font-normal text-neutral-warm-600">&copy; {currentYear} Pol Barrot Nutrició</span></p>
               <div className="flex justify-center sm:justify-start gap-3 mt-1.5 text-[11px] text-neutral-warm-600 items-center">
-                <a href="#newsletter" className="hover:underline text-[#00FF66]">Newsletter</a>
+                <a href="/newsletter-sub" className="hover:underline text-[#00FF66]">Newsletter</a>
                 <span>&bull;</span>
                 <a href="#avis-legal" className="hover:underline hover:text-neutral-warm-400">Avís Legal</a>
                 <span>&bull;</span>

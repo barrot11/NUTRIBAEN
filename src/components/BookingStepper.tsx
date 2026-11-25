@@ -76,9 +76,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
   useEffect(() => {
     if (selectedServiceId) {
       setVisitType("primera");
-      if (selectedServiceId === "consulta-unica") {
-        setFormData(prev => ({ ...prev, interestedService: "Consulta Única (40 min)" }));
-      } else if (selectedServiceId === "trimestral") {
+      if (selectedServiceId === "trimestral") {
         setFormData(prev => ({ ...prev, interestedService: "Protocol Trimestral ⭐ (Popular)" }));
       } else if (selectedServiceId === "semestral") {
         setFormData(prev => ({ ...prev, interestedService: "Protocol Semestral (VIP)" }));
@@ -492,7 +490,7 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                             : "text-neutral-warm-500 hover:text-neutral-warm-800"
                         }`}
                       >
-                        Consulta Única / 1a Visita (40 min)
+                        1a Visita (40 min)
                       </button>
                       <button
                         type="button"
@@ -928,7 +926,6 @@ export default function BookingStepper({ selectedServiceId, onBookingSuccess }: 
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {[
-                            "Consulta Única (40 min)",
                             "Protocol Trimestral ⭐ (Popular)",
                             "Protocol Semestral (VIP)",
                             "Xerrades i tallers",

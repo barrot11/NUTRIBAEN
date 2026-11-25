@@ -2,19 +2,6 @@ import { Service, FAQItem, Testimonial } from "./types";
 
 export const SERVICES: Service[] = [
   {
-    id: "consulta-unica",
-    title: "Consulta Única",
-    description: "Sessió individual de 40 minuts on farem una valoració inicial completa del teu estat actual.",
-    bullets: [
-      "Entrevista exhaustiva i valoració inicial de la teva situació de partida",
-      "Anàlisi d'hàbits, digestió, descans i patrons diaris",
-      "Pla d'acció immediat i recomanacions adaptades al teu context",
-      "Ideal per tenir claredat sense compromís a llarg termini"
-    ],
-    icon: "Stethoscope",
-    duration: "Sessió individual de 40 minuts"
-  },
-  {
     id: "trimestral",
     title: "Protocol Trimestral",
     popular: true,

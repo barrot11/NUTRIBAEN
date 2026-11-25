@@ -99,22 +99,15 @@ export default function NewsletterSubPage({ onBackToHome }: NewsletterSubPagePro
           <div className="space-y-12">
             {/* Header Title */}
             <div className="text-center space-y-4">
+              <div className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#00FF66]">
+                Newsletter
+              </div>
               <h1
                 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight"
                 style={{ color: "#ffffff" }}
               >
-                Newsletter 
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF66] via-emerald-400 to-[#00FF66]">
-                  
-                </span>
+                Cada setmana envio un correu explicant-te com millorar la teva salut. Et pots subscriure aquí.
               </h1>
-
-              <p
-                className="text-neutral-200 text-base sm:text-lg max-w-xl mx-auto leading-relaxed"
-                style={{ color: "#e5e7eb" }}
-              >
-                
-              </p>
             </div>
 
             {/* Main Conversion Card */}
@@ -128,7 +121,7 @@ export default function NewsletterSubPage({ onBackToHome }: NewsletterSubPagePro
                     className="block text-xs font-bold text-white tracking-wide"
                     style={{ color: "#ffffff" }}
                   >
-                    Nom de pila (opcional)
+                    Nom
                   </label>
                   <input
                     id="newsletter-name"
@@ -378,40 +371,6 @@ export default function NewsletterSubPage({ onBackToHome }: NewsletterSubPagePro
               </div>
             </div>
 
-            {/* Value Proposition bullets */}
-            <div className="border border-neutral-700 rounded-3xl p-6 sm:p-8 bg-[#141815] space-y-4">
-              <h3
-                className="text-xs font-bold tracking-wider text-[#00FF66] uppercase"
-              >
-                Què trobaràs al newsletter de Pol Barrot?
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[#00FF66] shrink-0 mt-0.5" />
-                  <span className="text-xs sm:text-sm text-white" style={{ color: "#ffffff" }}>
-                    Criteri clínic basat en estudis recents, sense modes ni mites alimentaris.
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[#00FF66] shrink-0 mt-0.5" />
-                  <span className="text-xs sm:text-sm text-white" style={{ color: "#ffffff" }}>
-                    Protocol i hàbits de ritmes circadians: sol, son, descans i menjars.
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[#00FF66] shrink-0 mt-0.5" />
-                  <span className="text-xs sm:text-sm text-white" style={{ color: "#ffffff" }}>
-                    Casos reals de consulta: digestió, pèrdua de greix, inflamació i energia.
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[#00FF66] shrink-0 mt-0.5" />
-                  <span className="text-xs sm:text-sm text-white" style={{ color: "#ffffff" }}>
-                    Respostes directes a preguntes habituals de la comunitat.
-                  </span>
-                </div>
-              </div>
-            </div>
           </div>
         ) : (
           /* State 2: Success Confirmation with Guided Instructions */

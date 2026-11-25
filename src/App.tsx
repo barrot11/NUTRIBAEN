@@ -11,7 +11,6 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import QuiSocPage from "./components/QuiSocPage";
 import QuiVaDirigitPage from "./components/QuiVaDirigitPage";
-import NewsletterSection from "./components/NewsletterSection";
 import NewsletterAdminModal from "./components/NewsletterAdminModal";
 import NewsletterSubPage from "./components/NewsletterSubPage";
 import ContactSubPage from "./components/ContactSubPage";
@@ -167,6 +166,7 @@ export default function App() {
         <Navbar 
           onBookClick={() => view === 'home' ? scrollToId("reserva") : navigateTo('home', 'reserva')} 
           onTestClick={handleOpenTestWindow}
+          onNewsletterClick={() => navigateTo('newsletter-sub')}
           onNavigateToSection={(sectionId) => navigateTo('home', sectionId)}
         />
       )}
@@ -236,10 +236,7 @@ export default function App() {
               onBookingSuccess={() => setSelectedServiceId(null)} 
             />
 
-            {/* 7. Newsletter Subscription Section */}
-            <NewsletterSection onOpenAdmin={() => setIsNewsletterAdminOpen(true)} />
-
-            {/* 8. Contact form and address blocks */}
+            {/* 7. Contact form and address blocks */}
             <Contact />
           </>
         )}
